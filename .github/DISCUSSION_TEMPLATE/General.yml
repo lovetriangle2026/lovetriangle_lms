@@ -1,10 +1,9 @@
 name: Daily Meeting
 description: Record the daily team meeting
 title: "[Daily Meeting] "
-labels: ["meeting"]
 
 body:
-  - type: textarea
+  - type: input
     attributes:
       label: 📅 회의 날짜
       description: 회의 날짜를 입력하세요
@@ -24,7 +23,7 @@ body:
     attributes:
       label: 📌 오늘 논의한 내용
       description: 오늘 회의에서 논의한 내용
-      placeholder: 
+      placeholder: |
         - 기능 설계 논의
         - DB 구조 논의
     validations:
@@ -33,16 +32,15 @@ body:
   - type: textarea
     attributes:
       label: ✅ 결정된 사항
-      description: 회의에서 최종 결정된 내용
-      placeholder:
-        - 강의 테이블 분리
-        - JWT 인증 사용
+      description: 회의에서 결정된 내용
+      placeholder: |
+        - 로그인 API 먼저 구현
+        - DB 테이블 수정
 
   - type: textarea
     attributes:
-      label: 🔧 해야 할 작업 (TODO)
-      description: 다음 회의 전까지 할 작업
-      placeholder:
-        - 유지 : ERD 설계
-        - 민서 : 로그인 API 구현
-        - 철수 : 강의 CRUD 개발
+      label: 🚀 다음 할 일
+      description: 다음 회의 전까지 할 일
+      placeholder: |
+        - JWT 인증 구현
+        - ERD 수정
