@@ -1,0 +1,14 @@
+.github/DISCUSSION_TEMPLATE/question.yml
+
+
+
+
+name: Question
+description: Ask a question about the project
+title: "[Question]: "
+body:
+  - type: textarea
+    attributes:
+      label: 질문 내용
+      description: 궁금한 내용을 작성해주세요
+      placeholder: 질문을 입력하세요
