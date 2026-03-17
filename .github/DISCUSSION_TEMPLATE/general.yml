@@ -19,7 +19,7 @@ body:
     attributes:
       label: 👥 참석자
       description: 회의에 참석한 팀원
-     
+      placeholder: 예) 유지, 민서, 철수
     validations:
       required: true
 
@@ -47,14 +47,10 @@ body:
     id: today_tasks
     attributes:
       label: 🚀 오늘 할 일
-      description: 오늘 해야 할 작업
-       value: |
-        동훈 :
+      description: 각자 오늘 해야 할 작업
+      value: |
+        동호 :
         석범 :
         채린 :
         유지 :
         민서 :
-    validations:
-      placeholder: |
-        - JWT 인증 구현
-        - 화면 설계 정리
