@@ -123,8 +123,6 @@
 
 
 
-
-</properties>
     <query key="users.findAll">
         select
         *

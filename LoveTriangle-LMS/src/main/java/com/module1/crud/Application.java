@@ -45,17 +45,13 @@ public class Application {
             StudentAssignmentInputView inputView = new StudentAssignmentInputView(controller, outputView);
             ProfessorAssignmentInputView inputView1 = new ProfessorAssignmentInputView(controller, outputView);
           
-            // Attendance 객체 조립
-            AttendanceService service = new AttendanceService(con);
-            AttendanceController controller = new AttendanceController(service);
-            AttendanceOutputView outputView = new AttendanceOutputView();
+            // Attendance 의존성 주입
+            AttendanceService attendanceService = new AttendanceService(con);
+            AttendanceController attendanceController = new AttendanceController(attendanceService);
+            AttendanceOutputView attendanceOutputView = new AttendanceOutputView();
 
-            ProfessorAttendanceInputView professorView =
-                    new ProfessorAttendanceInputView(controller, outputView);
-
-            StudentAttendanceInputView studentView =
-                    new StudentAttendanceInputView(controller, outputView);
-
+            ProfessorAttendanceInputView professorView = new ProfessorAttendanceInputView(attendanceController, attendanceOutputView);
+            StudentAttendanceInputView studentView =new StudentAttendanceInputView(attendanceController, attendanceOutputView);
 
 
             //Loginpage 의존성 주입
