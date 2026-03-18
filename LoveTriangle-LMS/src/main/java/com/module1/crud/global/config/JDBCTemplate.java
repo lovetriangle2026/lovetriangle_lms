@@ -15,34 +15,31 @@ public class JDBCTemplate {
 
     static {
 
+        //커넥션 풀 생성
         Properties prop = new Properties();
-
         try {
-            prop.load(JDBCTemplate.class
-                    .getClassLoader()
-                    .getResourceAsStream("db-info.properties"));
+            prop.load(JDBCTemplate.class.getClassLoader().getResourceAsStream("db-info.properties"));
 
             HikariConfig config = new HikariConfig();
 
-            // ✅ DB 설정
             config.setJdbcUrl(prop.getProperty("db.url"));
             config.setUsername(prop.getProperty("db.username"));
             config.setPassword(prop.getProperty("db.password"));
 
-            // ✅ MySQL 드라이버 명시
-            config.setDriverClassName("com.mysql.cj.jdbc.Driver");
-
-            // ✅ 커넥션 풀 설정
-            config.setMaximumPoolSize(10);
-            config.setMinimumIdle(5);
-            config.setMaxLifetime(1800000);
-            config.setConnectionTimeout(2000);
+            // connection 관련 설정
+            config.setMaximumPoolSize(10);  // 최대 10개의 커넥션 관리
+            config.setMinimumIdle(5);       // 최소 5개의 커넥션 유지
+            config.setMaxLifetime(180000);  // 커넥션을 사용할 수 있는 최대 시간
+            // 30분 후 새롭게 생성한다.
+            config.setConnectionTimeout(2000);  // 연결 요청이 2초 이상 지연되면
+            // 연결 실패로 인식한다.
 
             datasource = new HikariDataSource(config);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     public static Connection getConnection() throws SQLException {
@@ -50,18 +47,19 @@ public class JDBCTemplate {
     }
 
     public static void close() {
-        if (datasource != null) {
+        if(datasource != null){
             datasource.close();
         }
     }
 
+    // 옵션 : 커넥션 풀 상태 확인 메서드
     public static void printConnectionStatus() {
         HikariPoolMXBean poolMXBean = datasource.getHikariPoolMXBean();
-
-        System.out.println("[HikariCP 커넥션 풀 상태]");
+        System.out.println("🔎[HikariCP 커넥션 풀 상태 확인!!!]");
         System.out.println("총 커넥션 수 : " + poolMXBean.getTotalConnections());
         System.out.println("활성 커넥션 수 : " + poolMXBean.getActiveConnections());
-        System.out.println("유휴 커넥션 수 : " + poolMXBean.getIdleConnections());
-        System.out.println("=================================");
+        System.out.println("유휴(idle) 커넥션 수 : " + poolMXBean.getIdleConnections());
+        System.out.println("================================");
     }
+
 }

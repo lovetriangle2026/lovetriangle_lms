@@ -114,4 +114,21 @@
         where a.student_id = ?
         order by s.start_at
     </query>
+    <query key="assignment.findAll">
+        select
+        *
+        from assignments
+    </query>
+
+
+
+
+
+</properties>
+    <query key="users.findAll">
+        select
+        *
+        from users
+    </query>
+
 </properties>
