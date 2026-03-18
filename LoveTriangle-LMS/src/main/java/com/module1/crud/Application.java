@@ -5,6 +5,11 @@ import com.module1.crud.assignments.model.service.AssignmentService;
 import com.module1.crud.assignments.view.ProfessorAssignmentInputView;
 import com.module1.crud.assignments.view.StudentAssignmentInputView;
 import com.module1.crud.assignments.view.AssignmentOutputView;
+import com.module1.crud.attendance.controller.AttendanceController;
+import com.module1.crud.attendance.model.service.AttendanceService;
+import com.module1.crud.attendance.view.AttendanceOutputView;
+import com.module1.crud.attendance.view.ProfessorAttendanceInputView;
+import com.module1.crud.attendance.view.StudentAttendanceInputView;
 import com.module1.crud.global.config.JDBCTemplate;
 import com.module1.crud.global.loginpage.controller.LoginController;
 import com.module1.crud.global.loginpage.model.service.LoginService;
@@ -14,6 +19,7 @@ import com.module1.crud.users.controller.UsersController;
 import com.module1.crud.users.model.service.UsersService;
 import com.module1.crud.users.view.UsersInputView;
 import com.module1.crud.users.view.UsersOutputView;
+
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -38,6 +44,18 @@ public class Application {
             AssignmentOutputView outputView = new AssignmentOutputView();
             StudentAssignmentInputView inputView = new StudentAssignmentInputView(controller, outputView);
             ProfessorAssignmentInputView inputView1 = new ProfessorAssignmentInputView(controller, outputView);
+          
+            // Attendance 객체 조립
+            AttendanceService service = new AttendanceService(con);
+            AttendanceController controller = new AttendanceController(service);
+            AttendanceOutputView outputView = new AttendanceOutputView();
+
+            ProfessorAttendanceInputView professorView =
+                    new ProfessorAttendanceInputView(controller, outputView);
+
+            StudentAttendanceInputView studentView =
+                    new StudentAttendanceInputView(controller, outputView);
+
 
 
             //Loginpage 의존성 주입
