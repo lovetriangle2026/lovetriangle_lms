@@ -12,3 +12,10 @@
 
 
 </properties>
+    <query key="users.findAll">
+        select
+        *
+        from users
+    </query>
+
+</properties>

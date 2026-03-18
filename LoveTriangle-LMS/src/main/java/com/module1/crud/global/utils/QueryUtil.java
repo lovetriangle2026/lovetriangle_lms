@@ -62,7 +62,7 @@ public class QueryUtil {
 
     /**
      * 📌 특정 쿼리 ID로 SQL 가져오기
-     * @param key XML에서 정의한 query의 id
+     * @param key XML에서 정의한 query의 key
      * @return SQL 쿼리 문자열
      */
     public static String getQuery(String key) {
@@ -70,3 +70,5 @@ public class QueryUtil {
     }
 
 }
+
+
