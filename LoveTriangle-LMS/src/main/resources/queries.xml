@@ -229,4 +229,10 @@
 
     </query>
 
+    <query key = "find all courses">
+        select * from courses;
+
+
+    </query>
+
 </properties>
