@@ -1,0 +1,52 @@
+title: "[Daily Meeting] "
+labels: ["meeting"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        📢 팀 데일리 회의 기록 템플릿입니다.
+
+  - type: input
+    id: date
+    attributes:
+      label: 📅 날짜
+      placeholder: 예) 2026-03-17
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: ❗ 문제 사항
+      placeholder: 오늘 발생한 문제를 작성하세요
+    validations:
+      required: false
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: ✅ 해결할 사항
+      placeholder: 해결 방법 또는 진행 예정 내용
+    validations:
+      required: false
+
+  - type: textarea
+    id: today_tasks
+    attributes:
+      label: 📌 오늘 할 일
+      placeholder: 각자 할 일을 작성하세요
+    validations:
+      required: true
+
+  - type: textarea
+    id: members
+    attributes:
+      label: 👥 팀원별 작업
+      value: |
+        동훈 :
+        석범 :
+        채린 :
+        유지 :
+        민서 :
+    validations:
+      required: true
