@@ -19,27 +19,23 @@ body:
     attributes:
       label: ❗ 문제 사항
       placeholder: 오늘 발생한 문제를 작성하세요
-    validations:
-      required: false
 
   - type: textarea
     id: solution
     attributes:
       label: ✅ 해결할 사항
-      placeholder: 해결 방법 또는 진행 예정 내용
-    validations:
-      required: false
+      placeholder: 해결 방법 또는 진행 예정 내용을 작성하세요
 
   - type: textarea
     id: today_tasks
     attributes:
       label: 📌 오늘 할 일
-      placeholder: 각자 할 일을 작성하세요
+      placeholder: 오늘 해야 할 일을 자유롭게 작성하세요
     validations:
       required: true
 
   - type: textarea
-    id: members
+    id: member_tasks
     attributes:
       label: 👥 팀원별 작업
       value: |
