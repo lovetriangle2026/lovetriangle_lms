@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <properties>
 
+    <query key="assignment.findAll">
+        select
+        *
+        from assignments
+    </query>
+
+
+
+
+
+</properties>
     <query key="users.findAll">
         select
         *

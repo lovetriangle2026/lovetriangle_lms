@@ -1,5 +1,10 @@
 package com.module1.crud;
 
+import com.module1.crud.assignments.controller.AssignmentController;
+import com.module1.crud.assignments.model.service.AssignmentService;
+import com.module1.crud.assignments.view.ProfessorAssignmentInputView;
+import com.module1.crud.assignments.view.StudentAssignmentInputView;
+import com.module1.crud.assignments.view.AssignmentOutputView;
 import com.module1.crud.global.config.JDBCTemplate;
 import com.module1.crud.global.loginpage.controller.LoginController;
 import com.module1.crud.global.loginpage.model.service.LoginService;
@@ -27,7 +32,12 @@ public class Application {
             UsersOutputView usersOutputView = new UsersOutputView();
             UsersInputView usersInputView = new UsersInputView(usersController, usersOutputView);
 
-
+            //Assiginment 의존성주입
+            AssignmentService service = new AssignmentService(con);
+            AssignmentController controller = new AssignmentController(service);
+            AssignmentOutputView outputView = new AssignmentOutputView();
+            StudentAssignmentInputView inputView = new StudentAssignmentInputView(controller, outputView);
+            ProfessorAssignmentInputView inputView1 = new ProfessorAssignmentInputView(controller, outputView);
 
 
             //Loginpage 의존성 주입
