@@ -1,4 +1,4 @@
 package com.module1.crud.course.view;
 
-public class StudentCourseOutputView {
+public class StudentCourseInputView {
 }

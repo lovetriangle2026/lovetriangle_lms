@@ -49,7 +49,6 @@ public class Application {
             AttendanceService attendanceService = new AttendanceService(con);
             AttendanceController attendanceController = new AttendanceController(attendanceService);
             AttendanceOutputView attendanceOutputView = new AttendanceOutputView();
-
             ProfessorAttendanceInputView professorView = new ProfessorAttendanceInputView(attendanceController, attendanceOutputView);
             StudentAttendanceInputView studentView =new StudentAttendanceInputView(attendanceController, attendanceOutputView);
 

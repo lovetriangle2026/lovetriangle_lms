@@ -1,4 +1,4 @@
 package com.module1.crud.grade.view;
 
-public class GradeInputView {
+public class StudentGradeInputView {
 }

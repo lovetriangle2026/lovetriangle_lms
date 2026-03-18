@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-//채린 주소    <data-source source="LOCAL" name="@localhost" uuid="6b835d89-888f-41a8-b71e-67926aa38cac">
-    <data-source source="LOCAL" name="@LoveTriangle_LMS" uuid="fb840db8-1e91-465c-b8d2-f08697658c58">
+    <data-source source="LOCAL" name="@LoveTriangle_LMS" uuid="30ad735d-56a9-4901-8651-73b4468a942a">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
