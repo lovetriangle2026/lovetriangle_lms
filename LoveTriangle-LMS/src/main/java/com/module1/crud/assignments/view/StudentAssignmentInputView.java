@@ -2,6 +2,9 @@ package com.module1.crud.assignments.view;
 
 import com.module1.crud.assignments.controller.AssignmentController;
 import com.module1.crud.assignments.model.dto.AssignmentDTO;
+import com.module1.crud.assignments.model.dto.AssignmentSubmissionDTO;
+import com.module1.crud.global.session.SessionManager;
+import com.module1.crud.users.model.dto.UsersDTO;
 
 import java.util.List;
 import java.util.Scanner;
@@ -68,16 +71,42 @@ public class StudentAssignmentInputView {
     }
 
     private void createSubmission() {
+        outputView.printMessage("\n--- 과제 제출 ---");
 
+        UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
+
+        if (loggedInUser == null) {
+            outputView.printError("로그인 정보가 없습니다. 다시 로그인해주세요.");
+            return;
+        }
+
+        Long studentId = (long) loggedInUser.getId();
+
+        System.out.print("제출할 과제 번호를 입력하세요: ");
+        Long assignmentId = Long.parseLong(sc.nextLine());
+
+        System.out.print("제출 내용을 입력하세요: ");
+        String content = sc.nextLine();
+
+        AssignmentSubmissionDTO submissionDTO = new AssignmentSubmissionDTO(
+                assignmentId,
+                studentId,
+                content
+        );
+
+        controller.createSubmission(submissionDTO);
+        outputView.printMessage("과제 제출이 완료되었습니다.");
     }
 
     private void findMyAssignments() {
         outputView.printMessage("\n--- 수강 과목 과제 조회 ---");
 
-        List<AssignmentDTO> AssignmentDTOS =  controller.findMyAssignments();
+        UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
 
-        outputView.printAssignments(AssignmentDTOS);
+        Long userId = (long) loggedInUser.getId();
 
+        List<AssignmentDTO> assignmentDTOS = controller.findMyAssignments(userId);
+        outputView.printAssignments(assignmentDTOS);
 
 
     }

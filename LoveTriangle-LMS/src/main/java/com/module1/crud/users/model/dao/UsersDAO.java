@@ -38,7 +38,7 @@ public class UsersDAO {
                         // 🚨 DATE 타입은 LocalDate로 변환이 필요합니다!
                         rset.getDate("birth") != null ? rset.getDate("birth").toLocalDate() : null,
                         rset.getString("tel_num"),
-                        rset.getString("password"),
+                        rset.getString(" assword"),
                         rset.getString("pw_answer"),
                         rset.getString("user_type")
                 );
@@ -48,8 +48,45 @@ public class UsersDAO {
         } return usersDTOList;
 
     }
+    public Long save(UsersDTO usersDTO) throws SQLException {
+        String query = QueryUtil.getQuery("Users.save");
 
+        try (PreparedStatement pstmt = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
+            pstmt.setString(1, usersDTO.getUserCode());
+            pstmt.setString(2, usersDTO.getLoginId());
+            pstmt.setString(3, usersDTO.getName());
+            // 💡 핵심 변경 사항: LocalDate 타입을 DB에 저장할 수 있도록 java.sql.Date로 변환합니다.
+            pstmt.setDate(4, java.sql.Date.valueOf(usersDTO.getBirth()));
+            pstmt.setString(5, usersDTO.getTelNum());
+            pstmt.setString(6, usersDTO.getPassword());
+            pstmt.setString(7, usersDTO.getPwAnswer());
+            pstmt.setString(8, usersDTO.getUserType());
+
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        return rs.getLong(1);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public int deleteById(int userId) throws SQLException {
+        String query = QueryUtil.getQuery("Users.delete");
+
+        // DELETE는 키를 생성하지 않으므로 RETURN_GENERATED_KEYS가 필요 없습니다.
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setLong(1, userId);
+
+            // 삭제된 행의 개수를 반환합니다. (정상 삭제 시 1 반환)
+            return pstmt.executeUpdate();
+        }
+    }
 
 
 }

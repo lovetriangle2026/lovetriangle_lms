@@ -6,6 +6,9 @@ import com.module1.crud.attendance.view.ProfessorAttendanceInputView;
 import com.module1.crud.attendance.view.StudentAttendanceInputView;
 import com.module1.crud.course.view.StudentCourseInputView;
 import com.module1.crud.global.loginpage.controller.LoginController;
+import com.module1.crud.grade.view.ProfessorGradeInputView;
+import com.module1.crud.global.session.SessionManager;
+import com.module1.crud.users.model.dto.UsersDTO;
 import com.module1.crud.grade.view.StudentGradeInputView;
 import com.module1.crud.users.view.UsersInputView;
 
@@ -23,8 +26,8 @@ public class LoginInputView {
         private final ProfessorAssignmentInputView professorAssignmentInputView;
         private final ProfessorAttendanceInputView professorAttendanceInputView;
         private final StudentAttendanceInputView studentAttendanceInputView;
-        private final StudentCourseInputView studentCourseInputView;
         private final StudentGradeInputView studentGradeInputView;
+        private final ProfessorGradeInputView professorGradeInputView;
 
         public LoginInputView(
                 LoginController controller,
@@ -34,8 +37,7 @@ public class LoginInputView {
                 ProfessorAssignmentInputView professorAssignmentInputView,
                 ProfessorAttendanceInputView professorAttendanceInputView,
                 StudentAttendanceInputView studentAttendanceInputView,
-                StudentCourseInputView studentCourseInputView,
-                StudentGradeInputView studentGradeInputView) {
+                StudentCourseInputView studentCourseInputView, StudentGradeInputView studentGradeInputView, ProfessorGradeInputView professorGradeInputView) {
 
             this.controller = controller;
             this.outputView = outputView;
@@ -46,8 +48,8 @@ public class LoginInputView {
             this.professorAssignmentInputView = professorAssignmentInputView;
             this.professorAttendanceInputView = professorAttendanceInputView;
             this.studentAttendanceInputView = studentAttendanceInputView;
-            this.studentCourseInputView = studentCourseInputView;
             this.studentGradeInputView = studentGradeInputView;
+            this.professorGradeInputView = professorGradeInputView;
         }
 
 
@@ -67,7 +69,7 @@ public class LoginInputView {
                     loginMenu(); // 로그인 화면으로 이동
                     break;
                 case "2":
-                    signUpMenu(); // 회원가입 화면으로 이동
+                    usersInputView.createUser();
                     break;
                 case "0":
                     System.out.println("LMS 시스템을 종료합니다. 안녕히 가세요!");
@@ -78,27 +80,50 @@ public class LoginInputView {
         }
     }
 
-    // 2. 로그인 화면 (하드코딩 분기)
     private void loginMenu() {
-        System.out.println("\n--------- [로그인] --------- s는 학생 p는 교수 / pw는 아무거나 ");
-        System.out.print("ID: ");
-        String id = sc.nextLine();
-        System.out.print("PW: ");
-        String pw = sc.nextLine();
+        while (true) { // 💡 무한 루프 시작
+            System.out.println("\n--------- [로그인] ---------");
+            System.out.println("(이전 메뉴로 돌아가려면 '0'을 입력하세요)");
 
-        // 💡 프로토타입용 하드코딩 테스트 로직 (실제로는 UserController가 DB를 조회해야 함)
-        if (id.startsWith("s") || id.startsWith("S")) {
-            System.out.println("✅ [학생] 계정으로 로그인 성공!");
-            studentMainMenu(1L);
-            // 학생 MainMenu로 이동
+            System.out.print("ID: ");
+            String id = sc.nextLine();
 
-        } else if (id.startsWith("p") || id.startsWith("P")) {
-            System.out.println("✅ [교수] 계정으로 로그인 성공!");
-            professorMainMenu();
-            // 교수 MainMenu로 이동
+            // 탈출 로직: ID 입력 단계에서 0을 누르면 종료
+            if ("0".equals(id)) {
+                System.out.println("초기 메뉴로 돌아갑니다.");
+                return;
+            }
 
-        } else {
-            System.out.println("🚨 로그인 실패: 테스트를 위해 ID를 's'나 'p'로 시작하게 입력해주세요.");
+            System.out.print("PW: ");
+            String pw = sc.nextLine();
+
+            // 1. Controller를 통해 실제 DB 로그인 수행
+            boolean loginSuccess = controller.login(id, pw);
+
+            if (loginSuccess) {
+                UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
+                String userType = loggedInUser.getUserType();
+
+                System.out.println("✅ [" + loggedInUser.getName() + "]님 환영합니다! (" + userType + ")");
+
+                // 2. 권한에 따른 화면 분기 처리
+                if ("STUDENT".equalsIgnoreCase(userType)) {
+                    studentMainMenu();
+                } else if ("PROFESSOR".equalsIgnoreCase(userType)) {
+                    professorMainMenu();
+                } else {
+                    System.out.println("🚨 알 수 없는 권한입니다.");
+                    SessionManager.getInstance().clearSession();
+                }
+
+                // 💡 로그인이 성공해서 메뉴에 들어갔다가 '로그아웃'해서 나오면
+                // 이 loginMenu 메서드도 완전히 종료시켜서 '시작 메뉴'로 보내야 함
+                return;
+
+            } else {
+                // 로그인 실패 시 루프가 돌면서 다시 입력을 받게 됨
+                outputView.printError("로그인 실패: 아이디 또는 비밀번호가 일치하지 않습니다. 다시 시도해 주세요.");
+            }
         }
     }
 
@@ -111,9 +136,19 @@ public class LoginInputView {
     }
 
     // 3. 학생 메인 메뉴
-    private void studentMainMenu(Long userId) {
+    // 3. 학생 메인 메뉴
+    private void studentMainMenu() {
         while (true) {
+            // 1. 💡 핵심: 루프 시작 시 마다 세션 상태 확인 (게이트키퍼 역할)
+            UsersDTO user = SessionManager.getInstance().getLoggedInUser();
+
+            // 세션이 없으면(탈퇴/로그아웃 등) 즉시 이 메뉴를 종료하고 시작 메뉴로 돌아감
+            if (user == null) {
+                return;
+            }
+
             System.out.println("\n========= [학생 메인 메뉴] =========");
+            System.out.println("로그인 유저: " + user.getName() + " (" + user.getUserCode() + ")"); // 사용자 정보 표시
             System.out.println("1. 강의관리");
             System.out.println("2. 출결관리");
             System.out.println("3. 성적관리");
@@ -126,30 +161,31 @@ public class LoginInputView {
 
             switch (choice) {
                 case "1":
-                    // TODO: 강의관리 담당자 (예: courseController.displayStudentMenu())
                     System.out.println("👉 강의관리 모듈로 이동합니다.");
-                    studentCourseInputView.displayStudentMenu(userId);
+                    // courseInputView.displayMenu();
                     break;
                 case "2":
-                    studentAttendanceInputView.displayMenu();
                     System.out.println("👉 출결관리 모듈로 이동합니다.");
+                    studentAttendanceInputView.displayMenu();
                     break;
                 case "3":
-                    // TODO: 성적관리 담당자
                     System.out.println("👉 성적관리 모듈로 이동합니다.");
                     studentGradeInputView.displayStudentMainMenu();
                     break;
                 case "4":
-                    studentAssignmentInputView.displaymainmenu();
                     System.out.println("👉 과제관리 모듈로 이동합니다.");
+                    studentAssignmentInputView.displaymainmenu();
                     break;
                 case "5":
-                    usersInputView.UsersMainPage();
                     System.out.println("👉 회원관리 모듈로 이동합니다.");
+                    usersInputView.usersMainPage();
+                    // 💡 여기서 탈퇴하고 돌아오면, 다음 루프 시작 시 (user == null) 체크에서 걸려 return 됨
                     break;
                 case "0":
-                    System.out.println("로그아웃 되었습니다.");
-                    return; // 이전 화면(시작 메뉴)으로 돌아감
+                    // 2. 💡 로그아웃 시 세션을 비워줍니다.
+                    SessionManager.getInstance().clearSession();
+                    System.out.println("✅ 로그아웃 되었습니다.");
+                    return;
                 default:
                     System.out.println("🚨 잘못된 입력입니다. 다시 선택해주세요.");
             }
@@ -176,12 +212,13 @@ public class LoginInputView {
                     System.out.println("👉 강의관리 모듈로 이동합니다.");
                     break;
                 case "2":
-                    // TODO: 출결관리 담당자
+                    professorAttendanceInputView.displayMenu();
                     System.out.println("👉 출결관리 모듈로 이동합니다.");
                     break;
                 case "3":
                     // TODO: 성적관리 담당자
                     System.out.println("👉 성적관리 모듈로 이동합니다.");
+                    professorGradeInputView.displayProfessorMainMenu();
 
                     break;
                 case "4":

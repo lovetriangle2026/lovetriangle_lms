@@ -21,6 +21,8 @@ import com.module1.crud.global.loginpage.view.LoginInputView;
 import com.module1.crud.global.loginpage.view.LoginOutputView;
 import com.module1.crud.grade.controller.GradeController;
 import com.module1.crud.grade.model.service.GradeService;
+import com.module1.crud.grade.view.ProfessorGradeInputView;
+import com.module1.crud.grade.view.ProfessorGradeOutputView;
 import com.module1.crud.grade.view.StudentGradeInputView;
 import com.module1.crud.grade.view.StudentGradeOutputView;
 import com.module1.crud.users.controller.UsersController;
@@ -46,12 +48,12 @@ public class Application {
             UsersOutputView usersOutputView = new UsersOutputView();
             UsersInputView usersInputView = new UsersInputView(usersController, usersOutputView);
 
-            //Assiginment 의존성주입
+            //Assignment 의존성주입
             AssignmentService service = new AssignmentService(con);
             AssignmentController controller = new AssignmentController(service);
             AssignmentOutputView outputView = new AssignmentOutputView();
-            StudentAssignmentInputView inputView = new StudentAssignmentInputView(controller, outputView);
-            ProfessorAssignmentInputView inputView1 = new ProfessorAssignmentInputView(controller, outputView);
+            StudentAssignmentInputView StudentAssignmentInputView = new StudentAssignmentInputView(controller, outputView);
+            ProfessorAssignmentInputView ProfessorAssignmentInputView = new ProfessorAssignmentInputView(controller, outputView);
           
             // Attendance 의존성 주입
             AttendanceService attendanceService = new AttendanceService(con);
@@ -60,32 +62,46 @@ public class Application {
             ProfessorAttendanceInputView professorView = new ProfessorAttendanceInputView(attendanceController, attendanceOutputView);
             StudentAttendanceInputView studentView =new StudentAttendanceInputView(attendanceController, attendanceOutputView);
 
+            //grade 의존성 주입
             GradeService gradeService = new GradeService(con);
             GradeController gradeController = new GradeController(gradeService);
             StudentGradeOutputView studentGradeOutputView = new StudentGradeOutputView();
             StudentGradeInputView studentGradeInputView = new StudentGradeInputView(gradeController,studentGradeOutputView);
-
+            // grade 의존성 주입
+            GradeService gradeService2 = new GradeService(con);
+            GradeController gradeController2 = new GradeController(gradeService2);
+            ProfessorGradeOutputView professorGradeOutputView = new ProfessorGradeOutputView();
+            ProfessorGradeInputView professorGradeInputView = new ProfessorGradeInputView(gradeController2,professorGradeOutputView);
 
 
 
             //course 의존성 주입
             // 1. Service 생성 (DB 연결 객체인 con을 넣어줍니다)
             CourseService courseService = new CourseService(con);
-// 2. Controller 생성 (방금 만든 service를 넣어줍니다)
+            // 2. Controller 생성 (방금 만든 service를 넣어줍니다)
             CourseController courseController = new CourseController(courseService);
-// 3. OutputView 생성 (데이터를 보여줄 도구)
+            // 3. OutputView 생성 (데이터를 보여줄 도구)
             StudentCourseOutputView studentCourseOutputView = new StudentCourseOutputView();
-// 4. InputView 생성 (사용자 입력을 받고, 컨트롤러와 출력뷰를 연결)
+            // 4. InputView 생성 (사용자 입력을 받고, 컨트롤러와 출력뷰를 연결)
             StudentCourseInputView studentCourseInputView = new StudentCourseInputView(courseController, studentCourseOutputView);
-
 
 
             //Loginpage 의존성 주입
             LoginService loginService = new LoginService(con);
             LoginController loginController = new LoginController(loginService);
             LoginOutputView loginOutputView = new LoginOutputView();
-            LoginInputView loginInputView = new LoginInputView(loginController, loginOutputView, usersInputView, inputView, inputView1, professorView, studentView, studentCourseInputView,studentGradeInputView);
-           
+            LoginInputView loginInputView = new LoginInputView(
+                    loginController,
+                    loginOutputView,
+                    usersInputView,
+                    StudentAssignmentInputView,
+                    ProfessorAssignmentInputView,
+                    professorView,
+                    studentView,
+                    studentCourseInputView,
+                    studentGradeInputView,
+                    professorGradeInputView
+            );
 
             loginInputView.displayStartMenu();
 
