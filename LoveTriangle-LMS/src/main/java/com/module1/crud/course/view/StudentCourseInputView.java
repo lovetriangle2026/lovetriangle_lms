@@ -19,7 +19,7 @@ public class StudentCourseInputView {
         this.outputView = outputView;
     }
 
-    public void displayStudentMenu(Long userId) {
+    public void displayStudentMenu() {
         Scanner sc = new Scanner(System.in); //입력 받짜.
         System.out.println("1. 전체 강의 목록 조회");
         System.out.println("0. 뒤로 가기");
