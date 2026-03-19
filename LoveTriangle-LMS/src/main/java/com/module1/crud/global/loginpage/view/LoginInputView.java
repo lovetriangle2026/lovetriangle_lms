@@ -166,7 +166,7 @@ public class LoginInputView {
                     System.out.println("👉 강의관리 모듈로 이동합니다.");
                     break;
                 case "2":
-                    // TODO: 출결관리 담당자
+                    professorAttendanceInputView.displayMenu();
                     System.out.println("👉 출결관리 모듈로 이동합니다.");
                     break;
                 case "3":
