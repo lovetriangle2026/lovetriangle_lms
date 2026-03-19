@@ -10,6 +10,10 @@ import com.module1.crud.attendance.model.service.AttendanceService;
 import com.module1.crud.attendance.view.AttendanceOutputView;
 import com.module1.crud.attendance.view.ProfessorAttendanceInputView;
 import com.module1.crud.attendance.view.StudentAttendanceInputView;
+import com.module1.crud.course.controller.CourseController;
+import com.module1.crud.course.model.service.CourseService;
+import com.module1.crud.course.view.StudentCourseInputView;
+import com.module1.crud.course.view.StudentCourseOutputView;
 import com.module1.crud.global.config.JDBCTemplate;
 import com.module1.crud.global.loginpage.controller.LoginController;
 import com.module1.crud.global.loginpage.model.service.LoginService;
@@ -65,14 +69,12 @@ public class Application {
             //course 의존성 주입
             // 1. Service 생성 (DB 연결 객체인 con을 넣어줍니다)
             CourseService courseService = new CourseService(con);
-// 2. Controller 생성 (방금 만든 service를 넣어줍니다)
+            // 2. Controller 생성 (방금 만든 service를 넣어줍니다)
             CourseController courseController = new CourseController(courseService);
-// 3. OutputView 생성 (데이터를 보여줄 도구)
+            // 3. OutputView 생성 (데이터를 보여줄 도구)
             StudentCourseOutputView studentCourseOutputView = new StudentCourseOutputView();
-// 4. InputView 생성 (사용자 입력을 받고, 컨트롤러와 출력뷰를 연결)
+            // 4. InputView 생성 (사용자 입력을 받고, 컨트롤러와 출력뷰를 연결)
             StudentCourseInputView studentCourseInputView = new StudentCourseInputView(courseController, studentCourseOutputView);
-
-
 
 
             //Loginpage 의존성 주입
