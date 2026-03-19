@@ -76,7 +76,7 @@ public class UsersDAO {
         return null;
     }
 
-    public int deleteById(Long userId) throws SQLException {
+    public int deleteById(int userId) throws SQLException {
         String query = QueryUtil.getQuery("Users.delete");
 
         // DELETE는 키를 생성하지 않으므로 RETURN_GENERATED_KEYS가 필요 없습니다.
