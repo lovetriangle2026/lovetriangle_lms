@@ -21,7 +21,6 @@ public class StudentCourseInputView {
     public void displayStudentMenu() {
         Scanner sc = new Scanner(System.in); //입력 받짜.
         System.out.println("1. 전체 강의 목록 조회");
-        System.out.println("2. 수강 강의 조회");
         System.out.println("0. 뒤로 가기");
         System.out.println("번호 선택 : ");
 
@@ -30,10 +29,7 @@ public class StudentCourseInputView {
 
         if (choice ==1) {
             displayAllCourse();
-        }else if (choice ==2){
-
-        }
-        else if (choice ==0) {
+        } else if (choice ==0) {
             System.out.println("메뉴 종료합니다");
         }
     }
@@ -45,11 +41,4 @@ public class StudentCourseInputView {
         outputView.printCourses(courseList);
 
     }
-    //여기부터 본인이 신청한 강의 조회 기능
-    private void FindMyCourses() {
-
-        outputView.printMessage("--- 내가 신청한 강의 목록 조회 ---");
-        
-    }
-
 }
