@@ -62,12 +62,25 @@ public class Application {
             StudentGradeInputView studentGradeInputView = new StudentGradeInputView(gradeController,studentGradeOutputView);
 
 
+            //course 의존성 주입
+            // 1. Service 생성 (DB 연결 객체인 con을 넣어줍니다)
+            CourseService courseService = new CourseService(con);
+// 2. Controller 생성 (방금 만든 service를 넣어줍니다)
+            CourseController courseController = new CourseController(courseService);
+// 3. OutputView 생성 (데이터를 보여줄 도구)
+            StudentCourseOutputView studentCourseOutputView = new StudentCourseOutputView();
+// 4. InputView 생성 (사용자 입력을 받고, 컨트롤러와 출력뷰를 연결)
+            StudentCourseInputView studentCourseInputView = new StudentCourseInputView(courseController, studentCourseOutputView);
+
+
+
 
             //Loginpage 의존성 주입
             LoginService loginService = new LoginService(con);
             LoginController loginController = new LoginController(loginService);
             LoginOutputView loginOutputView = new LoginOutputView();
             LoginInputView loginInputView = new LoginInputView(loginController, loginOutputView, usersInputView, StudentAssignmentInputView, ProfessorAssignmentInputView, professorView, studentView,studentGradeInputView);
+
 
             loginInputView.displayStartMenu();
 
