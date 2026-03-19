@@ -3,6 +3,7 @@ package com.module1.crud.course.view;
 import com.module1.crud.course.controller.CourseController;
 import com.module1.crud.course.model.dto.CourseDTO;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,7 +19,7 @@ public class StudentCourseInputView {
         this.outputView = outputView;
     }
 
-    public void displayStudentMenu() {
+    public void displayStudentMenu(Long userId) {
         Scanner sc = new Scanner(System.in); //입력 받짜.
         System.out.println("1. 전체 강의 목록 조회");
         System.out.println("0. 뒤로 가기");
@@ -41,4 +42,16 @@ public class StudentCourseInputView {
         outputView.printCourses(courseList);
 
     }
+    //여기부터 본인이 신청한 강의 조회 기능
+    private void FindMyCourses(Long userId) throws SQLException {
+
+        outputView.printMessage("--- 내가 신청한 강의 목록 조회 ---");
+        // 1. 컨트롤러를 불러서 내 강의 목록 가져오기
+        List<CourseDTO> myCourseList = controller.findMyCourses(userId);
+
+        // 2. 출력 담당(outputView)에게 목록을 보여달라시키기
+        outputView.printCourses(myCourseList);
+
+    }
+
 }

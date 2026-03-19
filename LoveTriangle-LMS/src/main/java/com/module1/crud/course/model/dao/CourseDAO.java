@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class CourseDAO {
 
@@ -41,4 +42,35 @@ public class CourseDAO {
         return courselist;
 
     }
+    public List<CourseDTO> findMyCourses(Long userId) {
+        String query = com.module1.crud.global.utils.QueryUtil.getQuery("find my courses");
+        List<CourseDTO> courselist = new java.util.ArrayList<>();
+
+        try(java.sql.PreparedStatement pstmt = connection.prepareStatement(query)){
+            pstmt.setLong(1, userId);
+
+            try (java.sql.ResultSet rset = pstmt.executeQuery()) {
+                while (rset.next()) {
+                    CourseDTO course = new CourseDTO(
+                            rset.getLong("id"),
+                            rset.getString("course_code"),
+                            rset.getInt("professor_id"),
+                            rset.getString("title"),
+                            rset.getString("description"),
+                            rset.getString("semester"));
+
+                    courselist.add(course);
+
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+
+        }return courselist;
+
+    }
+
 }
