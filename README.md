@@ -1,6 +1,2 @@
-# lovetriangle\_lms
-
-
-
-# 풀리퀘스트 수정ASDFASDF
+//제발 돼라
 
