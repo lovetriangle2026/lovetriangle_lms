@@ -5,6 +5,7 @@ import com.module1.crud.assignments.view.StudentAssignmentInputView;
 import com.module1.crud.attendance.view.ProfessorAttendanceInputView;
 import com.module1.crud.attendance.view.StudentAttendanceInputView;
 import com.module1.crud.global.loginpage.controller.LoginController;
+import com.module1.crud.grade.view.ProfessorGradeInputView;
 import com.module1.crud.global.session.SessionManager;
 import com.module1.crud.users.model.dto.UsersDTO;
 import com.module1.crud.grade.view.StudentGradeInputView;
@@ -25,6 +26,7 @@ public class LoginInputView {
         private final ProfessorAttendanceInputView professorAttendanceInputView;
         private final StudentAttendanceInputView studentAttendanceInputView;
         private final StudentGradeInputView studentGradeInputView;
+        private final ProfessorGradeInputView professorGradeInputView;
 
         public LoginInputView(
                 LoginController controller,
@@ -34,7 +36,7 @@ public class LoginInputView {
                 ProfessorAssignmentInputView professorAssignmentInputView,
                 ProfessorAttendanceInputView professorAttendanceInputView,
                 StudentAttendanceInputView studentAttendanceInputView,
-                StudentGradeInputView studentGradeInputView) {
+                StudentGradeInputView studentGradeInputView, ProfessorGradeInputView professorGradeInputView) {
 
             this.controller = controller;
             this.outputView = outputView;
@@ -46,6 +48,7 @@ public class LoginInputView {
             this.professorAttendanceInputView = professorAttendanceInputView;
             this.studentAttendanceInputView = studentAttendanceInputView;
             this.studentGradeInputView = studentGradeInputView;
+            this.professorGradeInputView = professorGradeInputView;
         }
 
 
@@ -190,6 +193,7 @@ public class LoginInputView {
                 case "3":
                     // TODO: 성적관리 담당자
                     System.out.println("👉 성적관리 모듈로 이동합니다.");
+                    professorGradeInputView.displayProfessorMainMenu();
 
                     break;
                 case "4":
