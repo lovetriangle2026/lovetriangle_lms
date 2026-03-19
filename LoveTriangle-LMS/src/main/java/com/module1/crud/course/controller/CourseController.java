@@ -18,7 +18,7 @@ public class CourseController {
         return service.findAllCourses();
     }
 
-    public List<CourseDTO> findMyCourses(Long userId) throws SQLException {
+    public List<CourseDTO> findMyCourses(int userId) throws SQLException {
         return service.findMyCourses(userId);
     }
 

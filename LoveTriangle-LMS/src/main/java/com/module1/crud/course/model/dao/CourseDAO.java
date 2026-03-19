@@ -42,7 +42,7 @@ public class CourseDAO {
         return courselist;
 
     }
-    public List<CourseDTO> findMyCourses(Long userId) {
+    public List<CourseDTO> findMyCourses(int userId) {
         String query = com.module1.crud.global.utils.QueryUtil.getQuery("find my courses");
         List<CourseDTO> courselist = new java.util.ArrayList<>();
 
