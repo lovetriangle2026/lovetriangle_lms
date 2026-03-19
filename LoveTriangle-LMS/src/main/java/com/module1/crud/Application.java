@@ -19,6 +19,10 @@ import com.module1.crud.global.loginpage.controller.LoginController;
 import com.module1.crud.global.loginpage.model.service.LoginService;
 import com.module1.crud.global.loginpage.view.LoginInputView;
 import com.module1.crud.global.loginpage.view.LoginOutputView;
+import com.module1.crud.grade.controller.GradeController;
+import com.module1.crud.grade.model.service.GradeService;
+import com.module1.crud.grade.view.StudentGradeInputView;
+import com.module1.crud.grade.view.StudentGradeOutputView;
 import com.module1.crud.users.controller.UsersController;
 import com.module1.crud.users.model.service.UsersService;
 import com.module1.crud.users.view.UsersInputView;
@@ -56,6 +60,13 @@ public class Application {
             ProfessorAttendanceInputView professorView = new ProfessorAttendanceInputView(attendanceController, attendanceOutputView);
             StudentAttendanceInputView studentView =new StudentAttendanceInputView(attendanceController, attendanceOutputView);
 
+            GradeService gradeService = new GradeService(con);
+            GradeController gradeController = new GradeController(gradeService);
+            StudentGradeOutputView studentGradeOutputView = new StudentGradeOutputView();
+            StudentGradeInputView studentGradeInputView = new StudentGradeInputView(gradeController,studentGradeOutputView);
+
+
+
 
             //course 의존성 주입
             // 1. Service 생성 (DB 연결 객체인 con을 넣어줍니다)
@@ -73,7 +84,8 @@ public class Application {
             LoginService loginService = new LoginService(con);
             LoginController loginController = new LoginController(loginService);
             LoginOutputView loginOutputView = new LoginOutputView();
-            LoginInputView loginInputView = new LoginInputView(loginController, loginOutputView, usersInputView, inputView, inputView1, professorView, studentView, studentCourseInputView);
+            LoginInputView loginInputView = new LoginInputView(loginController, loginOutputView, usersInputView, inputView, inputView1, professorView, studentView, studentCourseInputView,studentGradeInputView);
+           
 
             loginInputView.displayStartMenu();
 

@@ -6,6 +6,7 @@ import com.module1.crud.attendance.view.ProfessorAttendanceInputView;
 import com.module1.crud.attendance.view.StudentAttendanceInputView;
 import com.module1.crud.course.view.StudentCourseInputView;
 import com.module1.crud.global.loginpage.controller.LoginController;
+import com.module1.crud.grade.view.StudentGradeInputView;
 import com.module1.crud.users.view.UsersInputView;
 
 import java.util.Scanner;
@@ -23,6 +24,7 @@ public class LoginInputView {
         private final ProfessorAttendanceInputView professorAttendanceInputView;
         private final StudentAttendanceInputView studentAttendanceInputView;
         private final StudentCourseInputView studentCourseInputView;
+        private final StudentGradeInputView studentGradeInputView;
 
         public LoginInputView(
                 LoginController controller,
@@ -33,6 +35,7 @@ public class LoginInputView {
                 ProfessorAttendanceInputView professorAttendanceInputView,
                 StudentAttendanceInputView studentAttendanceInputView,
                 StudentCourseInputView studentCourseInputView) {
+                StudentGradeInputView studentGradeInputView) {
 
             this.controller = controller;
             this.outputView = outputView;
@@ -44,6 +47,7 @@ public class LoginInputView {
             this.professorAttendanceInputView = professorAttendanceInputView;
             this.studentAttendanceInputView = studentAttendanceInputView;
             this.studentCourseInputView = studentCourseInputView;
+            this.studentGradeInputView = studentGradeInputView;
         }
 
 
@@ -133,6 +137,7 @@ public class LoginInputView {
                 case "3":
                     // TODO: 성적관리 담당자
                     System.out.println("👉 성적관리 모듈로 이동합니다.");
+                    studentGradeInputView.displayStudentMainMenu();
                     break;
                 case "4":
                     studentAssignmentInputView.displaymainmenu();
@@ -177,6 +182,7 @@ public class LoginInputView {
                 case "3":
                     // TODO: 성적관리 담당자
                     System.out.println("👉 성적관리 모듈로 이동합니다.");
+
                     break;
                 case "4":
                     // TODO: 과제관리 담당자

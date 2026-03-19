@@ -18,13 +18,15 @@ public class AssignmentDAO {
         this.connection = connection;
     }
 
-    public List<AssignmentDTO> findMyAssignments(Connection connection) throws SQLException {
+    public List<AssignmentDTO> findMyAssignments() throws SQLException {
 
         String query = QueryUtil.getQuery("assignment.findAll");
+        System.out.println("query = " + query);
         List<AssignmentDTO> assignmentList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query);
-             ResultSet rset = pstmt.executeQuery()) {
+        try (PreparedStatement pstmt = connection.prepareStatement(query)){
+                  ResultSet rset = pstmt.executeQuery();
+                  System.out.println("rset = " + rset);
 
             while (rset.next()) {
                 AssignmentDTO assignment = new AssignmentDTO(
@@ -34,7 +36,7 @@ public class AssignmentDAO {
                         rset.getString("description"),
                         rset.getTimestamp("deadline")
                 );
-
+                System.out.println("assignment = " + assignment);
                 assignmentList.add(assignment);
             }
         }
