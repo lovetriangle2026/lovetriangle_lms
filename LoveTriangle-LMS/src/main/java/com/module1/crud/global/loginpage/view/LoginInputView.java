@@ -4,6 +4,7 @@ import com.module1.crud.assignments.view.ProfessorAssignmentInputView;
 import com.module1.crud.assignments.view.StudentAssignmentInputView;
 import com.module1.crud.attendance.view.ProfessorAttendanceInputView;
 import com.module1.crud.attendance.view.StudentAttendanceInputView;
+import com.module1.crud.course.view.StudentCourseInputView;
 import com.module1.crud.global.loginpage.controller.LoginController;
 import com.module1.crud.grade.view.ProfessorGradeInputView;
 import com.module1.crud.global.session.SessionManager;
@@ -27,6 +28,7 @@ public class LoginInputView {
         private final StudentAttendanceInputView studentAttendanceInputView;
         private final StudentGradeInputView studentGradeInputView;
         private final ProfessorGradeInputView professorGradeInputView;
+        private final StudentCourseInputView studentCourseInputView;
 
         public LoginInputView(
                 LoginController controller,
@@ -36,7 +38,9 @@ public class LoginInputView {
                 ProfessorAssignmentInputView professorAssignmentInputView,
                 ProfessorAttendanceInputView professorAttendanceInputView,
                 StudentAttendanceInputView studentAttendanceInputView,
-                StudentGradeInputView studentGradeInputView, ProfessorGradeInputView professorGradeInputView) {
+                StudentCourseInputView studentCourseInputView,
+                StudentGradeInputView studentGradeInputView, ProfessorGradeInputView professorGradeInputView
+                ) {
 
             this.controller = controller;
             this.outputView = outputView;
@@ -49,6 +53,7 @@ public class LoginInputView {
             this.studentAttendanceInputView = studentAttendanceInputView;
             this.studentGradeInputView = studentGradeInputView;
             this.professorGradeInputView = professorGradeInputView;
+            this.studentCourseInputView = studentCourseInputView;
         }
 
 
