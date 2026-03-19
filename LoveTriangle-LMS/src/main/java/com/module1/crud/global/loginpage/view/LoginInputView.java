@@ -28,7 +28,6 @@ public class LoginInputView {
         private final StudentAttendanceInputView studentAttendanceInputView;
         private final StudentGradeInputView studentGradeInputView;
         private final ProfessorGradeInputView professorGradeInputView;
-        private final StudentCourseInputView studentCourseInputView;
 
         public LoginInputView(
                 LoginController controller,
@@ -38,9 +37,7 @@ public class LoginInputView {
                 ProfessorAssignmentInputView professorAssignmentInputView,
                 ProfessorAttendanceInputView professorAttendanceInputView,
                 StudentAttendanceInputView studentAttendanceInputView,
-                StudentCourseInputView studentCourseInputView,
-                StudentGradeInputView studentGradeInputView, ProfessorGradeInputView professorGradeInputView
-                ) {
+                StudentCourseInputView studentCourseInputView, StudentGradeInputView studentGradeInputView, ProfessorGradeInputView professorGradeInputView) {
 
             this.controller = controller;
             this.outputView = outputView;
@@ -53,7 +50,6 @@ public class LoginInputView {
             this.studentAttendanceInputView = studentAttendanceInputView;
             this.studentGradeInputView = studentGradeInputView;
             this.professorGradeInputView = professorGradeInputView;
-            this.studentCourseInputView = studentCourseInputView;
         }
 
 

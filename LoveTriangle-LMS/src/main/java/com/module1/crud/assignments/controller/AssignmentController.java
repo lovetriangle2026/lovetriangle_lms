@@ -1,6 +1,7 @@
 package com.module1.crud.assignments.controller;
 
 import com.module1.crud.assignments.model.dto.AssignmentDTO;
+import com.module1.crud.assignments.model.dto.AssignmentSubmissionDTO;
 import com.module1.crud.assignments.model.service.AssignmentService;
 
 import java.util.List;
@@ -16,9 +17,10 @@ public class AssignmentController {
     }
 
     public List<AssignmentDTO> findMyAssignments(Long userId) {
-
         return service.findMyAssignments(userId);
 
-
+    }
+    public void createSubmission(AssignmentSubmissionDTO submissionDTO) {
+        service.createSubmission(submissionDTO);
     }
 }
