@@ -10,7 +10,7 @@ public class AssignmentDTO {
     private String description;
     private Timestamp deadline;
 
-    public AssignmentDTO(long id, long courseId, String title, String description, Timestamp deadline) {
+    public AssignmentDTO(long id, long course_Id, String title, String description, Timestamp deadline) {
         this.id = id;
         this.course_Id = course_Id;
         this.title = title;

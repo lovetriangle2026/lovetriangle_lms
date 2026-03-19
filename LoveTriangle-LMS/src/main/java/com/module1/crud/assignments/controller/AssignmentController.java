@@ -15,9 +15,9 @@ public class AssignmentController {
 
     }
 
-    public List<AssignmentDTO> findMyAssignments() {
+    public List<AssignmentDTO> findMyAssignments(Long userId) {
 
-        return service.findMyAssignments();
+        return service.findMyAssignments(userId);
 
 
     }
