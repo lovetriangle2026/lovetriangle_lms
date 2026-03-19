@@ -10,10 +10,6 @@ import com.module1.crud.attendance.model.service.AttendanceService;
 import com.module1.crud.attendance.view.AttendanceOutputView;
 import com.module1.crud.attendance.view.ProfessorAttendanceInputView;
 import com.module1.crud.attendance.view.StudentAttendanceInputView;
-import com.module1.crud.course.controller.CourseController;
-import com.module1.crud.course.model.service.CourseService;
-import com.module1.crud.course.view.StudentCourseInputView;
-import com.module1.crud.course.view.StudentCourseOutputView;
 import com.module1.crud.global.config.JDBCTemplate;
 import com.module1.crud.global.loginpage.controller.LoginController;
 import com.module1.crud.global.loginpage.model.service.LoginService;
@@ -46,12 +42,12 @@ public class Application {
             UsersOutputView usersOutputView = new UsersOutputView();
             UsersInputView usersInputView = new UsersInputView(usersController, usersOutputView);
 
-            //Assiginment 의존성주입
+            //Assignment 의존성주입
             AssignmentService service = new AssignmentService(con);
             AssignmentController controller = new AssignmentController(service);
             AssignmentOutputView outputView = new AssignmentOutputView();
-            StudentAssignmentInputView inputView = new StudentAssignmentInputView(controller, outputView);
-            ProfessorAssignmentInputView inputView1 = new ProfessorAssignmentInputView(controller, outputView);
+            StudentAssignmentInputView StudentAssignmentInputView = new StudentAssignmentInputView(controller, outputView);
+            ProfessorAssignmentInputView ProfessorAssignmentInputView = new ProfessorAssignmentInputView(controller, outputView);
           
             // Attendance 의존성 주입
             AttendanceService attendanceService = new AttendanceService(con);
@@ -64,8 +60,6 @@ public class Application {
             GradeController gradeController = new GradeController(gradeService);
             StudentGradeOutputView studentGradeOutputView = new StudentGradeOutputView();
             StudentGradeInputView studentGradeInputView = new StudentGradeInputView(gradeController,studentGradeOutputView);
-
-
 
 
             //course 의존성 주입
@@ -81,15 +75,11 @@ public class Application {
 
 
 
-
-
-
             //Loginpage 의존성 주입
             LoginService loginService = new LoginService(con);
             LoginController loginController = new LoginController(loginService);
             LoginOutputView loginOutputView = new LoginOutputView();
-            LoginInputView loginInputView = new LoginInputView(loginController, loginOutputView, usersInputView, inputView, inputView1, professorView, studentView, studentCourseInputView,studentGradeInputView);
-           
+            LoginInputView loginInputView = new LoginInputView(loginController, loginOutputView, usersInputView, StudentAssignmentInputView, ProfessorAssignmentInputView, professorView, studentView,studentGradeInputView);
 
 
             loginInputView.displayStartMenu();
