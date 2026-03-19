@@ -38,7 +38,7 @@ public class UsersService {
         }
     }
 
-    public boolean deleteUser(Long userId) {
+    public boolean deleteUser(int userId) {
         try {
             int affectedRows = usersDAO.deleteById(userId);
 

@@ -75,7 +75,6 @@ public class Application {
 
 
 
-
             //course 의존성 주입
             // 1. Service 생성 (DB 연결 객체인 con을 넣어줍니다)
             CourseService courseService = new CourseService(con);

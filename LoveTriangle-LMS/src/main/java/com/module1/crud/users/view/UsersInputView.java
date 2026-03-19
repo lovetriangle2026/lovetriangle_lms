@@ -1,4 +1,5 @@
 package com.module1.crud.users.view;
+import com.module1.crud.global.session.SessionManager;
 import com.module1.crud.users.controller.UsersController;
 import com.module1.crud.users.model.dto.UsersDTO;
 import com.module1.crud.users.model.service.UsersService;
@@ -20,47 +21,64 @@ public class UsersInputView {
         this.outputView = outputView;
     }
 
-    public void UsersMainPage(){
-        final Scanner sc = new Scanner(System.in);
-        System.out.println("\n========= [회원관리 메인 메뉴] =========");
-        System.out.println("1. 회원정보 조회");
-        System.out.println("2. 수강내역조회");
-        System.out.println("3. 강의조회");
-        System.out.println("4. 과제조회");
-        System.out.println("0. 로그아웃");
-        System.out.print("▶ 메뉴 선택: ");
-        String choice = sc.nextLine();
 
+    public void usersMainPage() {
+        while (true) {
+            // 1. 세션에서 현재 로그인된 유저 정보 가져오기
+            UsersDTO user = SessionManager.getInstance().getLoggedInUser();
 
-        switch (choice) {
-            case "1":
-                displayUsersList();
-                System.out.println("👉 회원정보 조회합니다");
+            // 만약 세션이 비어있다면 (비정상 접근) 메인으로 튕겨내기
+            if (user == null) {
+                System.out.println("🚨 로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
+                return;
+            }
 
-                break;
+            System.out.println("\n================ [ 회원관리 메인 메뉴 ] ================");
 
-            case "2":
-                // TODO: 출결관리 담당자
-                System.out.println("👉 수강내역 조회합니다.");
-                break;
+            // 2. 콘솔 프로필 캐릭터 출력 (ASCII Art)
+            System.out.println("      ━━━━━━━");
+            System.out.println("     ┃  ●  ●  ┃");
+            System.out.println("     ┃    ▽   ┃  [ " + user.getName() + " ] 님 환영합니다.");
+            System.out.println("      ━━━━━━━    ID: " + user.getLoginId() + " (" + user.getUserType() + ")");
+            System.out.println("                 Code: " + user.getUserCode());
+            System.out.println("======================================================");
 
-            case "3":
-                // TODO: 성적관리 담당자
-                System.out.println("👉 강의조회합니다.");
-                break;
+            System.out.println(" 1. 회원정보 수정");
+            System.out.println(" 2. 수강내역 조회");
+            System.out.println(" 3. 나의 과제 조회");
+            System.out.println(" 4. 나의 출결 조회");
+            System.out.println(" 9. 회원 탈퇴 ");
+            System.out.println(" 0. 메인메뉴로 돌아가기");
+            System.out.println("======================================================");
+            System.out.print("▶ 메뉴 선택: ");
 
-            case "4":
-                // TODO: 과제관리 담당자
-                System.out.println("👉 과제조회합니다.");
-                break;
+            String choice = sc.nextLine();
 
-            case "0":
-                System.out.println("로그아웃 되었습니다.");
-                return; // 이전 화면(시작 메뉴)으로 돌아감
-            default:
-                System.out.println("🚨 잘못된 입력입니다. 다시 선택해주세요.");
+            switch (choice) {
+                case "1":
+//                    updateUserInfo(); // 정보 수정 메서드 호출 (구현 예정)
+                    break;
+                case "2":
+//                    courseHistory(); // 수강 내역 조회 (구현 예정)
+                    break;
+                case "3":
+//                    myAssignments(); // 과제 조회 (구현 예정)
+                    break;
+                case "4":
+//                    myAttendance(); // 출결 조회 (구현 예정)
+                    break;
+                case "9":
+                    deleteMyAccount(user.getId()); // 앞서 만든 삭제 로직 연결
+                    return; // 탈퇴 시 세션 종료 후 메인으로
+                case "0":
+                    System.out.println("메인메뉴로 돌아갑니다.");
+                    return;
+                default:
+                    System.out.println("🚨 잘못된 입력입니다. 다시 선택해주세요.");
+            }
         }
     }
+
 
     private void displayUsersList() {
         outputView.printMessage("\n--- [기초 실습] 강좌 목록 전체 조회 ---");
@@ -112,8 +130,7 @@ public class UsersInputView {
         }
     }
 
-    // 현재 로그인한 사용자의 PK 값(loggedInUserId)을 알고 있다고 가정합니다.
-    private void deleteMyAccount(Long loggedInUserId) {
+    private void deleteMyAccount(int loggedInUserId) {
         System.out.println("\n=== 🗑️ 회원 탈퇴 ===");
         System.out.print("정말 탈퇴하시겠습니까? 탈퇴 시 모든 데이터가 삭제됩니다. (Y/N) : ");
         String answer = sc.nextLine();
@@ -124,7 +141,7 @@ public class UsersInputView {
 
             if (isDeleted) {
                 outputView.printSuccess("회원 탈퇴가 완료되었습니다. 그동안 이용해 주셔서 감사합니다.");
-                // TODO: 여기서 로그아웃 처리 및 메인 화면으로 돌아가는 로직 추가
+                SessionManager.getInstance().clearSession();
             } else {
                 outputView.printError("회원 탈퇴에 실패했습니다. 관리자에게 문의하세요.");
             }
