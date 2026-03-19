@@ -34,7 +34,7 @@ public class LoginInputView {
                 ProfessorAssignmentInputView professorAssignmentInputView,
                 ProfessorAttendanceInputView professorAttendanceInputView,
                 StudentAttendanceInputView studentAttendanceInputView,
-                StudentCourseInputView studentCourseInputView) {
+                StudentCourseInputView studentCourseInputView,
                 StudentGradeInputView studentGradeInputView) {
 
             this.controller = controller;
@@ -89,7 +89,7 @@ public class LoginInputView {
         // 💡 프로토타입용 하드코딩 테스트 로직 (실제로는 UserController가 DB를 조회해야 함)
         if (id.startsWith("s") || id.startsWith("S")) {
             System.out.println("✅ [학생] 계정으로 로그인 성공!");
-            studentMainMenu();
+            studentMainMenu(1L);
             // 학생 MainMenu로 이동
 
         } else if (id.startsWith("p") || id.startsWith("P")) {
@@ -111,7 +111,7 @@ public class LoginInputView {
     }
 
     // 3. 학생 메인 메뉴
-    private void studentMainMenu() {
+    private void studentMainMenu(Long userId) {
         while (true) {
             System.out.println("\n========= [학생 메인 메뉴] =========");
             System.out.println("1. 강의관리");
@@ -128,7 +128,7 @@ public class LoginInputView {
                 case "1":
                     // TODO: 강의관리 담당자 (예: courseController.displayStudentMenu())
                     System.out.println("👉 강의관리 모듈로 이동합니다.");
-                    studentCourseInputView.displayStudentMenu();
+                    studentCourseInputView.displayStudentMenu(userId);
                     break;
                 case "2":
                     studentAttendanceInputView.displayMenu();
