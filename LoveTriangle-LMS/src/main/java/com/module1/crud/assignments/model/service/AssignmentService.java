@@ -22,7 +22,7 @@ public class AssignmentService {
 
     public List<AssignmentDTO> findMyAssignments() {
         try {
-            return AssignmentDAO.findMyAssignments(connection);
+            return AssignmentDAO.findMyAssignments();
         } catch (SQLException e) {
             throw new RuntimeException("학생 과제 조회 중 오류 발생 🚨 " + e);
         }
