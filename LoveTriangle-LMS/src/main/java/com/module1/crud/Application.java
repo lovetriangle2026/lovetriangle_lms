@@ -15,6 +15,10 @@ import com.module1.crud.global.loginpage.controller.LoginController;
 import com.module1.crud.global.loginpage.model.service.LoginService;
 import com.module1.crud.global.loginpage.view.LoginInputView;
 import com.module1.crud.global.loginpage.view.LoginOutputView;
+import com.module1.crud.grade.controller.GradeController;
+import com.module1.crud.grade.model.service.GradeService;
+import com.module1.crud.grade.view.StudentGradeInputView;
+import com.module1.crud.grade.view.StudentGradeOutputView;
 import com.module1.crud.users.controller.UsersController;
 import com.module1.crud.users.model.service.UsersService;
 import com.module1.crud.users.view.UsersInputView;
@@ -38,12 +42,12 @@ public class Application {
             UsersOutputView usersOutputView = new UsersOutputView();
             UsersInputView usersInputView = new UsersInputView(usersController, usersOutputView);
 
-            //Assiginment 의존성주입
+            //Assignment 의존성주입
             AssignmentService service = new AssignmentService(con);
             AssignmentController controller = new AssignmentController(service);
             AssignmentOutputView outputView = new AssignmentOutputView();
-            StudentAssignmentInputView inputView = new StudentAssignmentInputView(controller, outputView);
-            ProfessorAssignmentInputView inputView1 = new ProfessorAssignmentInputView(controller, outputView);
+            StudentAssignmentInputView StudentAssignmentInputView = new StudentAssignmentInputView(controller, outputView);
+            ProfessorAssignmentInputView ProfessorAssignmentInputView = new ProfessorAssignmentInputView(controller, outputView);
           
             // Attendance 의존성 주입
             AttendanceService attendanceService = new AttendanceService(con);
@@ -52,12 +56,18 @@ public class Application {
             ProfessorAttendanceInputView professorView = new ProfessorAttendanceInputView(attendanceController, attendanceOutputView);
             StudentAttendanceInputView studentView =new StudentAttendanceInputView(attendanceController, attendanceOutputView);
 
+            GradeService gradeService = new GradeService(con);
+            GradeController gradeController = new GradeController(gradeService);
+            StudentGradeOutputView studentGradeOutputView = new StudentGradeOutputView();
+            StudentGradeInputView studentGradeInputView = new StudentGradeInputView(gradeController,studentGradeOutputView);
+
+
 
             //Loginpage 의존성 주입
             LoginService loginService = new LoginService(con);
             LoginController loginController = new LoginController(loginService);
             LoginOutputView loginOutputView = new LoginOutputView();
-            LoginInputView loginInputView = new LoginInputView(loginController, loginOutputView, usersInputView, inputView, inputView1, professorView, studentView);
+            LoginInputView loginInputView = new LoginInputView(loginController, loginOutputView, usersInputView, StudentAssignmentInputView, ProfessorAssignmentInputView, professorView, studentView,studentGradeInputView);
 
             loginInputView.displayStartMenu();
 

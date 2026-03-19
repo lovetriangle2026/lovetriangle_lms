@@ -20,9 +20,9 @@ public class AssignmentService {
         this.connection = connection;
     }
 
-    public List<AssignmentDTO> findMyAssignments() {
+    public List<AssignmentDTO> findMyAssignments(Long userId) {
         try {
-            return AssignmentDAO.findMyAssignments(connection);
+            return AssignmentDAO.findMyAssignments(userId);
         } catch (SQLException e) {
             throw new RuntimeException("학생 과제 조회 중 오류 발생 🚨 " + e);
         }
