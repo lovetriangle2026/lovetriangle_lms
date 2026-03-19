@@ -8,12 +8,18 @@ public class AssignmentDTO {
     private Long course_Id;
     private String title;
     private String description;
-    private Long deadline;
+    private Timestamp deadline;
 
-    public AssignmentDTO(long id, long courseId, String title, String description, Timestamp deadline) {
+    public AssignmentDTO(long id, long course_Id, String title, String description, Timestamp deadline) {
+        this.id = id;
+        this.course_Id = course_Id;
+        this.title = title;
+        this.description = description;
+        this.deadline = deadline;
+
     }
 
-    public AssignmentDTO(Long id, Long course_Id, String title, String description, Long deadline) {
+    public AssignmentDTO(Long id, Long course_Id, String title, String description, Timestamp deadline) {
         this.id = id;
         this.course_Id = course_Id;
         this.title = title;
@@ -53,11 +59,11 @@ public class AssignmentDTO {
         this.description = description;
     }
 
-    public Long getDeadline() {
+    public Timestamp getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(Long deadline) {
+    public void setDeadline(Timestamp deadline) {
         this.deadline = deadline;
     }
 

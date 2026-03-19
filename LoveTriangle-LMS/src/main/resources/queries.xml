@@ -115,19 +115,20 @@
         order by s.start_at
     </query>
     <query key="assignment.findAll">
-        select
-        *
-        from assignments
+        SELECT
+        a.id,
+        a.course_id,
+        a.title,
+        a.description,
+        a.deadline
+        FROM assignments a
+        JOIN enrollments e
+        ON a.course_id = e.course_id
+        WHERE e.user_id = ?
+        ORDER BY a.deadline ASC
     </query>
 
 
-
-
-    <query key="users.findAll">
-        select
-        *
-        from users
-    </query>
 
     <query key = "grade.findall">
 
@@ -326,6 +327,32 @@
         ORDER BY t.student_name;
 
 
+<!--    =====================Users Queries====================   -->
+
+
+    <!--유저전체조회-->
+    <query key="users.findAll">
+        select
+        *
+        from users
+    </query>
+
+    <!--회원가입-유저저장-->
+    <query key="Users.save">
+        INSERT INTO users (user_code, login_id, name, birth, tel_num, password, pw_answer, user_type)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    </query>
+
+    <!--    회원탈퇴-유저삭제-->
+    <query key="Users.delete">
+        DELETE FROM users WHERE id = ?
+    </query>
+
+    <!--    회원인증-->
+    <query key="Users.findByLoginIdAndPassword">
+        SELECT id, user_code, login_id, name, birth, tel_num, password, pw_answer, user_type
+        FROM users
+        WHERE login_id = ? AND password = ?
     </query>
 
 </properties>

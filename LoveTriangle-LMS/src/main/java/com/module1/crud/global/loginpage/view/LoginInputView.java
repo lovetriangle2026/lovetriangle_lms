@@ -6,6 +6,8 @@ import com.module1.crud.attendance.view.ProfessorAttendanceInputView;
 import com.module1.crud.attendance.view.StudentAttendanceInputView;
 import com.module1.crud.global.loginpage.controller.LoginController;
 import com.module1.crud.grade.view.ProfessorGradeInputView;
+import com.module1.crud.global.session.SessionManager;
+import com.module1.crud.users.model.dto.UsersDTO;
 import com.module1.crud.grade.view.StudentGradeInputView;
 import com.module1.crud.users.view.UsersInputView;
 
@@ -66,7 +68,7 @@ public class LoginInputView {
                     loginMenu(); // 로그인 화면으로 이동
                     break;
                 case "2":
-                    signUpMenu(); // 회원가입 화면으로 이동
+                    usersInputView.createUser();
                     break;
                 case "0":
                     System.out.println("LMS 시스템을 종료합니다. 안녕히 가세요!");
@@ -77,27 +79,38 @@ public class LoginInputView {
         }
     }
 
-    // 2. 로그인 화면 (하드코딩 분기)
+// LoginInputView.java 내의 수정된 loginMenu 메서드
     private void loginMenu() {
-        System.out.println("\n--------- [로그인] --------- s는 학생 p는 교수 / pw는 아무거나 ");
+
+        System.out.println("\n--------- [로그인] ---------");
         System.out.print("ID: ");
         String id = sc.nextLine();
         System.out.print("PW: ");
         String pw = sc.nextLine();
 
-        // 💡 프로토타입용 하드코딩 테스트 로직 (실제로는 UserController가 DB를 조회해야 함)
-        if (id.startsWith("s") || id.startsWith("S")) {
-            System.out.println("✅ [학생] 계정으로 로그인 성공!");
-            studentMainMenu();
-            // 학생 MainMenu로 이동
+        // 1. Controller를 통해 실제 DB 로그인을 수행합니다 (Step 2, 3 로직 작동)
+        boolean loginSuccess = controller.login(id, pw);
 
-        } else if (id.startsWith("p") || id.startsWith("P")) {
-            System.out.println("✅ [교수] 계정으로 로그인 성공!");
-            professorMainMenu();
-            // 교수 MainMenu로 이동
+        if (loginSuccess) {
+            // 2. 💡 핵심: SessionManager에서 로그인된 유저 정보를 꺼내옵니다.
+            UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
+            String userType = loggedInUser.getUserType(); // "STUDENT" 또는 "PROFESSOR"
+
+            System.out.println("✅ [" + loggedInUser.getName() + "]님 환영합니다! (" + userType + ")");
+
+            // 3. 권한(UserType)에 따른 화면 분기 처리
+            if ("STUDENT".equalsIgnoreCase(userType)) {
+                studentMainMenu(); // 학생용 메뉴로 이동
+            } else if ("PROFESSOR".equalsIgnoreCase(userType)) {
+                professorMainMenu(); // 교수용 메뉴로 이동
+            } else {
+                System.out.println("🚨 알 수 없는 권한입니다. 관리자에게 문의하세요.");
+                SessionManager.getInstance().clearSession(); // 세션 비우고 튕겨내기
+            }
 
         } else {
-            System.out.println("🚨 로그인 실패: 테스트를 위해 ID를 's'나 'p'로 시작하게 입력해주세요.");
+            // 로그인 실패 시
+            outputView.printError("로그인 실패: 아이디 또는 비밀번호가 일치하지 않습니다.");
         }
     }
 
@@ -174,7 +187,7 @@ public class LoginInputView {
                     System.out.println("👉 강의관리 모듈로 이동합니다.");
                     break;
                 case "2":
-                    // TODO: 출결관리 담당자
+                    professorAttendanceInputView.displayMenu();
                     System.out.println("👉 출결관리 모듈로 이동합니다.");
                     break;
                 case "3":
