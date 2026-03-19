@@ -1,5 +1,12 @@
 package com.module1.crud.grade.model.service;
 
+import com.module1.crud.grade.model.dao.GradeViewDAO;
+import com.module1.crud.grade.model.dto.GradeViewDTO;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
 public class GradeService {
     private final GradeViewDAO GradeViewDAO;
     private final Connection connection;

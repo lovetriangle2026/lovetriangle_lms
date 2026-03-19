@@ -1,5 +1,9 @@
 package com.module1.crud.global.loginpage.view;
 
+import com.module1.crud.assignments.view.ProfessorAssignmentInputView;
+import com.module1.crud.assignments.view.StudentAssignmentInputView;
+import com.module1.crud.attendance.view.ProfessorAttendanceInputView;
+import com.module1.crud.attendance.view.StudentAttendanceInputView;
 import com.module1.crud.global.loginpage.controller.LoginController;
 import com.module1.crud.users.view.UsersInputView;
 
@@ -7,23 +11,37 @@ import java.util.Scanner;
 
 public class LoginInputView {
 
-    private final Scanner sc = new Scanner(System.in);
-    private final LoginController controller;
-    private final LoginOutputView outputView;
+        private final Scanner sc = new Scanner(System.in);
+        private final LoginController controller;
+        private final LoginOutputView outputView;
+        private final UsersInputView usersInputView;
 
-    //의존성 주입
-    private final UsersInputView usersInputView;
+        // 추가된 의존성 필드 선언 (명확한 네이밍 적용)
+        private final StudentAssignmentInputView studentAssignmentInputView;
+        private final ProfessorAssignmentInputView professorAssignmentInputView;
+        private final ProfessorAttendanceInputView professorAttendanceInputView;
+        private final StudentAttendanceInputView studentAttendanceInputView;
 
+        public LoginInputView(
+                LoginController controller,
+                LoginOutputView outputView,
+                UsersInputView usersInputView,
+                StudentAssignmentInputView studentAssignmentInputView,
+                ProfessorAssignmentInputView professorAssignmentInputView,
+                ProfessorAttendanceInputView professorAttendanceInputView,
+                StudentAttendanceInputView studentAttendanceInputView) {
 
+            this.controller = controller;
+            this.outputView = outputView;
+            this.usersInputView = usersInputView;
 
+            // 추가된 객체 초기화
+            this.studentAssignmentInputView = studentAssignmentInputView;
+            this.professorAssignmentInputView = professorAssignmentInputView;
+            this.professorAttendanceInputView = professorAttendanceInputView;
+            this.studentAttendanceInputView = studentAttendanceInputView;
+        }
 
-
-
-    public LoginInputView(LoginController controller, LoginOutputView outputView, UsersInputView usersInputView) {
-        this.controller = controller;
-        this.outputView = outputView;
-        this.usersInputView = usersInputView;
-    }
 
     // 1. 시스템 시작 (최초 진입점)
     public void displayStartMenu() {
@@ -104,7 +122,7 @@ public class LoginInputView {
                     System.out.println("👉 강의관리 모듈로 이동합니다.");
                     break;
                 case "2":
-                    // TODO: 출결관리 담당자
+                    studentAttendanceInputView.displayMenu();
                     System.out.println("👉 출결관리 모듈로 이동합니다.");
                     break;
                 case "3":
@@ -112,7 +130,7 @@ public class LoginInputView {
                     System.out.println("👉 성적관리 모듈로 이동합니다.");
                     break;
                 case "4":
-                    // TODO: 과제관리 담당자
+                    studentAssignmentInputView.displaymainmenu();
                     System.out.println("👉 과제관리 모듈로 이동합니다.");
                     break;
                 case "5":
