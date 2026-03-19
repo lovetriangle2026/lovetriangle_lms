@@ -229,8 +229,101 @@
 
     </query>
 
+
+
     <query key = "find all courses">
         select * from courses;
+
+
+    </query>
+
+    <query key = "grade.findById">
+        SELECT
+        t.student_id,
+        t.student_name,
+        t.course_id,
+        t.assignment_title,
+        t.midterm_score,
+        t.final_score,
+        t.midterm_35,
+        t.final_35,
+        t.attendance_score,
+        t.assignment_score,
+        t.total_score,
+        CASE
+        WHEN t.total_score >= 95 THEN 'A+'
+        WHEN t.total_score >= 90 THEN 'A'
+        WHEN t.total_score >= 85 THEN 'B+'
+        WHEN t.total_score >= 80 THEN 'B'
+        WHEN t.total_score >= 75 THEN 'C+'
+        WHEN t.total_score >= 70 THEN 'C'
+        WHEN t.total_score >= 65 THEN 'D+'
+        WHEN t.total_score >= 60 THEN 'D'
+        ELSE 'F'
+        END AS grade
+        FROM (
+        SELECT
+        g.student_id,
+        u.name AS student_name,
+        g.course_id,
+        asg.assignment_title,
+        g.midterm_score,
+        g.final_score,
+        ROUND(g.midterm_score / 100.0 * 35, 2) AS midterm_35,
+        ROUND(g.final_score / 100.0 * 35, 2) AS final_35,
+        COALESCE(att.attendance_20, 0) AS attendance_score,
+        COALESCE(asg.assignment_10, 0) AS assignment_score,
+        ROUND(
+        (g.midterm_score / 100.0 * 35)
+        + (g.final_score / 100.0 * 35)
+        + COALESCE(att.attendance_20, 0)
+        + COALESCE(asg.assignment_10, 0),
+        2
+        ) AS total_score
+        FROM exams g
+        JOIN users u
+        ON g.student_id = u.id
+        JOIN courses c
+        ON g.course_id = c.id
+        LEFT JOIN (
+        SELECT
+        a.student_id,
+        s.course_id,
+        ROUND(
+        SUM(
+        CASE
+        WHEN a.attendance_status = 'PRESENT' THEN 1
+        WHEN a.attendance_status = 'LATE' THEN 0.5
+        WHEN a.attendance_status = 'EXCUSED' THEN 1
+        ELSE 0
+        END
+        ),
+        2
+        ) AS attendance_20
+        FROM attendance a
+        JOIN sessions s
+        ON a.session_id = s.id
+        GROUP BY a.student_id, s.course_id
+        ) att
+        ON g.student_id = att.student_id
+        AND g.course_id = att.course_id
+        LEFT JOIN (
+        SELECT
+        sub.student_id,
+        ass.course_id,
+        ass.title AS assignment_title,
+        ROUND(MAX(sub.score) / 100.0 * 15, 2) AS assignment_10
+        FROM assignment_submissions sub
+        JOIN assignments ass
+        ON sub.assignment_id = ass.id
+        GROUP BY sub.student_id, ass.course_id, ass.title
+        ) asg
+        ON g.student_id = asg.student_id
+        AND g.course_id = asg.course_id
+        WHERE c.professor_id = ?
+        ) t
+        WHERE t.student_name LIKE CONCAT('%', ?, '%')
+        ORDER BY t.student_name;
 
 
     </query>
