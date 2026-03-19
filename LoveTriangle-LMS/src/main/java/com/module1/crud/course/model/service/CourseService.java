@@ -30,7 +30,7 @@ public class CourseService {
         }
     }
 
-    public List<CourseDTO> findMyCourses(Long userId) throws SQLException {
+    public List<CourseDTO> findMyCourses(int userId) throws SQLException {
         Connection con = JDBCTemplate.getConnection();
 
         List<CourseDTO> myCourses = courseDAO.findMyCourses(userId);

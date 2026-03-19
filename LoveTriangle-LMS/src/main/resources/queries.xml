@@ -248,7 +248,7 @@
         c.semester
         FROM courses c
         JOIN enrollments e ON c.id = e.course_id
-        WHERE e.student_id = ?
+        WHERE e.user_id = ?
     </query>
 
 
