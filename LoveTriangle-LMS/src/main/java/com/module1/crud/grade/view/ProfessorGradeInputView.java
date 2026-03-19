@@ -2,6 +2,8 @@ package com.module1.crud.grade.view;
 
 import com.module1.crud.grade.controller.GradeController;
 import com.module1.crud.grade.model.dto.GradeViewDTO;
+import com.module1.crud.global.session.SessionManager;
+import com.module1.crud.users.model.dto.UsersDTO;
 
 import java.util.List;
 import java.util.Scanner;
@@ -63,13 +65,19 @@ public class ProfessorGradeInputView {
         int s = inputInt();
 
           if(s==1){
-        List<GradeViewDTO> GradeList = controller.findAllCourses();
-        outputView.printGrades(GradeList);}
+              outputView.printError("아직 구현 중인 기능입니다.");}
 
           if(s==2){
-              long professor = 1;
-              String studentname = "박만서";
-              List<GradeViewDTO> oneGradeList = controller.handlefindgrade(professor,studentname);
+              UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
+              if (loggedInUser == null) {
+                  outputView.printError("로그인 정보가 없습니다. 다시 로그인해주세요.");
+                  return;
+              }
+              long professor = loggedInUser.getId();
+              System.out.print("조회할 학생 이름을 입력해주세요 : ");
+              String studentName = sc.nextLine();
+
+              List<GradeViewDTO> oneGradeList = controller.handlefindgrade(professor,studentName);
               outputView.printstudentGrades(oneGradeList);
           }
 

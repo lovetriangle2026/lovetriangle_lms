@@ -5,7 +5,8 @@ import com.module1.crud.grade.model.dto.GradeViewDTO;
 
 import java.util.List;
 import java.util.Scanner;
-
+import com.module1.crud.global.session.SessionManager;
+import com.module1.crud.users.model.dto.UsersDTO;
 public class StudentGradeInputView {
     private final GradeController controller;
     private final StudentGradeOutputView outputView;
@@ -54,10 +55,14 @@ public class StudentGradeInputView {
     }
 
     private void displayGradeStatus() {
-        outputView.printMessage("\n--- [기초 실습] 성적 목록 전체 조회 ---");
-        List<GradeViewDTO> GradeList = controller.findAllCourses();
+        outputView.printMessage("\n--- [내 성적 조회] ---");
+        UsersDTO loginUser = SessionManager.getInstance().getLoggedInUser();
+        if (loginUser == null) {
+            outputView.printError("로그인 정보가 없습니다.");
+            return;}
+        long studentId = loginUser.getId();
+        List<GradeViewDTO> GradeList = controller.findAllGrade(studentId);
         outputView.printGrades(GradeList);
-
     }
 
     private int inputInt() {

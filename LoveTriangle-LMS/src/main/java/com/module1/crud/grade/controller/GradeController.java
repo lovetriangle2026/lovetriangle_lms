@@ -13,9 +13,9 @@ public class GradeController {
         this.service = service;
     }
 
-    public List<GradeViewDTO> findAllCourses() {
+    public List<GradeViewDTO> findAllGrade(long studentId) {
 
-        return service.findAllGrade();
+        return service.findAllGrade(studentId);
     }
 
     public List<GradeViewDTO> handlefindgrade(long professeorid,String studentname) {
