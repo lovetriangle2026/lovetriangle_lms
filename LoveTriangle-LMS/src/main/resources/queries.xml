@@ -356,4 +356,20 @@
         WHERE login_id = ? AND password = ?
     </query>
 
+
+    <query key="assignmentSubmission.existsByAssignmentAndStudent">
+        SELECT COUNT(*)
+        FROM assignment_submissions
+        WHERE assignment_id = ?
+        AND student_id = ?
+    </query>
+
+    <query key="assignmentSubmission.existsByAssignmentAndStudent">
+        SELECT COUNT(*)
+        FROM assignment_submissions
+        WHERE assignment_id = ?
+        AND student_id = ?
+    </query>
+
+
 </properties>
