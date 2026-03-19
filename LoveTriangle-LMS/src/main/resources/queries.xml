@@ -325,6 +325,7 @@
         ) t
         WHERE t.student_name LIKE CONCAT('%', ?, '%')
         ORDER BY t.student_name;
+    </query>
 
 
 <!--    =====================Users Queries====================   -->

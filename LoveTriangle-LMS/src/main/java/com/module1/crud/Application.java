@@ -91,7 +91,18 @@ public class Application {
             LoginService loginService = new LoginService(con);
             LoginController loginController = new LoginController(loginService);
             LoginOutputView loginOutputView = new LoginOutputView();
-            LoginInputView loginInputView = new LoginInputView(loginController, loginOutputView, StudentCourseInputView, usersInputView,ProfessorAssignmentInputView,StudentAssignmentInputView, ProfessorAttendanceInputView, StudentAttendanceInputView,studentGradeInputView,professorGradeInputView);
+            LoginInputView loginInputView = new LoginInputView(
+                    loginController,
+                    loginOutputView,
+                    usersInputView,
+                    StudentAssignmentInputView,
+                    ProfessorAssignmentInputView,
+                    professorView,
+                    studentView,
+                    studentCourseInputView,
+                    studentGradeInputView,
+                    professorGradeInputView
+            );
 
             loginInputView.displayStartMenu();
 
