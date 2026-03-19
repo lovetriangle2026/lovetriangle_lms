@@ -74,8 +74,7 @@ public class StudentAssignmentInputView {
     private void findMyAssignments() {
         outputView.printMessage("\n--- 수강 과목 과제 조회 ---");
 
-        Long testUserId = 4L;   // 테스트용 하드코딩 (나중에 로그인 정보로 변경)
-        List<AssignmentDTO> AssignmentDTOS =  controller.findMyAssignments(testUserId);
+        List<AssignmentDTO> AssignmentDTOS =  controller.findMyAssignments();
 
         outputView.printAssignments(AssignmentDTOS);
 
