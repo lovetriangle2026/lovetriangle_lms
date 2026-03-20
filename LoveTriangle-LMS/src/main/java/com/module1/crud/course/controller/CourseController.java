@@ -2,6 +2,8 @@ package com.module1.crud.course.controller;
 
 import com.module1.crud.course.model.dto.CourseDTO;
 import com.module1.crud.course.model.service.CourseService;
+import com.module1.crud.course.view.ProfInputView;
+import com.module1.crud.course.view.ProfOutputView;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -13,10 +15,14 @@ public class CourseController {
         this.service = service;
     }
 
-    public List<CourseDTO> findAllCourses() {
 
-        return service.findAllCourses();
+    public void findAllCourses() { // 반환타입을 void로!
+        List<CourseDTO> courseList = service.findAllCourses();
+        ProfOutputView profOutputView = new ProfOutputView();
+        profOutputView.displayCourseList(courseList); //
     }
+
+
 
     public List<CourseDTO> findMyCourses(int userId) throws SQLException {
         return service.findMyCourses(userId);
@@ -24,6 +30,21 @@ public class CourseController {
     public boolean enrollCourse(int userId, int courseId) {
         return service.enrollCourse(userId, courseId);
     }
+
+    public void registerNewCourse() {
+        ProfOutputView profOutputView = new ProfOutputView();
+        ProfInputView profInputView = new ProfInputView(this, profOutputView);
+
+        CourseDTO newCourse = profInputView.inputCourse();
+        int result = service.insertCourse(newCourse);
+        profOutputView.displayResult(result);
+    }
+
+
+
+
+
+
 
 
 }

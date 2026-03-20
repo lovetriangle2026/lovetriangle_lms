@@ -2,7 +2,7 @@ package com.module1.crud.assignments.model.dto;
 
 import java.sql.Timestamp;
 
-public class AssignmentDTO {
+public class StudentAssignmentDTO {
 
     private Long id;
     private Long course_Id;
@@ -13,8 +13,8 @@ public class AssignmentDTO {
     private String submissionContent;
     private Timestamp submittedAt;
 
-    public AssignmentDTO(long id, long course_Id, String title, String description,
-                         Timestamp deadline, String submissionStatus, String submissionContent, Timestamp submittedAt) {
+    public StudentAssignmentDTO(long id, long course_Id, String title, String description,
+                                Timestamp deadline, String submissionStatus, String submissionContent, Timestamp submittedAt) {
         this.id = id;
         this.course_Id = course_Id;
         this.title = title;
@@ -26,7 +26,7 @@ public class AssignmentDTO {
 
     }
 
-    public AssignmentDTO(Long id, Long course_Id, String title, String description, Timestamp deadline) {
+    public StudentAssignmentDTO(Long id, Long course_Id, String title, String description, Timestamp deadline) {
         this.id = id;
         this.course_Id = course_Id;
         this.title = title;

@@ -70,8 +70,8 @@ public class StudentCourseInputView {
     private void displayAllCourse() {
 
         outputView.printMessage("\n--- [기초 실습] 강좌 목록 전체 조회 ---");
-        List<CourseDTO> courseList = controller.findAllCourses();
-        outputView.printCourses(courseList);
+        controller.findAllCourses();
+//        outputView.printCourses(courseList);
 
     }
     //여기부터 본인이 신청한 강의 조회 기능

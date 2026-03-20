@@ -4,6 +4,9 @@ import com.module1.crud.assignments.view.ProfessorAssignmentInputView;
 import com.module1.crud.assignments.view.StudentAssignmentInputView;
 import com.module1.crud.attendance.view.ProfessorAttendanceInputView;
 import com.module1.crud.attendance.view.StudentAttendanceInputView;
+import com.module1.crud.course.controller.CourseController;
+import com.module1.crud.course.view.ProfInputView;
+import com.module1.crud.course.view.ProfOutputView;
 import com.module1.crud.course.view.StudentCourseInputView;
 import com.module1.crud.global.loginpage.controller.LoginController;
 import com.module1.crud.grade.view.ProfessorGradeInputView;
@@ -30,6 +33,10 @@ public class LoginInputView {
         private final StudentGradeInputView studentGradeInputView;
         private final ProfessorGradeInputView professorGradeInputView;
         private final StudentCourseInputView studentCourseInputView;
+        private final CourseController courseController;
+        private final ProfInputView profInputView;
+
+
 
         public LoginInputView(
                 LoginController controller,
@@ -41,11 +48,15 @@ public class LoginInputView {
                 StudentAttendanceInputView studentAttendanceInputView,
                 StudentCourseInputView studentCourseInputView,
                 StudentGradeInputView studentGradeInputView,
-                ProfessorGradeInputView professorGradeInputView) {
+                ProfessorGradeInputView professorGradeInputView,
+                ProfInputView profInputView,
+                CourseController courseController) {
 
             this.controller = controller;
             this.outputView = outputView;
             this.usersInputView = usersInputView;
+            this.profInputView = profInputView;
+            this.courseController = courseController;
 
             // 추가된 객체 초기화
             this.studentAssignmentInputView = studentAssignmentInputView;
@@ -357,6 +368,8 @@ public class LoginInputView {
             switch (choice) {
                 case "1":
                     System.out.println("👉 강의관리 모듈로 이동합니다.");
+                    professorCourseMenu(); //이거 서브메뉴 추가햇는데 ..
+
                     break;
 
                 case "2":
@@ -373,6 +386,7 @@ public class LoginInputView {
                 case "4":
                     // TODO: 과제관리 담당자
                     System.out.println("👉 과제관리 모듈로 이동합니다.");
+                    professorAssignmentInputView.displayMainmenu();
                     break;
 
                 case "5":
@@ -388,6 +402,30 @@ public class LoginInputView {
                 default:
                     System.out.println("🚨 잘못된 입력입니다. 다시 선택해주세요.");
 
+            }
+        }
+    }
+    private void professorCourseMenu() {
+        while (true) {
+            System.out.println("\n========= [🎓 교수용 강의 관리] =========");
+            System.out.println("1. 전체 강의 목록 조회");
+            System.out.println("2. 신규 강의 등록 ✨");
+            System.out.println("0. 이전 메뉴로");
+            System.out.print("▶ 메뉴 선택: ");
+
+            String choice = sc.nextLine();
+
+            switch (choice) {
+                case "1":
+                    courseController.findAllCourses();
+                    break;
+                case "2":
+                    courseController.registerNewCourse();
+                    break;
+                case "0":
+                    return; // 이 메서드를 종료하고 이전(교수 메인 메뉴)으로 돌아감
+                default:
+                    System.out.println("🚨 잘못된 번호입니다. 다시 입력해 주세요.");
             }
         }
     }
