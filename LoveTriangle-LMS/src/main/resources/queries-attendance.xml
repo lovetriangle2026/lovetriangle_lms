@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<properties>
+<query key="attendance.findAll">
+    select
+    a.id as attendance_id,
+    a.student_id,
+    u.name as student_name,
+    a.session_id,
+    s.course_id,
+    c.title as course_title,
+    s.title as session_title,
+    s.week,
+    a.attendance_status,
+    a.checked_at
+    from attendance a
+    join users u
+    on a.student_id = u.id
+    join sessions s
+    on a.session_id = s.id
+    join courses c
+    on s.course_id = c.id
+    order by a.id
+</query>
+
+<query key="attendance.findByCourseId">
+select
+a.id as attendance_id,
+a.student_id,
+u.name as student_name,
+a.session_id,
+s.course_id,
+c.title as course_title,
+s.title as session_title,
+s.week,
+a.attendance_status,
+a.checked_at
+from attendance a
+join users u
+on a.student_id = u.id
+join sessions s
+on a.session_id = s.id
+join courses c
+on s.course_id = c.id
+where s.course_id = ?
+order by a.id
+</query>
+
+<query key="attendance.findByWeek">
+select
+a.id as attendance_id,
+a.student_id,
+u.name as student_name,
+a.session_id,
+s.course_id,
+c.title as course_title,
+s.title as session_title,
+s.week,
+a.attendance_status,
+a.checked_at
+from attendance a
+join users u
+on a.student_id = u.id
+join sessions s
+on a.session_id = s.id
+join courses c
+on s.course_id = c.id
+where s.week = ?
+order by a.id
+</query>
+
+<query key="attendance.findByStatus">
+select
+a.id as attendance_id,
+a.student_id,
+u.name as student_name,
+a.session_id,
+s.course_id,
+c.title as course_title,
+s.title as session_title,
+s.week,
+a.attendance_status,
+a.checked_at
+from attendance a
+join users u
+on a.student_id = u.id
+join sessions s
+on a.session_id = s.id
+join courses c
+on s.course_id = c.id
+where a.attendance_status = ?
+order by a.id
+</query>
+
+<query key="attendance.findByStudentId">
+select
+a.id as attendance_id,
+a.student_id,
+u.name as student_name,
+a.session_id,
+s.course_id,
+c.title as course_title,
+s.title as session_title,
+s.week,
+a.attendance_status,
+a.checked_at
+from attendance a
+join users u
+on a.student_id = u.id
+join sessions s
+on a.session_id = s.id
+join courses c
+on s.course_id = c.id
+where a.student_id = ?
+order by s.start_at
+</query>
+
+</properties>
