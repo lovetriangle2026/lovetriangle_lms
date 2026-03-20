@@ -33,4 +33,13 @@ public class GradeService {
             throw new RuntimeException("성적 전체 조회 중 Error 발생!! 🚨🚨" + e);
         }
     }
+    public List<GradeViewDTO> getSallgradeByprofessor(long professorId) {
+
+        try {
+            return GradeViewDAO.findAllGradeByProfessor(professorId);
+        } catch (SQLException e) {
+            throw new RuntimeException("성적 조회 중 Error 발생!! 🚨🚨" + e);
+        }
+    }
+
 }

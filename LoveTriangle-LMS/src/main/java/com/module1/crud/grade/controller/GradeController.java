@@ -22,4 +22,9 @@ public class GradeController {
 
         return service.getStudentgrade(professeorid,studentname);
     }
+
+    public List<GradeViewDTO> viewallgradeByprofessor(long professor) {
+        return service.getSallgradeByprofessor(professor);
+
+    }
 }
