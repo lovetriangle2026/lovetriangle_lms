@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<properties>
+    <query key = "find all courses">
+        select * from courses;
+
+
+    </query>
+
+    <query key="find my courses">
+        SELECT
+        c.id,
+        c.course_code,
+        c.professor_id,
+        c.title,
+        c.description,
+        c.semester
+        FROM courses c
+        JOIN enrollments e ON c.id = e.course_id
+        WHERE e.student_id = ?
+    </query>
+
+
+</properties>
