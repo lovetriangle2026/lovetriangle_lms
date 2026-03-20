@@ -88,5 +88,24 @@ public class UsersDAO {
         }
     }
 
+    public int update(UsersDTO usersDTO) throws SQLException {
+        // QueryUtil에 "Users.update" 키로 쿼리를 미리 작성해두어야 합니다.
+        // 쿼리 예시: UPDATE users SET password=?, tel_num=?, name=?, pw_answer=? WHERE id=?
+        String query = QueryUtil.getQuery("Users.update");
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            // 수정 가능한 데이터만 바인딩 (교수/학생 타입 등은 제외)
+            pstmt.setString(1, usersDTO.getPassword());
+            pstmt.setString(2, usersDTO.getTelNum());
+            pstmt.setString(3, usersDTO.getName());
+            pstmt.setString(4, usersDTO.getPwAnswer());
+
+            // WHERE 조건에 들어갈 고유 ID
+            pstmt.setInt(5, usersDTO.getId());
+
+            return pstmt.executeUpdate(); // 수정된 행의 개수 반환
+        }
+    }
+
 
 }

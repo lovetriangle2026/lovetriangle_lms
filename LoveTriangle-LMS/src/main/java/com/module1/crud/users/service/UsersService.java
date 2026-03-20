@@ -1,6 +1,5 @@
-package com.module1.crud.users.model.service;
+package com.module1.crud.users.service;
 
-import com.module1.crud.global.session.SessionManager;
 import com.module1.crud.users.model.dao.UsersDAO;
 import com.module1.crud.users.model.dto.UsersDTO;
 
@@ -46,6 +45,20 @@ public class UsersService {
             return affectedRows > 0;
         } catch (SQLException e) {
             throw new RuntimeException("회원 탈퇴 처리 중 Error 발생!!! 🚨", e);
+        }
+    }
+
+    public boolean updateUser(UsersDTO updatedUser) {
+        /* comment.
+         * 비즈니스 로직을 처리하는 곳입니다.
+         * 필요하다면 이곳에서 전화번호 정규식 검사, 비밀번호 길이 검사 등을 수행할 수 있습니다.
+         * */
+        try {
+            int affectedRows = usersDAO.update(updatedUser);
+            return affectedRows > 0; // 1줄 이상 수정되었다면 true 반환
+        } catch (SQLException e) {
+            System.out.println("🚨 DB 업데이트 중 오류 발생: " + e.getMessage());
+            return false;
         }
     }
 

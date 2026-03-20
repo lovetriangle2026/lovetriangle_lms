@@ -1,7 +1,7 @@
 package com.module1.crud.users.controller;
 
 import com.module1.crud.users.model.dto.UsersDTO;
-import com.module1.crud.users.model.service.UsersService;
+import com.module1.crud.users.service.UsersService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,5 +37,12 @@ public class UsersController {
         return service.deleteUser(userId);
     }
 
+    public boolean updateUser(UsersDTO updatedUser) {
+        /* comment.
+         * View에서 조립된 갱신용 DTO를 받아 Service 계층으로 전달합니다.
+         * 팀원들이 작성한 Create 로직과 흐름을 동일하게 맞췄습니다.
+         * */
+        return service.updateUser(updatedUser);
+    }
 
 }
