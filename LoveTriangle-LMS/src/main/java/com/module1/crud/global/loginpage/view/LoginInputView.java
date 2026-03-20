@@ -428,7 +428,4 @@ public class LoginInputView {
             }
         }
     }
-
-
-
 }
