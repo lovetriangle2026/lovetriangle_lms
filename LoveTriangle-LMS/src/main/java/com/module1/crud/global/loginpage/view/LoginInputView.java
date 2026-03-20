@@ -111,6 +111,7 @@ public class LoginInputView {
 
                 System.out.println("✅ [" + loggedInUser.getName() + "]님 환영합니다! (" + userType + ")");
 
+
                 // 2. 권한에 따른 화면 분기 처리
                 if ("STUDENT".equalsIgnoreCase(userType)) {
                     studentMainMenu(loggedInUser);
