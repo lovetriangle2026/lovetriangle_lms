@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<properties>
+    <!--유저전체조회-->
+    <query key="users.findAll">
+        select
+        *
+        from users
+    </query>
+
+    <!--회원가입-유저저장-->
+    <query key="Users.save">
+        INSERT INTO users (user_code, login_id, name, birth, tel_num, password, pw_answer, user_type)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    </query>
+
+    <!--    회원탈퇴-유저삭제-->
+    <query key="Users.delete">
+        DELETE FROM users WHERE id = ?
+    </query>
+
+    <!--    회원인증-->
+    <query key="Users.findByLoginIdAndPassword">
+        SELECT id, user_code, login_id, name, birth, tel_num, password, pw_answer, user_type
+        FROM users
+        WHERE login_id = ? AND password = ?
+    </query>
+
+</properties>
