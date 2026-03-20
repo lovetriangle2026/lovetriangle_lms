@@ -5,8 +5,10 @@ import com.module1.crud.grade.model.service.GradeService;
 
 import java.util.List;
 import com.module1.crud.grade.model.dto.GradeEditDTO;
+import com.module1.crud.grade.model.dto.GradeRegisterDTO;
 public class GradeController {
     private final GradeService service;
+
 
     public GradeController(GradeService service) {
 
@@ -46,5 +48,27 @@ public class GradeController {
     // 과제 수정
     public int updateAssignmentScore(int studentId, int courseId, int newScore) {
         return service.updateAssignmentScore(studentId, courseId, newScore);
+    }
+    public List<GradeRegisterDTO> getAssignmentRegisterTargets(long professorId) {
+        return service.getAssignmentRegisterTargets(professorId);
+    }
+
+    public int registerAssignmentScore(int studentId, int courseId, int score) {
+        return service.registerAssignmentScore(studentId, courseId, score);
+    }
+    public List<GradeRegisterDTO> getMidtermRegisterTargets(long professorId) {
+        return service.getMidtermRegisterTargets(professorId);
+    }
+
+    public int registerMidtermScore(int studentId, int courseId, int score) {
+        return service.registerMidtermScore(studentId, courseId, score);
+    }
+
+    public List<GradeRegisterDTO> getFinalRegisterTargets(long professorId) {
+        return service.getFinalRegisterTargets(professorId);
+    }
+
+    public int registerFinalScore(int studentId, int courseId, int score) {
+        return service.registerFinalScore(studentId, courseId, score);
     }
 }

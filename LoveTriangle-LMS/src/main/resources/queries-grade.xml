@@ -393,7 +393,45 @@
         AND sub.score IS NULL
     </query>
 
+    <query key="grade.findMidtermRegisterTargets">
+        SELECT
+        ex.student_id,
+        u.name AS student_name,
+        ex.course_id,
+        c.title AS course_title
+        FROM exams ex
+        JOIN users u ON ex.student_id = u.id
+        JOIN courses c ON ex.course_id = c.id
+        WHERE c.professor_id = ?
+        AND ex.midterm_score IS NULL
+        ORDER BY c.title, u.name
+    </query>
 
+    <query key="grade.registerMidtermScore">
+        UPDATE exams
+        SET midterm_score = ?
+        WHERE student_id = ? AND course_id = ?
+    </query>
+
+    <query key="grade.findFinalRegisterTargets">
+        SELECT
+        ex.student_id,
+        u.name AS student_name,
+        ex.course_id,
+        c.title AS course_title
+        FROM exams ex
+        JOIN users u ON ex.student_id = u.id
+        JOIN courses c ON ex.course_id = c.id
+        WHERE c.professor_id = ?
+        AND ex.final_score IS NULL
+        ORDER BY c.title, u.name
+    </query>
+
+    <query key="grade.registerFinalScore">
+        UPDATE exams
+        SET final_score = ?
+        WHERE student_id = ? AND course_id = ?
+    </query>
 
 
 </properties>
