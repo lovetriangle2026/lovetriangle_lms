@@ -32,7 +32,7 @@ public class UsersController {
         return service.saveUser(newUser);
     }
 
-    public boolean deleteUser(Long userId) {
+    public boolean deleteUser(int userId) {
         // View에서 넘어온 탈퇴 요청을 Service로 전달합니다.
         return service.deleteUser(userId);
     }

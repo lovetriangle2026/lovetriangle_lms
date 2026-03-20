@@ -16,10 +16,19 @@ public class GradeService {
         this.connection = connection;
     }
 
-    public List<GradeViewDTO> findAllGrade() {
+    public List<GradeViewDTO> findAllGrade(long studentId) {
 
         try {
-            return GradeViewDAO.findGrade();
+            return GradeViewDAO.findGrade(studentId);
+        } catch (SQLException e) {
+            throw new RuntimeException("성적 전체 조회 중 Error 발생!! 🚨🚨" + e);
+        }
+    }
+
+    public List<GradeViewDTO> getStudentgrade(long professorId, String studentName) {
+
+        try {
+            return GradeViewDAO.findByStudentName(professorId,studentName);
         } catch (SQLException e) {
             throw new RuntimeException("성적 전체 조회 중 Error 발생!! 🚨🚨" + e);
         }
