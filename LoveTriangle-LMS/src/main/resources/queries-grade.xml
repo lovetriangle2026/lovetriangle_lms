@@ -16,6 +16,7 @@
         t.assignment_score,
         t.total_score,
         CASE
+        WHEN t.total_score IS NULL THEN NULL
         WHEN t.total_score >= 95 THEN 'A+'
         WHEN t.total_score >= 90 THEN 'A'
         WHEN t.total_score >= 85 THEN 'B+'
@@ -28,26 +29,44 @@
         END AS grade
         FROM (
         SELECT
-        g.student_id,
+        e.user_id AS student_id,
         u.name AS student_name,
-        g.course_id,
+        e.course_id,
         c.title AS course_title,
-        g.midterm_score,
-        g.final_score,
-        ROUND(g.midterm_score / 100.0 * 35, 2) AS midterm_35,
-        ROUND(g.final_score / 100.0 * 35, 2) AS final_35,
+        ex.midterm_score,
+        ex.final_score,
+        CASE
+        WHEN ex.midterm_score IS NULL THEN NULL
+        ELSE ROUND(ex.midterm_score / 100.0 * 35, 2)
+        END AS midterm_35,
+        CASE
+        WHEN ex.final_score IS NULL THEN NULL
+        ELSE ROUND(ex.final_score / 100.0 * 35, 2)
+        END AS final_35,
         COALESCE(att.attendance_20, 0) AS attendance_score,
-        COALESCE(asg.assignment_10, 0) AS assignment_score,
-        ROUND(
-        (g.midterm_score / 100.0 * 35)
-        + (g.final_score / 100.0 * 35)
+        asg.assignment_10 AS assignment_score,
+        CASE
+        WHEN ex.midterm_score IS NULL
+        AND ex.final_score IS NULL
+        AND asg.assignment_10 IS NULL
+        AND att.attendance_20 IS NULL
+        THEN NULL
+        ELSE ROUND(
+        COALESCE(ex.midterm_score, 0) / 100.0 * 35
+        + COALESCE(ex.final_score, 0) / 100.0 * 35
         + COALESCE(att.attendance_20, 0)
         + COALESCE(asg.assignment_10, 0),
         2
-        ) AS total_score
-        FROM exams g
-        JOIN users u ON g.student_id = u.id
-        JOIN courses c ON g.course_id = c.id
+        )
+        END AS total_score
+        FROM enrollments e
+        JOIN users u
+        ON e.user_id = u.id
+        JOIN courses c
+        ON e.course_id = c.id
+        LEFT JOIN exams ex
+        ON ex.student_id = e.user_id
+        AND ex.course_id = e.course_id
         LEFT JOIN (
         SELECT
         a.student_id,
@@ -64,22 +83,24 @@
         2
         ) AS attendance_20
         FROM attendance a
-        JOIN sessions s ON a.session_id = s.id
+        JOIN sessions s
+        ON a.session_id = s.id
         GROUP BY a.student_id, s.course_id
         ) att
-        ON g.student_id = att.student_id
-        AND g.course_id = att.course_id
+        ON e.user_id = att.student_id
+        AND e.course_id = att.course_id
         LEFT JOIN (
         SELECT
         sub.student_id,
         ass.course_id,
         ROUND(MAX(sub.score) / 100.0 * 15, 2) AS assignment_10
         FROM assignment_submissions sub
-        JOIN assignments ass ON sub.assignment_id = ass.id
+        JOIN assignments ass
+        ON sub.assignment_id = ass.id
         GROUP BY sub.student_id, ass.course_id
         ) asg
-        ON g.student_id = asg.student_id
-        AND g.course_id = asg.course_id
+        ON e.user_id = asg.student_id
+        AND e.course_id = asg.course_id
         WHERE c.professor_id = ?
         ) t
         ORDER BY t.course_id, t.student_name;
@@ -99,6 +120,7 @@
         t.assignment_score,
         t.total_score,
         CASE
+        WHEN t.total_score IS NULL THEN NULL
         WHEN t.total_score >= 95 THEN 'A+'
         WHEN t.total_score >= 90 THEN 'A'
         WHEN t.total_score >= 85 THEN 'B+'
@@ -111,26 +133,44 @@
         END AS grade
         FROM (
         SELECT
-        g.student_id,
+        e.user_id AS student_id,
         u.name AS student_name,
-        g.course_id,
+        e.course_id,
         c.title AS course_title,
-        g.midterm_score,
-        g.final_score,
-        ROUND(g.midterm_score / 100.0 * 35, 2) AS midterm_35,
-        ROUND(g.final_score / 100.0 * 35, 2) AS final_35,
+        ex.midterm_score,
+        ex.final_score,
+        CASE
+        WHEN ex.midterm_score IS NULL THEN NULL
+        ELSE ROUND(ex.midterm_score / 100.0 * 35, 2)
+        END AS midterm_35,
+        CASE
+        WHEN ex.final_score IS NULL THEN NULL
+        ELSE ROUND(ex.final_score / 100.0 * 35, 2)
+        END AS final_35,
         COALESCE(att.attendance_20, 0) AS attendance_score,
-        COALESCE(asg.assignment_10, 0) AS assignment_score,
-        ROUND(
-        (g.midterm_score / 100.0 * 35)
-        + (g.final_score / 100.0 * 35)
+        asg.assignment_10 AS assignment_score,
+        CASE
+        WHEN ex.midterm_score IS NULL
+        AND ex.final_score IS NULL
+        AND asg.assignment_10 IS NULL
+        AND att.attendance_20 IS NULL
+        THEN NULL
+        ELSE ROUND(
+        COALESCE(ex.midterm_score, 0) / 100.0 * 35
+        + COALESCE(ex.final_score, 0) / 100.0 * 35
         + COALESCE(att.attendance_20, 0)
         + COALESCE(asg.assignment_10, 0),
         2
-        ) AS total_score
-        FROM exams g
-        JOIN users u ON g.student_id = u.id
-        JOIN courses c ON g.course_id = c.id
+        )
+        END AS total_score
+        FROM enrollments e
+        JOIN users u
+        ON e.user_id = u.id
+        JOIN courses c
+        ON e.course_id = c.id
+        LEFT JOIN exams ex
+        ON ex.student_id = e.user_id
+        AND ex.course_id = e.course_id
         LEFT JOIN (
         SELECT
         a.student_id,
@@ -147,22 +187,24 @@
         2
         ) AS attendance_20
         FROM attendance a
-        JOIN sessions s ON a.session_id = s.id
+        JOIN sessions s
+        ON a.session_id = s.id
         GROUP BY a.student_id, s.course_id
         ) att
-        ON g.student_id = att.student_id
-        AND g.course_id = att.course_id
+        ON e.user_id = att.student_id
+        AND e.course_id = att.course_id
         LEFT JOIN (
         SELECT
         sub.student_id,
         ass.course_id,
         ROUND(MAX(sub.score) / 100.0 * 15, 2) AS assignment_10
         FROM assignment_submissions sub
-        JOIN assignments ass ON sub.assignment_id = ass.id
+        JOIN assignments ass
+        ON sub.assignment_id = ass.id
         GROUP BY sub.student_id, ass.course_id
         ) asg
-        ON g.student_id = asg.student_id
-        AND g.course_id = asg.course_id
+        ON e.user_id = asg.student_id
+        AND e.course_id = asg.course_id
         WHERE c.professor_id = ?
         ) t
         WHERE t.student_name LIKE CONCAT('%', ?, '%')
@@ -220,98 +262,136 @@
 
 
 
-        <query key="grade.findall">
+    <query key="grade.findall">
+        SELECT
+        t.student_id,
+        t.student_name,
+        t.course_id,
+        t.course_title,
+        t.midterm_score,
+        t.final_score,
+        t.midterm_35,
+        t.final_35,
+        t.attendance_score,
+        t.assignment_score,
+        t.total_score,
+        CASE
+        WHEN t.total_score IS NULL THEN NULL
+        WHEN t.total_score >= 95 THEN 'A+'
+        WHEN t.total_score >= 90 THEN 'A'
+        WHEN t.total_score >= 85 THEN 'B+'
+        WHEN t.total_score >= 80 THEN 'B'
+        WHEN t.total_score >= 75 THEN 'C+'
+        WHEN t.total_score >= 70 THEN 'C'
+        WHEN t.total_score >= 65 THEN 'D+'
+        WHEN t.total_score >= 60 THEN 'D'
+        ELSE 'F'
+        END AS grade
+        FROM (
+        SELECT
+        e.user_id AS student_id,
+        u.name AS student_name,
+        e.course_id,
+        c.title AS course_title,
+        ex.midterm_score,
+        ex.final_score,
+        CASE
+        WHEN ex.midterm_score IS NULL THEN NULL
+        ELSE ROUND(ex.midterm_score / 100.0 * 35, 2)
+        END AS midterm_35,
+        CASE
+        WHEN ex.final_score IS NULL THEN NULL
+        ELSE ROUND(ex.final_score / 100.0 * 35, 2)
+        END AS final_35,
+        COALESCE(att.attendance_20, 0) AS attendance_score,
+        asg.assignment_10 AS assignment_score,
+        CASE
+        WHEN ex.midterm_score IS NULL
+        AND ex.final_score IS NULL
+        AND asg.assignment_10 IS NULL
+        AND att.attendance_20 IS NULL
+        THEN NULL
+        ELSE ROUND(
+        COALESCE(ex.midterm_score, 0) / 100.0 * 35
+        + COALESCE(ex.final_score, 0) / 100.0 * 35
+        + COALESCE(att.attendance_20, 0)
+        + COALESCE(asg.assignment_10, 0),
+        2
+        )
+        END AS total_score
+        FROM enrollments e
+        JOIN users u
+        ON e.user_id = u.id
+        JOIN courses c
+        ON e.course_id = c.id
+        LEFT JOIN exams ex
+        ON ex.student_id = e.user_id
+        AND ex.course_id = e.course_id
+        LEFT JOIN (
+        SELECT
+        a.student_id,
+        s.course_id,
+        ROUND(
+        SUM(
+        CASE
+        WHEN a.attendance_status = 'PRESENT' THEN 1
+        WHEN a.attendance_status = 'LATE' THEN 0.5
+        WHEN a.attendance_status = 'EXCUSED' THEN 1
+        ELSE 0
+        END
+        ),
+        2
+        ) AS attendance_20
+        FROM attendance a
+        JOIN sessions s
+        ON a.session_id = s.id
+        GROUP BY a.student_id, s.course_id
+        ) att
+        ON e.user_id = att.student_id
+        AND e.course_id = att.course_id
+        LEFT JOIN (
+        SELECT
+        sub.student_id,
+        ass.course_id,
+        ROUND(MAX(sub.score) / 100.0 * 15, 2) AS assignment_10
+        FROM assignment_submissions sub
+        JOIN assignments ass
+        ON sub.assignment_id = ass.id
+        GROUP BY sub.student_id, ass.course_id
+        ) asg
+        ON e.user_id = asg.student_id
+        AND e.course_id = asg.course_id
+        WHERE e.user_id = ?
+        ) t
+        ORDER BY t.course_id;
+    </query>
+    <query key="grade.findAssignmentRegisterTargets">
+        SELECT
+        sub.student_id,
+        u.name AS student_name,
+        a.course_id,
+        c.title AS course_title
+        FROM assignment_submissions sub
+        JOIN assignments a
+        ON sub.assignment_id = a.id
+        JOIN courses c
+        ON a.course_id = c.id
+        JOIN users u
+        ON sub.student_id = u.id
+        WHERE c.professor_id = ?
+        AND sub.score IS NULL
+        ORDER BY c.title, u.name
+    </query>
 
-                SELECT
-                t.student_id,
-                t.student_name,
-                t.course_id,
-                t.course_title,
-                t.midterm_score,
-                t.final_score,
-                t.midterm_35,
-                t.final_35,
-                t.attendance_score,
-                t.assignment_score,
-                t.total_score,
-                CASE
-                WHEN t.total_score >= 95 THEN 'A+'
-                WHEN t.total_score >= 90 THEN 'A'
-                WHEN t.total_score >= 85 THEN 'B+'
-                WHEN t.total_score >= 80 THEN 'B'
-                WHEN t.total_score >= 75 THEN 'C+'
-                WHEN t.total_score >= 70 THEN 'C'
-                WHEN t.total_score >= 65 THEN 'D+'
-                WHEN t.total_score >= 60 THEN 'D'
-                ELSE 'F'
-                END AS grade
-                FROM (
-                SELECT
-                g.student_id,
-                u.name AS student_name,
-                g.course_id,
-                c.title AS course_title,
-                g.midterm_score,
-                g.final_score,
-                ROUND(g.midterm_score / 100.0 * 35, 2) AS midterm_35,
-                ROUND(g.final_score / 100.0 * 35, 2) AS final_35,
-                COALESCE(att.attendance_20, 0) AS attendance_score,
-                COALESCE(asg.assignment_10, 0) AS assignment_score,
-                ROUND(
-                (g.midterm_score / 100.0 * 35)
-                + (g.final_score / 100.0 * 35)
-                + COALESCE(att.attendance_20, 0)
-                + COALESCE(asg.assignment_10, 0),
-                2
-                ) AS total_score
-                FROM exams g
-                JOIN users u
-                ON g.student_id = u.id
-                JOIN courses c
-                ON g.course_id = c.id
-
-                LEFT JOIN (
-                SELECT
-                a.student_id,
-                s.course_id,
-                ROUND(
-                SUM(
-                CASE
-                WHEN a.attendance_status = 'PRESENT' THEN 1
-                WHEN a.attendance_status = 'LATE' THEN 0.5
-                WHEN a.attendance_status = 'EXCUSED' THEN 1
-                ELSE 0
-                END
-                ),
-                2
-                ) AS attendance_20
-                FROM attendance a
-                JOIN sessions s
-                ON a.session_id = s.id
-                GROUP BY a.student_id, s.course_id
-                ) att
-                ON g.student_id = att.student_id
-                AND g.course_id = att.course_id
-
-                LEFT JOIN (
-                SELECT
-                sub.student_id,
-                ass.course_id,
-                ROUND(MAX(sub.score) / 100.0 * 15, 2) AS assignment_10
-                FROM assignment_submissions sub
-                JOIN assignments ass
-                ON sub.assignment_id = ass.id
-                GROUP BY sub.student_id, ass.course_id
-                ) asg
-                ON g.student_id = asg.student_id
-                AND g.course_id = asg.course_id
-
-                WHERE g.student_id = ?
-                ) t
-                ORDER BY t.course_id;
-
-        </query>
-
+    <query key="grade.registerAssignmentScore">
+        UPDATE assignment_submissions sub
+        JOIN assignments a
+        ON sub.assignment_id = a.id
+        SET sub.score = ?
+        WHERE sub.student_id = ?
+        AND a.course_id = ?
+        AND sub.score IS NULL
+    </query>
 
 
 
