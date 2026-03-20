@@ -18,6 +18,15 @@
         JOIN enrollments e ON c.id = e.course_id
         WHERE e.student_id = ?
     </query>
+    <query key="course.checkEnrollment">
+        SELECT COUNT(*)
+        FROM enrollments
+        WHERE user_id = ? AND course_id = ?
+    </query>
 
+    <query key="course.insertEnrollment">
+        INSERT INTO enrollments (user_id, course_id)
+        VALUES (?, ?)
+    </query>
 
 </properties>
