@@ -25,9 +25,4 @@
         WHERE login_id = ? AND password = ?
     </query>
 
-    <query key="Users.update">
-        UPDATE users SET password = ?, tel_num = ?, name = ?, pw_answer = ? WHERE id = ?
-    </query>
-
-
 </properties>
