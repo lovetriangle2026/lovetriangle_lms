@@ -16,10 +16,11 @@ public class CourseController {
     }
 
 
-    public void findAllCourses() { // 반환타입을 void로!
+    public List<CourseDTO> findAllCourses() { // 반환타입을 void로!
         List<CourseDTO> courseList = service.findAllCourses();
         ProfOutputView profOutputView = new ProfOutputView();
         profOutputView.displayCourseList(courseList); //
+        return courseList;
     }
 
 
