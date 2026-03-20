@@ -48,33 +48,6 @@ public class UsersDAO {
         } return usersDTOList;
 
     }
-    public Long save(UsersDTO usersDTO) throws SQLException {
-        String query = QueryUtil.getQuery("Users.save");
-
-        try (PreparedStatement pstmt = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
-
-            pstmt.setString(1, usersDTO.getUserCode());
-            pstmt.setString(2, usersDTO.getLoginId());
-            pstmt.setString(3, usersDTO.getName());
-            // 💡 핵심 변경 사항: LocalDate 타입을 DB에 저장할 수 있도록 java.sql.Date로 변환합니다.
-            pstmt.setDate(4, java.sql.Date.valueOf(usersDTO.getBirth()));
-            pstmt.setString(5, usersDTO.getTelNum());
-            pstmt.setString(6, usersDTO.getPassword());
-            pstmt.setString(7, usersDTO.getPwAnswer());
-            pstmt.setString(8, usersDTO.getUserType());
-
-            int affectedRows = pstmt.executeUpdate();
-
-            if (affectedRows > 0) {
-                try (ResultSet rs = pstmt.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        return rs.getLong(1);
-                    }
-                }
-            }
-        }
-        return null;
-    }
 
     public int deleteById(int userId) throws SQLException {
         String query = QueryUtil.getQuery("Users.delete");

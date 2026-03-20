@@ -6,7 +6,8 @@ import com.module1.crud.users.model.dto.UsersDTO;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
-
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 public class UsersInputView {
 
 
@@ -108,47 +109,8 @@ public class UsersInputView {
         outputView.printCourses(courseList);
     }
 
-    public void createUser() {
-        System.out.println("\n=== 📝 신규 회원 가입 ===");
 
-        System.out.print("사번/학번(User Code)을 입력해주세요 : ");
-        String userCode = sc.nextLine();
 
-        System.out.print("로그인 ID를 입력해주세요 : ");
-        String loginId = sc.nextLine();
-
-        System.out.print("이름을 입력해주세요 : ");
-        String name = sc.nextLine();
-
-        System.out.print("생년월일 (YYYY-MM-DD 형식)을 입력해주세요 : ");
-        String birthInput = sc.nextLine();
-        // 💡 문자열 입력을 LocalDate 객체로 변환합니다.
-        LocalDate birth = LocalDate.parse(birthInput);
-
-        System.out.print("전화번호를 입력해주세요 : ");
-        String telNum = sc.nextLine();
-
-        System.out.print("비밀번호를 입력해주세요 : ");
-        String password = sc.nextLine();
-
-        System.out.print("비밀번호 찾기 정답을 입력해주세요 : ");
-        String pwAnswer = sc.nextLine();
-
-        System.out.print("사용자 유형 (STUDENT / PROFESSOR)을 입력해주세요 : ");
-        String userType = sc.nextLine();
-
-        /* comment.
-         * 입력받은 원시 데이터들을 Controller로 전달하여 처리를 위임합니다.
-         * DB 처리 결과로 생성된 회원의 고유 ID(PK)가 반환됩니다.
-         * */
-        Long result = controller.createUser(userCode, loginId, name, birth, telNum, password, pwAnswer, userType);
-
-        if (result != null && result > 0) {
-            outputView.printSuccess("회원 가입 성공! 부여된 회원 고유 ID : " + result);
-        } else {
-            outputView.printError("회원 가입에 실패했습니다. 입력 정보를 확인해주세요.");
-        }
-    }
 
     private void deleteMyAccount(int loggedInUserId) {
         System.out.println("\n=== 🗑️ 회원 탈퇴 ===");
@@ -242,22 +204,6 @@ public class UsersInputView {
             }
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -25,4 +25,34 @@
         WHERE login_id = ? AND password = ?
     </query>
 
+    <query key="Users.update">
+        UPDATE users SET password = ?, tel_num = ?, name = ?, pw_answer = ? WHERE id = ?
+    </query>
+
+    <query key="Users.checkSchoolMember">
+        SELECT COUNT(*)
+        FROM users
+        WHERE user_code = ? AND name = ? AND birth = ? AND user_type = ?
+    </query>
+
+    <query key = "Users.checkAlreadyRegistered">
+        SELECT login_id
+        FROM users
+        WHERE user_code = ?
+    </query>
+
+    <query key="Users.updateAccount">
+        UPDATE users
+        SET login_id = ?, password = ?, tel_num = ?, pw_answer = ?
+        WHERE user_code = ?
+    </query>
+
+    <query key="Users.findIdByUserCode">
+        SELECT id
+        FROM users
+        WHERE user_code = ?
+    </query>
+
+
+
 </properties>

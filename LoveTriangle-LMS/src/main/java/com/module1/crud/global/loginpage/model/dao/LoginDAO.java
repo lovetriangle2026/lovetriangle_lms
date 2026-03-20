@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 
 
 public class LoginDAO {
@@ -51,6 +52,79 @@ public class LoginDAO {
             }
         }return null;
 
+    }
+
+
+    public Long save(UsersDTO usersDTO) throws SQLException {
+        // 1. 기존 학적 레코드의 빈칸(ID, 비번 등)을 채우는 UPDATE 쿼리
+        String updateQuery = QueryUtil.getQuery("Users.updateAccount");
+
+        try (PreparedStatement pstmt = connection.prepareStatement(updateQuery)) {
+            // 채워 넣을 계정 정보들 바인딩
+            pstmt.setString(1, usersDTO.getLoginId());
+            pstmt.setString(2, usersDTO.getPassword());
+            pstmt.setString(3, usersDTO.getTelNum());
+            pstmt.setString(4, usersDTO.getPwAnswer());
+
+            // WHERE 조건: 1단계에서 인증된 학번/사번
+            pstmt.setString(5, usersDTO.getUserCode());
+
+            int affectedRows = pstmt.executeUpdate();
+
+            // 2. 업데이트가 성공적으로 적용되었다면, 뷰에 반환할 고유 ID(PK)를 조회합니다.
+            if (affectedRows > 0) {
+                String selectQuery = QueryUtil.getQuery("Users.findIdByUserCode");
+
+                try (PreparedStatement selectPstmt = connection.prepareStatement(selectQuery)) {
+                    selectPstmt.setString(1, usersDTO.getUserCode());
+
+                    try (ResultSet rs = selectPstmt.executeQuery()) {
+                        if (rs.next()) {
+                            return rs.getLong("id"); // DB에 저장된 진짜 고유 ID 반환!
+                        }
+                    }
+                }
+            }
+        }
+        return null; // 업데이트 실패 시 null 반환
+    }
+// 1. 학적 정보(이름, 학번, 생년월일, 소속)가 존재하는지 확인
+    public boolean checkSchoolMember(String userCode, String name, LocalDate birth, String userType) throws SQLException {
+        // SELECT COUNT(*) FROM users WHERE user_code = ? AND name = ? AND birth = ? AND user_type = ?
+        String query = QueryUtil.getQuery("Users.checkSchoolMember");
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, userCode);
+            pstmt.setString(2, name);
+            pstmt.setDate(3, java.sql.Date.valueOf(birth));
+            pstmt.setString(4, userType);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+
+    // 2. 이미 가입된 유저인지 확인 (login_id가 채워져 있는지 검사)
+    public boolean checkAlreadyRegistered(String userCode) throws SQLException {
+        // SELECT login_id FROM users WHERE user_code = ?
+        String query = QueryUtil.getQuery("Users.checkAlreadyRegistered");
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, userCode);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    String loginId = rs.getString("login_id");
+                    // loginId가 null이 아니고 비어있지 않다면 이미 가입한 회원!
+                    return loginId != null && !loginId.trim().isEmpty();
+                }
+            }
+        }
+        return false;
     }
 
 }

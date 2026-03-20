@@ -91,9 +91,6 @@ public class CourseDAO {
 
             result = pstmt.executeUpdate();
 
-
-
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
