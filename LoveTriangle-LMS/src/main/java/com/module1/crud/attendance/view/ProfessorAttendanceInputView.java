@@ -2,6 +2,9 @@ package com.module1.crud.attendance.view;
 
 import com.module1.crud.attendance.controller.AttendanceController;
 import com.module1.crud.attendance.model.dto.AttendanceDTO;
+import com.module1.crud.attendance.model.dto.ProfessorCourseDTO;
+import com.module1.crud.global.session.SessionManager;
+import com.module1.crud.users.model.dto.UsersDTO;
 
 import java.util.List;
 import java.util.Scanner;
@@ -56,13 +59,41 @@ public class ProfessorAttendanceInputView {
     }
 
     private void findAttendanceByCourseId() {
-        System.out.print("강의 ID를 입력해주세요 : ");
+        UsersDTO loginUser = SessionManager.getInstance().getLoggedInUser();
+        int professorId = loginUser.getId();
+
+        List<ProfessorCourseDTO> courseList = controller.findCoursesByProfessorId(professorId);
+
+        if (courseList == null || courseList.isEmpty()) {
+            outputView.printError("담당 강의가 없습니다.");
+            return;
+        }
+
+        System.out.println("\n===== 담당 강의 목록 =====");
+
+        for (ProfessorCourseDTO course : courseList) {
+            System.out.println(course.getId() + ". " + course.getTitle());
+        }
+        System.out.println("0. 돌아가기");
+        System.out.print("선택해주세요 : ");
         int courseId = inputInt();
 
-        List<AttendanceDTO> attendanceList = controller.findAttendanceByCourseId(courseId);
+        if (courseId == 0) {
+            outputView.printMessage("이전 메뉴로 돌아갑니다.");
+            return;
+        }
 
-        outputView.printAttendanceList(attendanceList);
+        List<AttendanceDTO> attendanceList =
+                controller.findAttendanceByCourseId(courseId, professorId);
+
+        if (attendanceList == null || attendanceList.isEmpty()) {
+            outputView.printError("담당 강의가 아니거나 조회된 출결 데이터가 없습니다.");
+            return;
+        }
+
+        outputView.printAttendanceByWeek(attendanceList);
     }
+
 
     private void findAttendanceByWeek() {
         System.out.print("조회할 주차를 입력해주세요 : ");

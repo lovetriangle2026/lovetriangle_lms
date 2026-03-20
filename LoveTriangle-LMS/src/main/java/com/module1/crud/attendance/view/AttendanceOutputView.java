@@ -14,7 +14,7 @@ public class AttendanceOutputView {
         System.out.println(message);
     }
 
-    public void printError(String message) {
+    public static void printError(String message) {
         System.out.println(message);
     }
 
@@ -47,5 +47,34 @@ public class AttendanceOutputView {
         }
 
         System.out.println("==============================================================================================");
+    }
+
+    public void printAttendanceByWeek(List<AttendanceDTO> attendanceList) {
+
+        if (attendanceList == null || attendanceList.isEmpty()) {
+            printMessage("조회된 출결 데이터가 없습니다.");
+            return;
+        }
+
+        String courseTitle = attendanceList.get(0).getCourseTitle();
+        System.out.println("\n===== " + courseTitle + " 출결 현황 =====");
+
+        int currentWeek = -1;
+
+        for (AttendanceDTO attendance : attendanceList) {
+            if (attendance.getWeek() != currentWeek) {
+                currentWeek = attendance.getWeek();
+                System.out.println();
+                System.out.println(currentWeek + "주차");
+            }
+
+            String checkedAt = attendance.getCheckedAt() == null
+                    ? "-"
+                    : attendance.getCheckedAt().toString();
+
+            System.out.println("- " + attendance.getStudentName()
+                    + " : " + attendance.getAttendanceStatus()
+                    + " (" + checkedAt + ")");
+        }
     }
 }
