@@ -19,30 +19,53 @@ public class AssignmentDAO {
         this.connection = connection;
     }
 
+    // ======================== 과제 조회 =========================
     public List<AssignmentDTO> findMyAssignments(Long userId) throws SQLException {
-
-        String query = QueryUtil.getQuery("assignment.findAll");
+        String query = QueryUtil.getQuery("assignment.findMyAssignments");
         List<AssignmentDTO> assignmentList = new ArrayList<>();
 
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setLong(1, userId);
 
             try (ResultSet rset = pstmt.executeQuery()) {
-
                 while (rset.next()) {
                     AssignmentDTO assignment = new AssignmentDTO(
                             rset.getLong("id"),
                             rset.getLong("course_id"),
                             rset.getString("title"),
                             rset.getString("description"),
-                            rset.getTimestamp("deadline")
+                            rset.getTimestamp("deadline"),
+                            rset.getString("submission_status"),
+                            rset.getString("submission_content"),
+                            rset.getTimestamp("submitted_at")
                     );
+
                     assignmentList.add(assignment);
                 }
             }
-
         }
-        return assignmentList;
 
+        return assignmentList;
     }
+
+    // ============================ 과제 제출 ============================
+    public boolean existsMyAssignment(Long assignmentId, Long studentId) throws SQLException {
+        String query = QueryUtil.getQuery("assignment.existsMyAssignment");
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setLong(1, assignmentId);
+            pstmt.setLong(2, studentId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return rset.getInt(1) > 0;
+                }
+            }
+        }
+
+        return false;
+    }
+
 }
+
+

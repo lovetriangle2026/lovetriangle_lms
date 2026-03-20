@@ -9,13 +9,20 @@ public class AssignmentDTO {
     private String title;
     private String description;
     private Timestamp deadline;
+    private String submissionStatus;
+    private String submissionContent;
+    private Timestamp submittedAt;
 
-    public AssignmentDTO(long id, long course_Id, String title, String description, Timestamp deadline) {
+    public AssignmentDTO(long id, long course_Id, String title, String description,
+                         Timestamp deadline, String submissionStatus, String submissionContent, Timestamp submittedAt) {
         this.id = id;
         this.course_Id = course_Id;
         this.title = title;
         this.description = description;
         this.deadline = deadline;
+        this.submissionStatus = submissionStatus;
+        this.submissionContent = submissionContent;
+        this.submittedAt = submittedAt;
 
     }
 
@@ -67,6 +74,30 @@ public class AssignmentDTO {
         this.deadline = deadline;
     }
 
+    public String getSubmissionStatus() {
+        return submissionStatus;
+    }
+
+    public void setSubmissionStatus(String submissionStatus) {
+        this.submissionStatus = submissionStatus;
+    }
+
+    public String getSubmissionContent() {
+        return submissionContent;
+    }
+
+    public void setSubmissionContent(String submissionContent) {
+        this.submissionContent = submissionContent;
+    }
+
+    public Timestamp getSubmittedAt() {
+        return submittedAt;
+    }
+
+    public void setSubmittedAt(Timestamp submittedAt) {
+        this.submittedAt = submittedAt;
+    }
+
     @Override
     public String toString() {
         return "AssignmentDTO{" +
@@ -75,6 +106,9 @@ public class AssignmentDTO {
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", deadline=" + deadline +
+                ", submissionStatus='" + submissionStatus + '\'' +
+                ", submissionContent='" + submissionContent + '\'' +
+                ", submittedAt=" + submittedAt +
                 '}';
     }
 }

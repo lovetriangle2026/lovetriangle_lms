@@ -16,11 +16,34 @@ public class AssignmentController {
 
     }
 
+    // ==================== 과제 조회 ========================
     public List<AssignmentDTO> findMyAssignments(Long userId) {
         return service.findMyAssignments(userId);
 
     }
+
+    // ==================== 과제 제출 ========================
+    public boolean canSubmitAssignment(Long assignmentId, Long studentId) {
+        return service.canSubmitAssignment(assignmentId, studentId);
+    }
+
+    public boolean isAlreadySubmitted(Long assignmentId, Long studentId) {
+        return service.isAlreadySubmitted(assignmentId, studentId);
+    }
+
     public void createSubmission(AssignmentSubmissionDTO submissionDTO) {
         service.createSubmission(submissionDTO);
     }
+
+
+    // ====================== 과제 수정 ===========================
+    public void updateSubmission(Long assignmentId, Long studentId, String newContent) {
+        service.updateSubmission(assignmentId, studentId, newContent);
+    }
+
+    // ====================== 과제 삭제 ===========================
+    public void deleteSubmission(Long assignmentId, Long studentId) {
+        service.deleteSubmission(assignmentId, studentId);
+    }
+
 }

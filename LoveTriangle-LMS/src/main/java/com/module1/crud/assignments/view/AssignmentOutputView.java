@@ -6,9 +6,11 @@ import java.util.List;
 
 public class AssignmentOutputView {
     public void printMessage(String s) {
+        System.out.println(s);
     }
 
     public void printError(String s) {
+        System.out.println("🚨 " + s);
     }
 
     public void printAssignments(List<AssignmentDTO> assignmentList) {
@@ -18,9 +20,17 @@ public class AssignmentOutputView {
             return;
         }
 
-        System.out.println("=================과제 조회 목록 결과=================");
-        for (AssignmentDTO courseDTO : assignmentList) {
-            System.out.println(courseDTO);
+        System.out.println("=============== 수강 과제 조회 ===============");
+        for (AssignmentDTO dto : assignmentList) {
+            System.out.println("과제번호 : " + dto.getId());
+            System.out.println("강의번호 : " + dto.getCourse_Id());
+            System.out.println("과제명   : " + dto.getTitle());
+            System.out.println("설명     : " + dto.getDescription());
+            System.out.println("마감일   : " + dto.getDeadline());
+            System.out.println("제출여부 : " + dto.getSubmissionStatus());
+            System.out.println("제출내용 : " + (dto.getSubmissionContent() == null ? "-" : dto.getSubmissionContent()));
+            System.out.println("제출일시 : " + (dto.getSubmittedAt() == null ? "-" : dto.getSubmittedAt()));
+            System.out.println("--------------------------------------------------");
         }
     }
 }
