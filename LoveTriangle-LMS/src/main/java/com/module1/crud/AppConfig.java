@@ -12,6 +12,8 @@ import com.module1.crud.attendance.view.ProfessorAttendanceInputView;
 import com.module1.crud.attendance.view.StudentAttendanceInputView;
 import com.module1.crud.course.controller.CourseController;
 import com.module1.crud.course.model.service.CourseService;
+import com.module1.crud.course.view.ProfInputView;
+import com.module1.crud.course.view.ProfOutputView;
 import com.module1.crud.course.view.StudentCourseInputView;
 import com.module1.crud.course.view.StudentCourseOutputView;
 import com.module1.crud.global.loginpage.controller.LoginController;
@@ -65,6 +67,8 @@ public class AppConfig {
         CourseService courseService = new CourseService(con);
         CourseController courseController = new CourseController(courseService);
         StudentCourseInputView studentCourseView = new StudentCourseInputView(courseController, new StudentCourseOutputView());
+        ProfInputView profInputView = new ProfInputView(courseController, new ProfOutputView());
+
 
         // 6. [Login] - 로그인 및 최종 조립
         LoginService loginService = new LoginService(con);
@@ -81,7 +85,9 @@ public class AppConfig {
                 studentAttendanceView,
                 studentCourseView,
                 studentGradeView,
-                professorGradeView
+                professorGradeView,
+                profInputView,
+                courseController
         );
     }
 }

@@ -19,5 +19,11 @@
         WHERE e.student_id = ?
     </query>
 
+    <query key = "insert course">
+        INSERT INTO courses (course_code, professor_id, title, description, semester)
+        VALUES (?, ?, ?, ?, ?)
+    </query>
+
+
 
 </properties>

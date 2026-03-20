@@ -12,7 +12,6 @@ public class Application {
     public static void main(String[] args) {
         try (Connection con = JDBCTemplate.getConnection()) {
 
-            // AppConfig에게 조립을 맡기고 결과만 받습니다.
             LoginInputView loginInputView = AppConfig.createLoginInputView(con);
 
             loginInputView.displayStartMenu();
