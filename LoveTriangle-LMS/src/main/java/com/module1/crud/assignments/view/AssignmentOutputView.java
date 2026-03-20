@@ -6,9 +6,11 @@ import java.util.List;
 
 public class AssignmentOutputView {
     public void printMessage(String s) {
+        System.out.println(s);
     }
 
     public void printError(String s) {
+        System.out.println("🚨 " + s);
     }
 
     public void printAssignments(List<AssignmentDTO> assignmentList) {

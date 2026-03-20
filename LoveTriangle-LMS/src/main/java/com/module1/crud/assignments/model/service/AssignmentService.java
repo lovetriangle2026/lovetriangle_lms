@@ -11,43 +11,79 @@ import java.util.List;
 
 public class AssignmentService {
 
-    private final AssignmentDAO AssignmentDAO;
-    private final AssignmentSubmissionDAO AssignmentSubmissionDAO;
+    private final AssignmentDAO assignmentDAO;
+    private final AssignmentSubmissionDAO assignmentSubmissionDAO;
     private final Connection connection;
 
     public AssignmentService(Connection connection) {
-        AssignmentDAO = new AssignmentDAO(connection);
-        AssignmentSubmissionDAO = new AssignmentSubmissionDAO(connection);
+        assignmentDAO = new AssignmentDAO(connection);
+        assignmentSubmissionDAO = new AssignmentSubmissionDAO(connection);
         this.connection = connection;
     }
-
+    // ============================ 과제 조회 ==========================
     public List<AssignmentDTO> findMyAssignments(Long userId) {
         try {
-            return AssignmentDAO.findMyAssignments(userId);
+            return assignmentDAO.findMyAssignments(userId);
         } catch (SQLException e) {
             throw new RuntimeException("학생 과제 조회 중 오류 발생 🚨 " + e);
         }
     }
+
+    // ============================== 과제 제출 =========================
+    public boolean canSubmitAssignment(Long assignmentId, Long studentId) {
+        try {
+            return assignmentDAO.existsMyAssignment(assignmentId, studentId);
+        } catch (SQLException e) {
+            throw new RuntimeException("과제 확인 중 오류 발생 🚨 " + e.getMessage());
+        }
+    }
+
+    public boolean isAlreadySubmitted(Long assignmentId, Long studentId) {
+        try {
+            return assignmentSubmissionDAO.existsByAssignmentAndStudent(assignmentId, studentId);
+        } catch (SQLException e) {
+            throw new RuntimeException("제출 여부 확인 중 오류 발생 🚨 " + e.getMessage());
+        }
+    }
+
     public void createSubmission(AssignmentSubmissionDTO submissionDTO) {
         try {
-            boolean exists = AssignmentSubmissionDAO.existsByAssignmentAndStudent(
-                    submissionDTO.getAssignmentId(),
-                    submissionDTO.getStudentId()
-            );
-
-            if (exists) {
-                throw new RuntimeException("이미 제출한 과제입니다.");
-            }
-
-            int result = AssignmentSubmissionDAO.createSubmission(submissionDTO);
+            int result = assignmentSubmissionDAO.createSubmission(submissionDTO);
 
             if (result <= 0) {
                 throw new RuntimeException("과제 제출에 실패했습니다.");
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("과제 제출 중 오류 발생 🚨 " + e);
+            throw new RuntimeException("과제 제출 중 오류 발생 🚨 " + e.getMessage());
         }
+    }
 
+    // ============================== 과제 수정 =============================
+    public void updateSubmission(Long assignmentId, Long studentId, String newContent) {
+        try {
+            int result = assignmentSubmissionDAO.updateSubmission(assignmentId, studentId, newContent);
+
+            if (result <= 0) {
+                throw new RuntimeException("과제 수정에 실패했습니다.");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("과제 수정 중 오류 발생 🚨 " + e.getMessage());
+        }
+    }
+
+    // ============================== 과제 삭제 =============================
+    public void deleteSubmission(Long assignmentId, Long studentId) {
+        try {
+            int result = assignmentSubmissionDAO.deleteSubmission(assignmentId, studentId);
+
+            if (result <= 0) {
+                throw new RuntimeException("과제 삭제에 실패했습니다.");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("과제 삭제 중 오류 발생 🚨 " + e.getMessage());
+        }
     }
 }

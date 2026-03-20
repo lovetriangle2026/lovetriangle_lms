@@ -7,23 +7,23 @@ public class AssignmentSubmissionDTO {
     private Long id;
     private Long assignmentId;
     private Long studentId;
-    private String content;
+    private String contentTitle;
     private Timestamp submittedAt;
 
     public AssignmentSubmissionDTO() {
     }
 
-    public AssignmentSubmissionDTO(Long assignmentId, Long studentId, String content) {
+    public AssignmentSubmissionDTO(Long assignmentId, Long studentId, String contentTitle) {
         this.assignmentId = assignmentId;
         this.studentId = studentId;
-        this.content = content;
+        this.contentTitle = contentTitle;
     }
 
-    public AssignmentSubmissionDTO(Long id, Long assignmentId, Long studentId, String content, Timestamp submittedAt) {
+    public AssignmentSubmissionDTO(Long id, Long assignmentId, Long studentId, String contentTitle, Timestamp submittedAt) {
         this.id = id;
         this.assignmentId = assignmentId;
         this.studentId = studentId;
-        this.content = content;
+        this.contentTitle = contentTitle;
         this.submittedAt = submittedAt;
     }
 
@@ -39,8 +39,8 @@ public class AssignmentSubmissionDTO {
         return studentId;
     }
 
-    public String getContent() {
-        return content;
+    public String getContentTitle() {
+        return contentTitle;
     }
 
     public Timestamp getSubmittedAt() {
@@ -59,8 +59,8 @@ public class AssignmentSubmissionDTO {
         this.studentId = studentId;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setContentTitle(String contentTitle) {
+        this.contentTitle = contentTitle;
     }
 
     public void setSubmittedAt(Timestamp submittedAt) {
@@ -73,7 +73,7 @@ public class AssignmentSubmissionDTO {
                 "id=" + id +
                 ", assignmentId=" + assignmentId +
                 ", studentId=" + studentId +
-                ", content='" + content + '\'' +
+                ", contentTitle='" + contentTitle + '\'' +
                 ", submittedAt=" + submittedAt +
                 '}';
     }

@@ -357,11 +357,13 @@
     </query>
 
 
-    <query key="assignmentSubmission.existsByAssignmentAndStudent">
+    <query key="assignment.existsMyAssignment">
         SELECT COUNT(*)
-        FROM assignment_submissions
-        WHERE assignment_id = ?
-        AND student_id = ?
+        FROM assignments a
+        JOIN enrollments e
+        ON a.course_id = e.course_id
+        WHERE a.id = ?
+        AND e.user_id = ?
     </query>
 
     <query key="assignmentSubmission.existsByAssignmentAndStudent">
@@ -369,6 +371,30 @@
         FROM assignment_submissions
         WHERE assignment_id = ?
         AND student_id = ?
+    </query>
+
+    <query key="assignmentSubmission.create">
+        INSERT INTO assignment_submissions (
+        assignment_id,
+        student_id,
+        content_title,
+        submitted_at
+        ) VALUES (
+        ?, ?, ?, NOW()
+        )
+    </query>
+
+
+    <query key="assignmentSubmission.update">
+        UPDATE assignment_submissions
+        SET content_title = ?,
+        submitted_at = CURRENT_TIMESTAMP
+        WHERE assignment_id = ? AND student_id = ?
+    </query>
+
+    <query key="assignmentSubmission.delete">
+        DELETE FROM assignment_submissions
+        WHERE assignment_id = ? AND student_id = ?
     </query>
 
 
