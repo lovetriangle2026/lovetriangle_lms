@@ -16,6 +16,8 @@ import java.util.Scanner;
 
 public class LoginInputView {
 
+        private final UsersDTO loggedUser = SessionManager.getInstance().getLoggedInUser();
+
         private final Scanner sc = new Scanner(System.in);
         private final LoginController controller;
         private final LoginOutputView outputView;
@@ -182,7 +184,7 @@ public class LoginInputView {
                     break;
                 case "5":
                     System.out.println("👉 회원관리 모듈로 이동합니다.");
-                    usersInputView.usersMainPage();
+                    usersInputView.stutMainPage(loggedUser);
                     // 💡 여기서 탈퇴하고 돌아오면, 다음 루프 시작 시 (user == null) 체크에서 걸려 return 됨
                     break;
                 case "0":
@@ -212,7 +214,7 @@ public class LoginInputView {
 
             switch (choice) {
                 case "1":
-                    // TODO: 강의관리 담당자 (예: courseController.displayStudentMenu())
+                    usersInputView.profMainPage(loggedUser);
                     System.out.println("👉 강의관리 모듈로 이동합니다.");
                     break;
                 case "2":
@@ -230,12 +232,13 @@ public class LoginInputView {
                     System.out.println("👉 과제관리 모듈로 이동합니다.");
                     break;
                 case "5":
-                    // TODO: 회원관리 담당자
+                    usersInputView.profMainPage(loggedUser);
                     System.out.println("👉 회원관리 모듈로 이동합니다.");
-                    break;
                 case "0":
-                    System.out.println("로그아웃 되었습니다.");
-                    return; // 이전 화면(시작 메뉴)으로 돌아감
+                    // 2. 💡 로그아웃 시 세션을 비워줍니다.1
+                    SessionManager.getInstance().clearSession();
+                    System.out.println("✅ 로그아웃 되었습니다.");
+                    return;
                 default:
                     System.out.println("🚨 잘못된 입력입니다. 다시 선택해주세요.");
             }

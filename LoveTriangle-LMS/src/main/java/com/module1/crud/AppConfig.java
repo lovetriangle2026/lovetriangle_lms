@@ -25,7 +25,7 @@ import com.module1.crud.grade.view.ProfessorGradeOutputView;
 import com.module1.crud.grade.view.StudentGradeInputView;
 import com.module1.crud.grade.view.StudentGradeOutputView;
 import com.module1.crud.users.controller.UsersController;
-import com.module1.crud.users.model.service.UsersService;
+import com.module1.crud.users.service.UsersService;
 import com.module1.crud.users.view.UsersInputView;
 import com.module1.crud.users.view.UsersOutputView;
 

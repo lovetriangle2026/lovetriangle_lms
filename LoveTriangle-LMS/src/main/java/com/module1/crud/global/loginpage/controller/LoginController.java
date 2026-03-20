@@ -1,7 +1,6 @@
 package com.module1.crud.global.loginpage.controller;
 
 import com.module1.crud.global.loginpage.model.service.LoginService;
-import com.module1.crud.users.model.service.UsersService;
 
 public class LoginController {
 
