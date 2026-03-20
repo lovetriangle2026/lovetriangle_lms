@@ -1,8 +1,8 @@
 package com.module1.crud.assignments.view;
 
 import com.module1.crud.assignments.controller.AssignmentController;
-import com.module1.crud.assignments.model.dto.AssignmentDTO;
-import com.module1.crud.assignments.model.dto.AssignmentSubmissionDTO;
+import com.module1.crud.assignments.model.dto.StudentAssignmentDTO;
+import com.module1.crud.assignments.model.dto.StudentAssignmentSubmissionDTO;
 import com.module1.crud.global.session.SessionManager;
 import com.module1.crud.users.model.dto.UsersDTO;
 
@@ -207,8 +207,8 @@ public class StudentAssignmentInputView {
                 System.out.print("제출 내용을 입력하세요: ");
                 String content = sc.nextLine();
 
-                AssignmentSubmissionDTO submissionDTO =
-                        new AssignmentSubmissionDTO(assignmentId, studentId, content);
+                StudentAssignmentSubmissionDTO submissionDTO =
+                        new StudentAssignmentSubmissionDTO(assignmentId, studentId, content);
 
                 controller.createSubmission(submissionDTO);
                 outputView.printMessage("과제 제출이 완료되었습니다.");
@@ -229,8 +229,8 @@ public class StudentAssignmentInputView {
         UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
         Long userId = (long) loggedInUser.getId();
 
-        List<AssignmentDTO> assignmentDTOS = controller.findMyAssignments(userId);
-        outputView.printAssignments(assignmentDTOS);
+        List<StudentAssignmentDTO> studentAssignmentDTOS = controller.findMyAssignments(userId);
+        outputView.printAssignments(studentAssignmentDTOS);
     }
 
     private int inputInt() {

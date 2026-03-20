@@ -2,8 +2,10 @@ package com.module1.crud.assignments.model.service;
 
 import com.module1.crud.assignments.model.dao.AssignmentDAO;
 import com.module1.crud.assignments.model.dao.AssignmentSubmissionDAO;
-import com.module1.crud.assignments.model.dto.AssignmentDTO;
-import com.module1.crud.assignments.model.dto.AssignmentSubmissionDTO;
+import com.module1.crud.assignments.model.dto.ProfessorAssignmentDTO;
+import com.module1.crud.assignments.model.dto.ProfessorAssignmentSubmissionDTO;
+import com.module1.crud.assignments.model.dto.StudentAssignmentDTO;
+import com.module1.crud.assignments.model.dto.StudentAssignmentSubmissionDTO;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -20,8 +22,9 @@ public class AssignmentService {
         assignmentSubmissionDAO = new AssignmentSubmissionDAO(connection);
         this.connection = connection;
     }
+    // =================================== 학생 파트 =========================================
     // ============================ 과제 조회 ==========================
-    public List<AssignmentDTO> findMyAssignments(Long userId) {
+    public List<StudentAssignmentDTO> findMyAssignments(Long userId) {
         try {
             return assignmentDAO.findMyAssignments(userId);
         } catch (SQLException e) {
@@ -46,7 +49,7 @@ public class AssignmentService {
         }
     }
 
-    public void createSubmission(AssignmentSubmissionDTO submissionDTO) {
+    public void createSubmission(StudentAssignmentSubmissionDTO submissionDTO) {
         try {
             int result = assignmentSubmissionDAO.createSubmission(submissionDTO);
 
@@ -86,4 +89,31 @@ public class AssignmentService {
             throw new RuntimeException("과제 삭제 중 오류 발생 🚨 " + e.getMessage());
         }
     }
+
+    // ======================================= 교수 파트 =====================================
+    public List<ProfessorAssignmentDTO> findAssignmentsByProfessor(Long professorId) {
+        try {
+            return assignmentDAO.findAssignmentsByProfessor(professorId);
+        } catch (SQLException e) {
+            throw new RuntimeException("교수 과제 조회 중 오류 발생 🚨 " + e.getMessage());
+        }
+    }
+
+    public boolean existsProfessorAssignment(Long assignmentId, Long professorId) {
+        try {
+            return assignmentDAO.existsProfessorAssignment(assignmentId, professorId);
+        } catch (SQLException e) {
+            throw new RuntimeException("교수 과제 확인 중 오류 발생 🚨 " + e.getMessage());
+        }
+    }
+
+    public List<ProfessorAssignmentSubmissionDTO> findSubmissionStatusByAssignment(Long assignmentId, Long professorId) {
+        try {
+            return assignmentDAO.findSubmissionStatusByAssignment(assignmentId, professorId);
+        } catch (SQLException e) {
+            throw new RuntimeException("과제별 학생 제출 현황 조회 중 오류 발생 🚨 " + e.getMessage());
+        }
+    }
+
+
 }

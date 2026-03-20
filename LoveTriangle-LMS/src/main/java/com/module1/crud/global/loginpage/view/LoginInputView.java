@@ -230,6 +230,7 @@ public class LoginInputView {
                 case "4":
                     // TODO: 과제관리 담당자
                     System.out.println("👉 과제관리 모듈로 이동합니다.");
+                    professorAssignmentInputView.displayMainmenu();
                     break;
                 case "5":
                     usersInputView.profMainPage(loggedUser);
