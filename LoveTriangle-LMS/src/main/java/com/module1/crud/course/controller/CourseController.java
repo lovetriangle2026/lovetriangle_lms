@@ -27,6 +27,9 @@ public class CourseController {
     public List<CourseDTO> findMyCourses(int userId) throws SQLException {
         return service.findMyCourses(userId);
     }
+    public boolean enrollCourse(int userId, int courseId) {
+        return service.enrollCourse(userId, courseId);
+    }
 
     public void registerNewCourse() {
         ProfOutputView profOutputView = new ProfOutputView();
