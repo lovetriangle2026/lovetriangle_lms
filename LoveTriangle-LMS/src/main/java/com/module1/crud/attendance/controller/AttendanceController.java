@@ -1,6 +1,7 @@
 package com.module1.crud.attendance.controller;
 
 import com.module1.crud.attendance.model.dto.AttendanceDTO;
+import com.module1.crud.attendance.model.dto.ProfessorCourseDTO;
 import com.module1.crud.attendance.model.service.AttendanceService;
 
 import java.util.List;
@@ -23,8 +24,11 @@ public class AttendanceController {
     /**
      * 강의별 출결 조회
      */
-    public List<AttendanceDTO> findAttendanceByCourseId(int courseId) {
-        return service.findAttendanceByCourseId(courseId);
+    public List<ProfessorCourseDTO> findCoursesByProfessorId(int professorId) {
+        return service.findCoursesByProfessorId(professorId);
+    }
+    public List<AttendanceDTO> findAttendanceByCourseId(int courseId, int professorId) {
+        return service.findAttendanceByCourseId(courseId, professorId);
     }
 
     /**

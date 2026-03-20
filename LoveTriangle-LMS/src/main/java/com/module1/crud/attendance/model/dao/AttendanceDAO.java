@@ -1,6 +1,7 @@
 package com.module1.crud.attendance.model.dao;
 
 import com.module1.crud.attendance.model.dto.AttendanceDTO;
+import com.module1.crud.attendance.model.dto.ProfessorCourseDTO;
 import com.module1.crud.global.utils.QueryUtil;
 
 import java.sql.Connection;
@@ -52,13 +53,13 @@ public class AttendanceDAO {
     /**
      * 강의별 출결 조회
      */
-    public List<AttendanceDTO> findByCourseId(int courseId) throws SQLException {
-
-        String query = QueryUtil.getQuery("attendance.findByCourseId");
+    public List<AttendanceDTO> findByCourseIdAndProfessorId(int courseId, int professorId) throws SQLException {
+        String query = QueryUtil.getQuery("attendance.findByCourseIdAndProfessorId");
         List<AttendanceDTO> attendanceList = new ArrayList<>();
 
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setInt(1, courseId);
+            pstmt.setInt(2, professorId);
 
             ResultSet rset = pstmt.executeQuery();
 
@@ -80,6 +81,28 @@ public class AttendanceDAO {
         }
 
         return attendanceList;
+    }
+
+    public List<ProfessorCourseDTO> findCoursesByProfessorId(int professorId) throws SQLException {
+
+        String query = QueryUtil.getQuery("attendance.findCoursesByProfessorId");
+        List<ProfessorCourseDTO> courseList = new ArrayList<>();
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, professorId);
+
+            ResultSet rset = pstmt.executeQuery();
+
+            while (rset.next()) {
+                ProfessorCourseDTO course = new ProfessorCourseDTO();
+                course.setId(rset.getInt("id"));
+                course.setTitle(rset.getString("title"));
+
+                courseList.add(course);
+            }
+        }
+
+        return courseList;
     }
 
     /**
