@@ -113,5 +113,36 @@ WHERE assignment_id = ? AND student_id = ?
         ORDER BY u.id ASC
     </query>
 
+    <query key="professorAssignment.existsProfessorCourse">
+        SELECT COUNT(*)
+        FROM courses
+        WHERE id = ?
+        AND professor_id = ?
+    </query>
+
+    <query key="professorAssignment.create">
+        INSERT INTO assignments (
+        course_id,
+        title,
+        description,
+        deadline
+        ) VALUES (?, ?, ?, ?)
+    </query>
+
+    <query key="professorAssignment.existsAssignmentByCourse">
+        SELECT COUNT(*)
+        FROM assignments
+        WHERE course_id = ?
+    </query>
+
+    <query key="professorAssignment.update">
+        UPDATE assignments a
+        JOIN courses c ON a.course_id = c.id
+        SET a.title = ?,
+        a.description = ?,
+        a.deadline = ?
+        WHERE a.id = ?
+        AND c.professor_id = ?
+    </query>
 
 </properties>

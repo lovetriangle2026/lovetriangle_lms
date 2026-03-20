@@ -6,10 +6,7 @@ import com.module1.crud.assignments.model.dto.StudentAssignmentDTO;
 import com.module1.crud.global.utils.QueryUtil;
 
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,6 +68,7 @@ public class AssignmentDAO {
 
 
     // ====================================== 교수 파트 ========================================
+    // ================= 과제 조회 ====================
     public List<ProfessorAssignmentDTO> findAssignmentsByProfessor(Long professorId) throws SQLException {
         String query = QueryUtil.getQuery("professorAssignment.findAssignmentsByProfessor");
         List<ProfessorAssignmentDTO> assignmentList = new ArrayList<>();
@@ -136,6 +134,71 @@ public class AssignmentDAO {
         }
 
         return list;
+    }
+
+    // ================== 과제 생성 ==================
+    public boolean existsProfessorCourse(Long courseId, Long professorId) throws SQLException {
+        String query = QueryUtil.getQuery("professorAssignment.existsProfessorCourse");
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setLong(1, courseId);
+            pstmt.setLong(2, professorId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return rset.getInt(1) > 0;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public boolean existsAssignmentByCourse(Long courseId) throws SQLException {
+        String query = QueryUtil.getQuery("professorAssignment.existsAssignmentByCourse");
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setLong(1, courseId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return rset.getInt(1) > 0;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public int createAssignment(Long courseId, String title, String description,
+                                Timestamp deadline) throws SQLException {
+        String query = QueryUtil.getQuery("professorAssignment.create");
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setLong(1, courseId);
+            pstmt.setString(2, title);
+            pstmt.setString(3, description);
+            pstmt.setTimestamp(4, deadline);
+
+            return pstmt.executeUpdate();
+        }
+    }
+
+    // ==================== 과제 수정 ==================
+    public int updateProfessorAssignment(Long assignmentId, Long professorId,
+                                         String newTitle, String newDescription,
+                                         java.sql.Timestamp newDeadline) throws SQLException {
+        String query = QueryUtil.getQuery("professorAssignment.update");
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, newTitle);
+            pstmt.setString(2, newDescription);
+            pstmt.setTimestamp(3, newDeadline);
+            pstmt.setLong(4, assignmentId);
+            pstmt.setLong(5, professorId);
+
+            return pstmt.executeUpdate();
+        }
     }
 }
 
