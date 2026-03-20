@@ -10,7 +10,6 @@ import java.util.List;
 
 public class AttendanceService {
 
-
     private final AttendanceDAO attendanceDAO;
     private final Connection connection;
 
@@ -31,7 +30,7 @@ public class AttendanceService {
     }
 
     /**
-     * 강의별 출결 조회
+     * 교수 담당 강의 목록 조회
      */
     public List<ProfessorCourseDTO> findCoursesByProfessorId(int professorId) {
         try {
@@ -40,6 +39,10 @@ public class AttendanceService {
             throw new RuntimeException("교수 강의 목록 조회 중 Error 발생!! 🚨🚨 " + e);
         }
     }
+
+    /**
+     * 강의별 출결 조회
+     */
     public List<AttendanceDTO> findAttendanceByCourseId(int courseId, int professorId) {
         try {
             return attendanceDAO.findByCourseIdAndProfessorId(courseId, professorId);
@@ -49,7 +52,29 @@ public class AttendanceService {
     }
 
     /**
-     * 주차별 출결 조회
+     * 강의 + 주차별 출결 조회
+     */
+    public List<AttendanceDTO> findAttendanceByCourseIdAndWeek(int courseId, int professorId, int week) {
+        try {
+            return attendanceDAO.findByCourseIdAndWeekAndProfessorId(courseId, professorId, week);
+        } catch (SQLException e) {
+            throw new RuntimeException("강의별 주차 출결 조회 중 Error 발생!! 🚨🚨 " + e);
+        }
+    }
+
+    /**
+     * 강의 + 출결 상태별 조회
+     */
+    public List<AttendanceDTO> findAttendanceByCourseIdAndStatus(int courseId, int professorId, String status) {
+        try {
+            return attendanceDAO.findByCourseIdAndStatusAndProfessorId(courseId, professorId, status);
+        } catch (SQLException e) {
+            throw new RuntimeException("강의별 출결 유형 조회 중 Error 발생!! 🚨🚨 " + e);
+        }
+    }
+
+    /**
+     * 기존 주차별 출결 조회
      */
     public List<AttendanceDTO> findAttendanceByWeek(int week) {
         try {
@@ -59,8 +84,16 @@ public class AttendanceService {
         }
     }
 
+    public List<AttendanceDTO> findAttendanceByWeek(int week, int professorId) {
+        try {
+            return attendanceDAO.findByWeekAndProfessorId(week, professorId);
+        } catch (SQLException e) {
+            throw new RuntimeException("교수 주차별 출결 조회 중 Error 발생!! 🚨🚨 " + e);
+        }
+    }
+
     /**
-     * 출결 상태별 조회
+     * 기존 출결 상태별 조회
      */
     public List<AttendanceDTO> findAttendanceByStatus(String status) {
         try {
@@ -80,4 +113,21 @@ public class AttendanceService {
             throw new RuntimeException("학생별 출결 조회 중 Error 발생!! 🚨🚨 " + e);
         }
     }
+
+    public List<ProfessorCourseDTO> findCoursesByStudentId(int studentId) {
+        try {
+            return attendanceDAO.findCoursesByStudentId(studentId);
+        } catch (SQLException e) {
+            throw new RuntimeException("학생 수강 강의 목록 조회 중 Error 발생!! 🚨🚨 " + e);
+        }
+    }
+
+    public List<AttendanceDTO> findAttendanceByStudentIdAndCourseId(int studentId, int courseId) {
+        try {
+            return attendanceDAO.findByStudentIdAndCourseId(studentId, courseId);
+        } catch (SQLException e) {
+            throw new RuntimeException("학생 강의별 출결 조회 중 Error 발생!! 🚨🚨 " + e);
+        }
+    }
+
 }
