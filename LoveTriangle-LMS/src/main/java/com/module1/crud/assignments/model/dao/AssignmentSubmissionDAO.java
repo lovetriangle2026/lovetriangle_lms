@@ -1,6 +1,6 @@
 package com.module1.crud.assignments.model.dao;
 
-import com.module1.crud.assignments.model.dto.AssignmentSubmissionDTO;
+import com.module1.crud.assignments.model.dto.StudentAssignmentSubmissionDTO;
 import com.module1.crud.global.utils.QueryUtil;
 
 import java.sql.Connection;
@@ -35,7 +35,7 @@ public class AssignmentSubmissionDAO {
     }
 
     // ====================== 과제 제출 ===========================
-    public int createSubmission(AssignmentSubmissionDTO submissionDTO) throws SQLException {
+    public int createSubmission(StudentAssignmentSubmissionDTO submissionDTO) throws SQLException {
         String query = QueryUtil.getQuery("assignmentSubmission.create");
 
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
