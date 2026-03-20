@@ -63,12 +63,15 @@ public class ProfessorGradeInputView {
         System.out.print("번호를 입력해주세요 : ");
 
         int s = inputInt();
+        UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
+        long professorId = loggedInUser.getId();
 
           if(s==1){
-              outputView.printError("아직 구현 중인 기능입니다.");}
+              List<GradeViewDTO> GradeList = controller.viewallgradeByprofessor(professorId);
+              outputView.printstudentGrades(GradeList);}
 
           if(s==2){
-              UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
+
               if (loggedInUser == null) {
                   outputView.printError("로그인 정보가 없습니다. 다시 로그인해주세요.");
                   return;
@@ -79,6 +82,8 @@ public class ProfessorGradeInputView {
 
               List<GradeViewDTO> oneGradeList = controller.handlefindgrade(professor,studentName);
               outputView.printstudentGrades(oneGradeList);
+          }else{
+              outputView.printError("다시 선택해주세요.");
           }
 
     }
