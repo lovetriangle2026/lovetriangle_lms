@@ -96,8 +96,6 @@ public class CourseDAO {
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        } finally {
-            JDBCTemplate.close(pstmt);
         }
 
         return result;
