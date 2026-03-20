@@ -28,6 +28,7 @@ public class LoginInputView {
         private final StudentAttendanceInputView studentAttendanceInputView;
         private final StudentGradeInputView studentGradeInputView;
         private final ProfessorGradeInputView professorGradeInputView;
+        private final StudentCourseInputView studentCourseInputView;
 
         public LoginInputView(
                 LoginController controller,
@@ -37,7 +38,9 @@ public class LoginInputView {
                 ProfessorAssignmentInputView professorAssignmentInputView,
                 ProfessorAttendanceInputView professorAttendanceInputView,
                 StudentAttendanceInputView studentAttendanceInputView,
-                StudentCourseInputView studentCourseInputView, StudentGradeInputView studentGradeInputView, ProfessorGradeInputView professorGradeInputView) {
+                StudentCourseInputView studentCourseInputView,
+                StudentGradeInputView studentGradeInputView,
+                ProfessorGradeInputView professorGradeInputView) {
 
             this.controller = controller;
             this.outputView = outputView;
@@ -50,6 +53,7 @@ public class LoginInputView {
             this.studentAttendanceInputView = studentAttendanceInputView;
             this.studentGradeInputView = studentGradeInputView;
             this.professorGradeInputView = professorGradeInputView;
+            this.studentCourseInputView = studentCourseInputView;
         }
 
 
@@ -162,7 +166,7 @@ public class LoginInputView {
             switch (choice) {
                 case "1":
                     System.out.println("👉 강의관리 모듈로 이동합니다.");
-                    // courseInputView.displayMenu();
+                    studentCourseInputView.displayStudentMenu();
                     break;
                 case "2":
                     System.out.println("👉 출결관리 모듈로 이동합니다.");
