@@ -94,26 +94,61 @@
 
     <query key="attendance.findByStudentId">
         select
-        a.id as attendance_id,
-        a.student_id,
-        u.name as student_name,
-        a.session_id,
-        s.course_id,
-        c.title as course_title,
-        s.title as session_title,
-        s.week,
-        a.attendance_status,
-        a.checked_at
+            a.id as attendance_id,
+            a.student_id,
+            u.name as student_name,
+            a.session_id,
+            s.course_id,
+            c.title as course_title,
+            s.title as session_title,
+            s.week,
+            a.attendance_status,
+            a.checked_at
         from attendance a
         join users u
-        on a.student_id = u.id
+            on a.student_id = u.id
         join sessions s
-        on a.session_id = s.id
+            on a.session_id = s.id
         join courses c
-        on s.course_id = c.id
+            on s.course_id = c.id
         where a.student_id = ?
         order by s.start_at
     </query>
+
+    <query key="attendance.findCoursesByProfessorId">
+        select
+            id,
+            title
+        from courses
+        where professor_id = ?
+        order by id
+    </query>
+
+    <query key="attendance.findByCourseIdAndProfessorId">
+        select
+            a.id as attendance_id,
+            a.student_id,
+            u.name as student_name,
+            a.session_id,
+            s.course_id,
+            c.title as course_title,
+            s.title as session_title,
+            s.week,
+            a.attendance_status,
+            a.checked_at
+        from attendance a
+        join users u
+            on a.student_id = u.id
+        join sessions s
+            on a.session_id = s.id
+        join courses c
+            on s.course_id = c.id
+        where s.course_id = ?
+            and c.professor_id = ?
+        order by s.week, u.name
+    </query>
+
+
     <query key="assignment.findAll">
         SELECT
         a.id,
@@ -127,8 +162,6 @@
         WHERE e.user_id = ?
         ORDER BY a.deadline ASC
     </query>
-
-
 
     <query key = "grade.findall">
 
