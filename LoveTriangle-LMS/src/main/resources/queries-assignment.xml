@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <properties>
 
-<query key = "find all courses">
-select * from courses;
-
-</query>
-
 <query key="assignment.existsMyAssignment">
 SELECT COUNT(*)
 FROM assignments a
