@@ -1,5 +1,6 @@
 package com.module1.crud.grade.view;
 
+import com.module1.crud.grade.model.dto.GradeEditDTO;
 import com.module1.crud.grade.model.dto.GradeViewDTO;
 
 import java.util.List;
@@ -31,4 +32,18 @@ public class ProfessorGradeOutputView {
     }
 
 
+    public void printEditableGradeList(List<GradeEditDTO> gradeList) {
+        System.out.println("=================================");
+        System.out.println("        수정 가능한 성적 목록");
+        System.out.println("=================================");
+
+        for (int i = 0; i < gradeList.size(); i++) {
+            GradeEditDTO grade = gradeList.get(i);
+            System.out.println((i + 1) + ". 학생명 : " + grade.getStudentName()
+                    + " / 과목명 : " + grade.getCourseTitle()
+                    + " / 중간 : " + grade.getMidtermScore()
+                    + " / 기말 : " + grade.getFinalScore()
+                    + " / 과제 : " + grade.getAssignmentScore());
+        }
+    }
 }
