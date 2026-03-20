@@ -4,7 +4,7 @@ public class GradeViewDTO {
     private int studentId;
     private String studentName;
     private int course_id;
-    private String assignment_title;
+    private String course_title;
     private int midterm_score;
     private int final_score;
     private double midterm_35;
@@ -15,11 +15,11 @@ public class GradeViewDTO {
     private String grade;
 
 
-    public GradeViewDTO(int studentId, String studentName, int course_id, String assignment_title, int midterm_score, int final_score, double midterm_35, double final_35, double attendance_score, int assignment_score, double total_score, String grade) {
+    public GradeViewDTO(int studentId, String studentName, int course_id, String course_title, int midterm_score, int final_score, double midterm_35, double final_35, double attendance_score, int assignment_score, double total_score, String grade) {
         this.studentId = studentId;
         this.studentName = studentName;
         this.course_id = course_id;
-        this.assignment_title = assignment_title;
+        this.course_title = course_title;
         this.midterm_score = midterm_score;
         this.final_score = final_score;
         this.midterm_35 = midterm_35;
@@ -54,12 +54,12 @@ public class GradeViewDTO {
         this.course_id = course_id;
     }
 
-    public String getAssignment_title() {
-        return assignment_title;
+    public String getCourse_title() {
+        return course_title;
     }
 
-    public void setAssignment_title(String assignment_title) {
-        this.assignment_title = assignment_title;
+    public void setCourse_title(String course_title) {
+        this.course_title = course_title;
     }
 
     public int getMidterm_score() {
@@ -132,7 +132,7 @@ public class GradeViewDTO {
                 "학번=" + studentId +
                 ", 학생이름='" + studentName + '\'' +
                 ", 과목아이디=" + course_id +
-                ", 과목이름='" + assignment_title + '\'' +
+                ", 과목이름='" + course_title + '\'' +
                 ", 중간고사=" + midterm_score +
                 ", 기말고사=" + final_score +
                 ", 중간고사(35만점)=" + midterm_35 +

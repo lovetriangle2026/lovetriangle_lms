@@ -1,6 +1,8 @@
 package com.module1.crud.grade.model.service;
 
+import com.module1.crud.grade.model.dao.GradeEditDAO;
 import com.module1.crud.grade.model.dao.GradeViewDAO;
+import com.module1.crud.grade.model.dto.GradeEditDTO;
 import com.module1.crud.grade.model.dto.GradeViewDTO;
 
 import java.sql.Connection;
@@ -10,9 +12,12 @@ import java.util.List;
 public class GradeService {
     private final GradeViewDAO GradeViewDAO;
     private final Connection connection;
+    private final GradeEditDAO gradeEditDAO;
+
 
     public GradeService(Connection connection) {
         this.GradeViewDAO = new GradeViewDAO(connection);
+        this.gradeEditDAO = new GradeEditDAO(connection);
         this.connection = connection;
     }
 
@@ -42,4 +47,52 @@ public class GradeService {
         }
     }
 
+    // 수정 대상 목록 조회
+    public List<GradeEditDTO> getEditableGradeList(long professorId) {
+        try {
+            return gradeEditDAO.findEditableGradeListByProfessor(professorId);
+        } catch (SQLException e) {
+            throw new RuntimeException("성적 수정 대상 조회 중 Error 발생!! 🚨🚨 " + e);
+        }
+    }
+
+    // 중간 점수 수정
+    public int updateMidtermScore(int studentId, int courseId, int newScore) {
+        validateScore(newScore);
+
+        try {
+            return gradeEditDAO.updateMidtermScore(studentId,courseId,newScore);
+        } catch (SQLException e) {
+            throw new RuntimeException("중간고사 점수 수정 중 Error 발생!! 🚨🚨 " + e);
+        }
+    }
+
+    // 기말 점수 수정
+    public int updateFinalScore(int studentId, int courseId, int newScore) {
+        validateScore(newScore);
+
+        try {
+            return gradeEditDAO.updateFinalScore(studentId, courseId, newScore);
+        } catch (SQLException e) {
+            throw new RuntimeException("기말고사 점수 수정 중 Error 발생!! 🚨🚨 " + e);
+        }
+    }
+
+    // 과제 점수 수정
+    public int updateAssignmentScore(int studentId, int courseId, int newScore) {
+        validateScore(newScore);
+
+        try {
+            return gradeEditDAO.updateAssignmentScore(studentId, courseId, newScore);
+        } catch (SQLException e) {
+            throw new RuntimeException("과제 점수 수정 중 Error 발생!! 🚨🚨 " + e);
+        }
+    }
+
+    private void validateScore(int score) {
+        if (score < 0 || score > 100) {
+            throw new IllegalArgumentException("점수는 0 이상 100 이하만 입력 가능합니다.");
+        }
+    }
 }
+
