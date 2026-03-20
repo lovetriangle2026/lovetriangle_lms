@@ -39,7 +39,18 @@ public class CourseService {
         return myCourses;
     }
 
-//qkqkqkqk
+    public int insertCourse(CourseDTO course){
+        //강의코드 자동생성 ...
+        // c - 랜덤숫자
+        String autoCode = "c-" + (int)(Math.random() * 900) + 100;
+        course.setCourse_code(autoCode);
+
+        int result = courseDAO.insertCourse(course);
+
+        return result;
+    }
+
+
 
 
 }

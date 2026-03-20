@@ -1,9 +1,11 @@
 package com.module1.crud.course.model.dao;
 
 import com.module1.crud.course.model.dto.CourseDTO;
+import com.module1.crud.global.config.JDBCTemplate;
 import com.module1.crud.global.utils.QueryUtil;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,6 @@ public class CourseDAO {
     }
 
     public List<CourseDTO> findall() throws SQLException {
-        //여ㅣ기서 뭘 쓰다가 try로 감싸주게되는지
 
         String query = QueryUtil.getQuery("find all courses");
         List<CourseDTO> courselist = new ArrayList<>();
@@ -72,5 +73,39 @@ public class CourseDAO {
         }return courselist;
 
     }
+    public int insertCourse(CourseDTO course){
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        int result = 0; // 등록 성공 여부
+
+        String sql = QueryUtil.getQuery("insert course");
+
+        try {
+            pstmt = connection.prepareStatement(sql);
+
+            pstmt.setString(1, course.getCourse_code());
+            pstmt.setInt(2, course.getProfessor_id());
+            pstmt.setString(3, course.getTitle());
+            pstmt.setString(4, course.getDescription());
+            pstmt.setString(5,course.getSemester());
+
+            result = pstmt.executeUpdate();
+
+
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            JDBCTemplate.close(pstmt);
+        }
+
+        return result;
+
+
+    }
+
+
+
 
 }
