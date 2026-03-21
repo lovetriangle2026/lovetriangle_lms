@@ -14,7 +14,6 @@ public class Application {
             // 💡 1. AppConfig에게 조립을 맡기고, 새로 만든 'SystemRouter'를 받습니다.
             SystemRouter systemRouter = AppConfig.createSystemRouter(con);
 
-
             // 💡 2. 라우터의 최초 진입점인 start() 메서드를 호출하여 시스템을 가동합니다.
             systemRouter.start();
 
