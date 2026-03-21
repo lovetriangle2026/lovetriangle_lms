@@ -28,13 +28,13 @@ submitted_at
 )
 </query>
 
-
-<query key="assignmentSubmission.update">
-UPDATE assignment_submissions
-SET content_title = ?,
-submitted_at = CURRENT_TIMESTAMP
-WHERE assignment_id = ? AND student_id = ?
-</query>
+    <query key="assignmentSubmission.update">
+        UPDATE assignment_submissions
+        SET content_title = ?,
+        submitted_at = CURRENT_TIMESTAMP
+        WHERE assignment_id = ?
+        AND student_id = ?
+    </query>
 
 <query key="assignmentSubmission.delete">
 DELETE FROM assignment_submissions
@@ -45,23 +45,26 @@ WHERE assignment_id = ? AND student_id = ?
         SELECT
         a.id,
         a.course_id,
+        c.title AS course_title,
         a.title,
         a.description,
         a.deadline,
         CASE
-        WHEN s.id IS NOT NULL THEN '제출완료'
+        WHEN s.id IS NOT NULL THEN '제출 완료'
         ELSE '미제출'
         END AS submission_status,
         s.content_title AS submission_content,
         s.submitted_at
         FROM assignments a
+        JOIN courses c
+        ON a.course_id = c.id
         JOIN enrollments e
-        ON a.course_id = e.course_id
+        ON e.course_id = c.id
         LEFT JOIN assignment_submissions s
-        ON a.id = s.assignment_id
-        AND e.user_id = s.student_id
+        ON s.assignment_id = a.id
+        AND s.student_id = e.user_id
         WHERE e.user_id = ?
-        ORDER BY a.deadline ASC
+        ORDER BY c.title, a.deadline;
     </query>
 
     <query key="professorAssignment.findAssignmentsByProfessor">
@@ -93,24 +96,25 @@ WHERE assignment_id = ? AND student_id = ?
         u.id AS student_id,
         u.name AS student_name,
         CASE
-        WHEN s.id IS NOT NULL THEN '제출완료'
+        WHEN s.id IS NOT NULL THEN '제출 완료'
         ELSE '미제출'
         END AS submission_status,
-        s.content_title,
+        s.content_title AS content_title,
         s.submitted_at
         FROM assignments a
         JOIN courses c
         ON a.course_id = c.id
         JOIN enrollments e
-        ON c.id = e.course_id
+        ON e.course_id = c.id
         JOIN users u
-        ON e.user_id = u.id
+        ON u.id = e.user_id
         LEFT JOIN assignment_submissions s
-        ON a.id = s.assignment_id
-        AND u.id = s.student_id
+        ON s.assignment_id = a.id
+        AND s.student_id = u.id
         WHERE a.id = ?
         AND c.professor_id = ?
-        ORDER BY u.id ASC
+        AND u.user_type = 'STUDENT'
+        ORDER BY u.id;
     </query>
 
     <query key="professorAssignment.existsProfessorCourse">
@@ -144,5 +148,28 @@ WHERE assignment_id = ? AND student_id = ?
         WHERE a.id = ?
         AND c.professor_id = ?
     </query>
+
+    <query key="professorAssignment.deleteSubmissionsByAssignment">
+        DELETE FROM assignment_submissions
+        WHERE assignment_id = ?
+    </query>
+
+    <query key="professorAssignment.delete">
+        DELETE a
+        FROM assignments a
+        JOIN courses c ON a.course_id = c.id
+        WHERE a.id = ?
+        AND c.professor_id = ?
+    </query>
+
+    <query key="professorAssignment.findProfessorCourses">
+        SELECT
+        c.id AS course_id,
+        c.title AS course_title
+        FROM courses c
+        WHERE c.professor_id = ?
+        ORDER BY c.title ASC
+    </query>
+
 
 </properties>

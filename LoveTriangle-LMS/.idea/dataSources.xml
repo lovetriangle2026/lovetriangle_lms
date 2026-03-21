@@ -13,7 +13,7 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="@localhost [3]" uuid="fa9e4ecf-0ead-4c08-824d-0fb898220592">
+    <data-source source="LOCAL" name="@llovetriangle" uuid="fa9e4ecf-0ead-4c08-824d-0fb898220592">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
@@ -49,7 +49,7 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="@localhost [4]" uuid="80a4828f-8924-4916-809f-4d395e2afd4a">
+    <data-source source="LOCAL" name="@love" uuid="630bc6b9-ed4d-4179-acd3-81c34ef9e324">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>

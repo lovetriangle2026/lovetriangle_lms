@@ -5,26 +5,25 @@ import com.module1.crud.assignments.model.dto.ProfessorAssignmentSubmissionDTO;
 import com.module1.crud.assignments.model.dto.StudentAssignmentDTO;
 import com.module1.crud.global.utils.QueryUtil;
 
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class AssignmentDAO {
 
-    private final Connection connection;
-
-    public AssignmentDAO(Connection connection) {
-
-        this.connection = connection;
+    // 💡 더 이상 Connection을 필드로 가지지 않습니다.
+    public AssignmentDAO() {
     }
+
     // ========================================학생 파트 ===========================================
     // ======================== 과제 조회 =========================
-    public List<StudentAssignmentDTO> findMyAssignments(Long userId) throws SQLException {
+    public List<StudentAssignmentDTO> findMyAssignments(Connection con, Long userId) throws SQLException {
         String query = QueryUtil.getQuery("assignment.findMyAssignments");
         List<StudentAssignmentDTO> assignmentList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, userId);
 
             try (ResultSet rset = pstmt.executeQuery()) {
@@ -32,6 +31,7 @@ public class AssignmentDAO {
                     StudentAssignmentDTO assignment = new StudentAssignmentDTO(
                             rset.getLong("id"),
                             rset.getLong("course_id"),
+                            rset.getString("course_title"),
                             rset.getString("title"),
                             rset.getString("description"),
                             rset.getTimestamp("deadline"),
@@ -49,10 +49,10 @@ public class AssignmentDAO {
     }
 
     // ============================ 과제 제출 ============================
-    public boolean existsMyAssignment(Long assignmentId, Long studentId) throws SQLException {
+    public boolean existsMyAssignment(Connection con, Long assignmentId, Long studentId) throws SQLException {
         String query = QueryUtil.getQuery("assignment.existsMyAssignment");
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, assignmentId);
             pstmt.setLong(2, studentId);
 
@@ -66,14 +66,51 @@ public class AssignmentDAO {
         return false;
     }
 
+    // 제출할 때 마감일이 지났는지 확인하기 위한 코드
+    public Timestamp findAssignmentDeadline(Connection con, Long assignmentId) throws SQLException {
+        String query = "SELECT deadline FROM assignments WHERE id = ?";
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setLong(1, assignmentId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return rset.getTimestamp("deadline");
+                }
+            }
+        }
+
+        return null;
+    }
+
 
     // ====================================== 교수 파트 ========================================
     // ================= 과제 조회 ====================
-    public List<ProfessorAssignmentDTO> findAssignmentsByProfessor(Long professorId) throws SQLException {
+    public Map<Long, String> findProfessorCourses(Connection con, Long professorId) throws SQLException {
+        String query = QueryUtil.getQuery("professorAssignment.findProfessorCourses");
+        Map<Long, String> courseMap = new LinkedHashMap<>();
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setLong(1, professorId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                while (rset.next()) {
+                    courseMap.put(
+                            rset.getLong("course_id"),
+                            rset.getString("course_title")
+                    );
+                }
+            }
+        }
+
+        return courseMap;
+    }
+
+    public List<ProfessorAssignmentDTO> findAssignmentsByProfessor(Connection con, Long professorId) throws SQLException {
         String query = QueryUtil.getQuery("professorAssignment.findAssignmentsByProfessor");
         List<ProfessorAssignmentDTO> assignmentList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, professorId);
 
             try (ResultSet rset = pstmt.executeQuery()) {
@@ -94,10 +131,10 @@ public class AssignmentDAO {
         return assignmentList;
     }
 
-    public boolean existsProfessorAssignment(Long assignmentId, Long professorId) throws SQLException {
+    public boolean existsProfessorAssignment(Connection con, Long assignmentId, Long professorId) throws SQLException {
         String query = QueryUtil.getQuery("professorAssignment.existsProfessorAssignment");
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, assignmentId);
             pstmt.setLong(2, professorId);
 
@@ -111,11 +148,11 @@ public class AssignmentDAO {
         return false;
     }
 
-    public List<ProfessorAssignmentSubmissionDTO> findSubmissionStatusByAssignment(Long assignmentId, Long professorId) throws SQLException {
+    public List<ProfessorAssignmentSubmissionDTO> findSubmissionStatusByAssignment(Connection con, Long assignmentId, Long professorId) throws SQLException {
         String query = QueryUtil.getQuery("professorAssignment.findSubmissionStatusByAssignment");
         List<ProfessorAssignmentSubmissionDTO> list = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, assignmentId);
             pstmt.setLong(2, professorId);
 
@@ -137,10 +174,10 @@ public class AssignmentDAO {
     }
 
     // ================== 과제 생성 ==================
-    public boolean existsProfessorCourse(Long courseId, Long professorId) throws SQLException {
+    public boolean existsProfessorCourse(Connection con, Long courseId, Long professorId) throws SQLException {
         String query = QueryUtil.getQuery("professorAssignment.existsProfessorCourse");
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, courseId);
             pstmt.setLong(2, professorId);
 
@@ -154,10 +191,10 @@ public class AssignmentDAO {
         return false;
     }
 
-    public boolean existsAssignmentByCourse(Long courseId) throws SQLException {
+    public boolean existsAssignmentByCourse(Connection con, Long courseId) throws SQLException {
         String query = QueryUtil.getQuery("professorAssignment.existsAssignmentByCourse");
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, courseId);
 
             try (ResultSet rset = pstmt.executeQuery()) {
@@ -170,11 +207,11 @@ public class AssignmentDAO {
         return false;
     }
 
-    public int createAssignment(Long courseId, String title, String description,
+    public int createAssignment(Connection con, Long courseId, String title, String description,
                                 Timestamp deadline) throws SQLException {
         String query = QueryUtil.getQuery("professorAssignment.create");
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, courseId);
             pstmt.setString(2, title);
             pstmt.setString(3, description);
@@ -185,12 +222,12 @@ public class AssignmentDAO {
     }
 
     // ==================== 과제 수정 ==================
-    public int updateProfessorAssignment(Long assignmentId, Long professorId,
+    public int updateProfessorAssignment(Connection con, Long assignmentId, Long professorId,
                                          String newTitle, String newDescription,
                                          java.sql.Timestamp newDeadline) throws SQLException {
         String query = QueryUtil.getQuery("professorAssignment.update");
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setString(1, newTitle);
             pstmt.setString(2, newDescription);
             pstmt.setTimestamp(3, newDeadline);
@@ -200,6 +237,25 @@ public class AssignmentDAO {
             return pstmt.executeUpdate();
         }
     }
+
+    // ===================== 과제 삭제 ======================
+    public int deleteProfessorAssignment(Connection con, Long assignmentId, Long professorId) throws SQLException {
+        String query = QueryUtil.getQuery("professorAssignment.delete");
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setLong(1, assignmentId);
+            pstmt.setLong(2, professorId);
+
+            return pstmt.executeUpdate();
+        }
+    }
+
+    public int deleteSubmissionsByAssignment(Connection con, Long assignmentId) throws SQLException {
+        String query = QueryUtil.getQuery("professorAssignment.deleteSubmissionsByAssignment");
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setLong(1, assignmentId);
+            return pstmt.executeUpdate();
+        }
+    }
 }
-
-

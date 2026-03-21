@@ -6,6 +6,7 @@ public class StudentAssignmentDTO {
 
     private Long id;
     private Long course_Id;
+    private String courseTitle;
     private String title;
     private String description;
     private Timestamp deadline;
@@ -13,22 +14,23 @@ public class StudentAssignmentDTO {
     private String submissionContent;
     private Timestamp submittedAt;
 
-    public StudentAssignmentDTO(long id, long course_Id, String title, String description,
+    public StudentAssignmentDTO(long id, long course_Id, String courseTitle, String title, String description,
                                 Timestamp deadline, String submissionStatus, String submissionContent, Timestamp submittedAt) {
         this.id = id;
         this.course_Id = course_Id;
+        this.courseTitle = courseTitle;
         this.title = title;
         this.description = description;
         this.deadline = deadline;
         this.submissionStatus = submissionStatus;
         this.submissionContent = submissionContent;
         this.submittedAt = submittedAt;
-
     }
 
-    public StudentAssignmentDTO(Long id, Long course_Id, String title, String description, Timestamp deadline) {
+    public StudentAssignmentDTO(Long id, Long course_Id, String courseTitle, String title, String description, Timestamp deadline) {
         this.id = id;
         this.course_Id = course_Id;
+        this.courseTitle = courseTitle;
         this.title = title;
         this.description = description;
         this.deadline = deadline;
@@ -48,6 +50,14 @@ public class StudentAssignmentDTO {
 
     public void setCourse_Id(Long course_Id) {
         this.course_Id = course_Id;
+    }
+
+    public String getCourseTitle() {
+        return courseTitle;
+    }
+
+    public void setCourseTitle(String courseTitle) {
+        this.courseTitle = courseTitle;
     }
 
     public String getTitle() {
@@ -103,6 +113,7 @@ public class StudentAssignmentDTO {
         return "AssignmentDTO{" +
                 "id=" + id +
                 ", course_Id=" + course_Id +
+                ", courseTitle='" + courseTitle + '\'' +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", deadline=" + deadline +

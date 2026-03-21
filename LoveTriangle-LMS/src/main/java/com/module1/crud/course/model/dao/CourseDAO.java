@@ -1,147 +1,26 @@
 package com.module1.crud.course.model.dao;
 
 import com.module1.crud.course.model.dto.CourseDTO;
-import com.module1.crud.global.config.JDBCTemplate;
 import com.module1.crud.global.utils.QueryUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class CourseDAO {
 
-    private final Connection connection;
-
-    public CourseDAO(Connection connection) {
-        this.connection = connection;
+    public CourseDAO() {
     }
 
-    public List<CourseDTO> findall() throws SQLException {
-
+    public List<CourseDTO> findall(Connection con) throws SQLException {
         String query = QueryUtil.getQuery("find all courses");
         List<CourseDTO> courselist = new ArrayList<>();
 
-        try (java.sql.PreparedStatement pstmt = connection.prepareStatement(query)) {
-            java.sql.ResultSet rset = pstmt.executeQuery();
-
-            while(rset.next()){
-                CourseDTO course = new CourseDTO(
-                        rset.getLong("id"),
-                        rset.getString("course_code"),
-                        rset.getInt("professor_id"),
-                        rset.getString("title"),
-                        rset.getString("description"),
-                        rset.getString("semester")
-                );
-                courselist.add(course);
-
-            }
-        }
-        return courselist;
-
-    }
-    public List<CourseDTO> findMyCourses(int userId) {
-        String query = com.module1.crud.global.utils.QueryUtil.getQuery("find my courses");
-        List<CourseDTO> courselist = new java.util.ArrayList<>();
-
-        try(java.sql.PreparedStatement pstmt = connection.prepareStatement(query)){
-            pstmt.setLong(1, userId);
-
-            try (java.sql.ResultSet rset = pstmt.executeQuery()) {
-                while (rset.next()) {
-                    CourseDTO course = new CourseDTO(
-                            rset.getLong("id"),
-                            rset.getString("course_code"),
-                            rset.getInt("professor_id"),
-                            rset.getString("title"),
-                            rset.getString("description"),
-                            rset.getString("semester"));
-
-                    courselist.add(course);
-
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-
-        }return courselist;
-
-    }
-    public int insertCourse(CourseDTO course){
-        Connection con = null;
-        PreparedStatement pstmt = null;
-        int result = 0; // 등록 성공 여부
-
-        String sql = QueryUtil.getQuery("insert course");
-
-        try {
-            pstmt = connection.prepareStatement(sql);
-
-            pstmt.setString(1, course.getCourse_code());
-            pstmt.setInt(2, course.getProfessor_id());
-            pstmt.setString(3, course.getTitle());
-            pstmt.setString(4, course.getDescription());
-            pstmt.setString(5,course.getSemester());
-
-            result = pstmt.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return result;
-
-
-    }
-    public boolean isAlreadyEnrolled(int userId, int courseId) {
-        String query = com.module1.crud.global.utils.QueryUtil.getQuery("course.checkEnrollment");
-
-        try (java.sql.PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setInt(1, userId);
-            pstmt.setInt(2, courseId);
-
-            try (java.sql.ResultSet rset = pstmt.executeQuery()) {
-                if (rset.next()) {
-                    return rset.getInt(1) > 0;
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return false;
-    }
-
-    public int insertEnrollment(int userId, int courseId) {
-        String query = com.module1.crud.global.utils.QueryUtil.getQuery("course.insertEnrollment");
-
-        try (java.sql.PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setInt(1, userId);
-            pstmt.setInt(2, courseId);
-
-            return pstmt.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    public List<CourseDTO> findProfessorCourses(int professorId) throws SQLException {
-        String query = QueryUtil.getQuery("find professor courses");
-        List<CourseDTO> courselist = new ArrayList<>();
-
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setInt(1, professorId);
-
-            try (java.sql.ResultSet rset = pstmt.executeQuery()) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            try (ResultSet rset = pstmt.executeQuery()) {
                 while (rset.next()) {
                     CourseDTO course = new CourseDTO(
                             rset.getLong("id"),
@@ -158,5 +37,92 @@ public class CourseDAO {
         return courselist;
     }
 
+    public List<CourseDTO> findMyCourses(Connection con, int userId) throws SQLException {
+        String query = QueryUtil.getQuery("find my courses");
+        List<CourseDTO> courselist = new ArrayList<>();
 
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setLong(1, userId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                while (rset.next()) {
+                    CourseDTO course = new CourseDTO(
+                            rset.getLong("id"),
+                            rset.getString("course_code"),
+                            rset.getInt("professor_id"),
+                            rset.getString("title"),
+                            rset.getString("description"),
+                            rset.getString("semester")
+                    );
+                    courselist.add(course);
+                }
+            }
+        }
+        return courselist;
+    }
+
+    public int insertCourse(Connection con, CourseDTO course) throws SQLException {
+        String sql = QueryUtil.getQuery("insert course");
+
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setString(1, course.getCourse_code());
+            pstmt.setInt(2, course.getProfessor_id());
+            pstmt.setString(3, course.getTitle());
+            pstmt.setString(4, course.getDescription());
+            pstmt.setString(5, course.getSemester());
+
+            return pstmt.executeUpdate();
+        }
+    }
+
+    public boolean isAlreadyEnrolled(Connection con, int userId, int courseId) throws SQLException {
+        String query = QueryUtil.getQuery("course.checkEnrollment");
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, courseId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return rset.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+
+    public int insertEnrollment(Connection con, int userId, int courseId) throws SQLException {
+        String query = QueryUtil.getQuery("course.insertEnrollment");
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, courseId);
+
+            return pstmt.executeUpdate();
+        }
+    }
+
+    public List<CourseDTO> findProfessorCourses(Connection con, int professorId) throws SQLException {
+        String query = QueryUtil.getQuery("find professor courses");
+        List<CourseDTO> courselist = new ArrayList<>();
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setInt(1, professorId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                while (rset.next()) {
+                    CourseDTO course = new CourseDTO(
+                            rset.getLong("id"),
+                            rset.getString("course_code"),
+                            rset.getInt("professor_id"),
+                            rset.getString("title"),
+                            rset.getString("description"),
+                            rset.getString("semester")
+                    );
+                    courselist.add(course);
+                }
+            }
+        }
+        return courselist;
+    }
 }

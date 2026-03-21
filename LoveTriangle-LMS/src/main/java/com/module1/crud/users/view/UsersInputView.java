@@ -1,4 +1,5 @@
 package com.module1.crud.users.view;
+import com.module1.crud.auth.find.view.FindAccountView;
 import com.module1.crud.global.session.SessionManager;
 import com.module1.crud.users.controller.UsersController;
 import com.module1.crud.users.model.dto.UsersDTO;
@@ -13,12 +14,16 @@ public class UsersInputView {
 
     private final UsersController controller;
     private final UsersOutputView outputView;
+    private final FindAccountView findAccountView;
     private final Scanner sc = new Scanner(System.in);
 
 
-    public UsersInputView(UsersController controller, UsersOutputView outputView) {
-        this.controller = controller;
+
+
+    public UsersInputView(UsersController usersController, UsersOutputView outputView, FindAccountView findAccountView) {
+        this.controller = usersController;
         this.outputView = outputView;
+        this.findAccountView = findAccountView; // 주입 완료
     }
 
 
@@ -101,14 +106,6 @@ public class UsersInputView {
     }
 
 
-    private void displayUsersList() {
-        outputView.printMessage("\n--- [기초 실습] 강좌 목록 전체 조회 ---");
-
-        List<UsersDTO> courseList = controller.findAllUsers();
-
-        outputView.printCourses(courseList);
-    }
-
 
 
 
@@ -139,7 +136,6 @@ public class UsersInputView {
             System.out.println(" - 이름: " + user.getName());
             System.out.println(" - 전화번호: " + user.getTelNum());
             System.out.println(" - 비밀번호 찾기 답: " + user.getPwAnswer());
-            System.out.println(" - 비밀번호: **** (보안상 숨김처리)");
             System.out.println(" ※ ID, 학번/사번, 생년월일, 소속(" + user.getUserType() + ")은 변경할 수 없습니다.");
             System.out.println("======================================================");
             System.out.println(" 1. 비밀번호 변경");
@@ -165,15 +161,21 @@ public class UsersInputView {
 
             switch (choice) {
                 case "1":
-                    System.out.print("현재 비밀번호를 입력하세요 (본인 확인): ");
-                    String currentPw = sc.nextLine();
-                    if (!currentPw.equals(user.getPassword())) {
-                        System.out.println("🚨 비밀번호가 일치하지 않습니다.");
-                        continue;
+                    // 💡 주입받은 findAccountView의 메서드 호출
+                    // 현재 로그인된 유저의 ID를 넘겨주어 본인 확인 후 비밀번호를 변경하게 함
+                    boolean isChanged = findAccountView.loggedResetPassword(user.getLoginId());
+
+                    if (isChanged) {
+                        // 성공 시: DB는 이미 수정되었으므로 세션 정보 최신화
+                        // 세션 매니저를 통해 DB의 최신 데이터를 다시 로드
+                        UsersDTO latestUser = controller.getUserInfo(user.getLoginId());
+                        SessionManager.getInstance().setLoggedInUser(latestUser);
+                        user = latestUser; // 현재 View의 user 객체도 동기화
+
+                        System.out.println("✅ 회원 정보가 최신화되었습니다.");
                     }
-                    System.out.print("새 비밀번호 입력: ");
-                    updatedUser.setPassword(sc.nextLine());
-                    break;
+                    // 비밀번호는 find 모듈에서 직접 처리했으므로 switch 아래의 updateUser를 탈 필요 없음
+                    continue;
                 case "2":
                     System.out.print("새 전화번호 입력: ");
                     updatedUser.setTelNum(sc.nextLine());

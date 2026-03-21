@@ -3,27 +3,29 @@ package com.module1.crud.attendance.model.service;
 import com.module1.crud.attendance.model.dao.AttendanceDAO;
 import com.module1.crud.attendance.model.dto.AttendanceDTO;
 import com.module1.crud.attendance.model.dto.ProfessorCourseDTO;
+import com.module1.crud.attendance.model.dto.SessionDTO;
+import com.module1.crud.global.config.JDBCTemplate; // 💡 임포트 추가!
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class AttendanceService {
 
     private final AttendanceDAO attendanceDAO;
-    private final Connection connection;
+    // 💡 Service 필드에서 Connection 제거
 
-    public AttendanceService(Connection connection) {
-        this.attendanceDAO = new AttendanceDAO(connection);
-        this.connection = connection;
+    public AttendanceService() {
+        this.attendanceDAO = new AttendanceDAO();
     }
 
     /**
      * 전체 출결 조회
      */
     public List<AttendanceDTO> findAllAttendance() {
-        try {
-            return attendanceDAO.findAll();
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return attendanceDAO.findAll(con);
         } catch (SQLException e) {
             throw new RuntimeException("출결 전체 조회 중 Error 발생!! 🚨🚨 " + e);
         }
@@ -33,8 +35,8 @@ public class AttendanceService {
      * 교수 담당 강의 목록 조회
      */
     public List<ProfessorCourseDTO> findCoursesByProfessorId(int professorId) {
-        try {
-            return attendanceDAO.findCoursesByProfessorId(professorId);
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return attendanceDAO.findCoursesByProfessorId(con, professorId);
         } catch (SQLException e) {
             throw new RuntimeException("교수 강의 목록 조회 중 Error 발생!! 🚨🚨 " + e);
         }
@@ -44,8 +46,8 @@ public class AttendanceService {
      * 강의별 출결 조회
      */
     public List<AttendanceDTO> findAttendanceByCourseId(int courseId, int professorId) {
-        try {
-            return attendanceDAO.findByCourseIdAndProfessorId(courseId, professorId);
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return attendanceDAO.findByCourseIdAndProfessorId(con, courseId, professorId);
         } catch (SQLException e) {
             throw new RuntimeException("교수 강의별 출결 조회 중 Error 발생!! 🚨🚨 " + e);
         }
@@ -55,8 +57,8 @@ public class AttendanceService {
      * 강의 + 주차별 출결 조회
      */
     public List<AttendanceDTO> findAttendanceByCourseIdAndWeek(int courseId, int professorId, int week) {
-        try {
-            return attendanceDAO.findByCourseIdAndWeekAndProfessorId(courseId, professorId, week);
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return attendanceDAO.findByCourseIdAndWeekAndProfessorId(con, courseId, professorId, week);
         } catch (SQLException e) {
             throw new RuntimeException("강의별 주차 출결 조회 중 Error 발생!! 🚨🚨 " + e);
         }
@@ -66,8 +68,8 @@ public class AttendanceService {
      * 강의 + 출결 상태별 조회
      */
     public List<AttendanceDTO> findAttendanceByCourseIdAndStatus(int courseId, int professorId, String status) {
-        try {
-            return attendanceDAO.findByCourseIdAndStatusAndProfessorId(courseId, professorId, status);
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return attendanceDAO.findByCourseIdAndStatusAndProfessorId(con, courseId, professorId, status);
         } catch (SQLException e) {
             throw new RuntimeException("강의별 출결 유형 조회 중 Error 발생!! 🚨🚨 " + e);
         }
@@ -77,16 +79,16 @@ public class AttendanceService {
      * 기존 주차별 출결 조회
      */
     public List<AttendanceDTO> findAttendanceByWeek(int week) {
-        try {
-            return attendanceDAO.findByWeek(week);
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return attendanceDAO.findByWeek(con, week);
         } catch (SQLException e) {
             throw new RuntimeException("주차별 출결 조회 중 Error 발생!! 🚨🚨 " + e);
         }
     }
 
     public List<AttendanceDTO> findAttendanceByWeek(int week, int professorId) {
-        try {
-            return attendanceDAO.findByWeekAndProfessorId(week, professorId);
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return attendanceDAO.findByWeekAndProfessorId(con, week, professorId);
         } catch (SQLException e) {
             throw new RuntimeException("교수 주차별 출결 조회 중 Error 발생!! 🚨🚨 " + e);
         }
@@ -96,8 +98,8 @@ public class AttendanceService {
      * 기존 출결 상태별 조회
      */
     public List<AttendanceDTO> findAttendanceByStatus(String status) {
-        try {
-            return attendanceDAO.findByStatus(status);
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return attendanceDAO.findByStatus(con, status);
         } catch (SQLException e) {
             throw new RuntimeException("출결 상태별 조회 중 Error 발생!! 🚨🚨 " + e);
         }
@@ -107,26 +109,93 @@ public class AttendanceService {
      * 학생별 출결 조회
      */
     public List<AttendanceDTO> findAttendanceByStudentId(int studentId) {
-        try {
-            return attendanceDAO.findByStudentId(studentId);
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return attendanceDAO.findByStudentId(con, studentId);
         } catch (SQLException e) {
             throw new RuntimeException("학생별 출결 조회 중 Error 발생!! 🚨🚨 " + e);
         }
     }
 
     public List<ProfessorCourseDTO> findCoursesByStudentId(int studentId) {
-        try {
-            return attendanceDAO.findCoursesByStudentId(studentId);
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return attendanceDAO.findCoursesByStudentId(con, studentId);
         } catch (SQLException e) {
             throw new RuntimeException("학생 수강 강의 목록 조회 중 Error 발생!! 🚨🚨 " + e);
         }
     }
 
     public List<AttendanceDTO> findAttendanceByStudentIdAndCourseId(int studentId, int courseId) {
-        try {
-            return attendanceDAO.findByStudentIdAndCourseId(studentId, courseId);
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return attendanceDAO.findByStudentIdAndCourseId(con, studentId, courseId);
         } catch (SQLException e) {
             throw new RuntimeException("학생 강의별 출결 조회 중 Error 발생!! 🚨🚨 " + e);
+        }
+    }
+
+    /**
+     * 교수가 학생 출결 수정
+     * */
+    public boolean updateAttendanceStatus(int attendanceId, String status) {
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return attendanceDAO.updateAttendanceStatus(con, attendanceId, status);
+        } catch (SQLException e) {
+            throw new RuntimeException("출결 수정 중 Error 발생!! 🚨🚨 " + e);
+        }
+    }
+
+    /**
+     * 학생 출석체크
+     * */
+    public List<SessionDTO> findAvailableSessionByStudentId(int studentId) {
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return attendanceDAO.findAvailableSessionByStudentId(con, studentId);
+        } catch (SQLException e) {
+            throw new RuntimeException("출석 가능한 수업 조회 중 Error 발생!! 🚨🚨 " + e);
+        }
+    }
+
+    // 💡 이 메서드는 조회 후 등록/수정을 하는 복합 로직이므로 트랜잭션을 적용합니다!
+    public boolean checkAttendance(int studentId, SessionDTO session) {
+        try (Connection con = JDBCTemplate.getConnection()) {
+            con.setAutoCommit(false); // 🔒 트랜잭션 시작
+
+            try {
+                AttendanceDTO attendance = attendanceDAO.findByStudentIdAndSessionId(con, studentId, session.getId());
+                String status = calculateAttendanceStatus(session);
+
+                boolean isSuccess;
+                if (attendance == null) {
+                    isSuccess = attendanceDAO.insertAttendance(con, studentId, session.getId(), status);
+                } else {
+                    isSuccess = attendanceDAO.updateAttendanceCheck(con, attendance.getId(), status);
+                }
+
+                con.commit(); // 🔓 모든 로직이 정상 처리되면 커밋
+                return isSuccess;
+
+            } catch (Exception e) {
+                con.rollback(); // 🚨 에러 발생 시 롤백
+                throw new RuntimeException("출석체크 트랜잭션 중 Error 발생!! 🚨🚨", e);
+            } finally {
+                con.setAutoCommit(true); // 자동 커밋 원상 복구
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("출석체크 DB 연결 중 Error 발생!! 🚨🚨 " + e);
+        }
+    }
+
+    private String calculateAttendanceStatus(SessionDTO session) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startAt = session.getStartAt().toLocalDateTime();
+
+        LocalDateTime presentStart = startAt.minusMinutes(10);
+        LocalDateTime lateStart = startAt.plusMinutes(10);
+
+        if (!now.isBefore(presentStart) && now.isBefore(lateStart)) {
+            return "PRESENT";
+        } else {
+            return "LATE";
         }
     }
 

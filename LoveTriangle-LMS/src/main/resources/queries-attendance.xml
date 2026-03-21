@@ -257,4 +257,59 @@
         order by s.week
     </query>
 
+    <query key="attendance.updateAttendanceStatus">
+        update attendance
+        set attendance_status = ?
+        where id = ?
+    </query>
+
+    <query key="attendance.findAvailableSessionByStudentId">
+        select
+            s.id as session_id,
+            s.course_id,
+            c.title as course_title,
+            s.week,
+            s.start_at,
+            s.end_at
+        from enrollments e
+        join courses c
+            on e.course_id = c.id
+        join sessions s
+            on c.id = s.course_id
+        where e.user_id = ?
+            and now() >= date_sub(s.start_at, interval 10 minute)
+            and now() &lt;= s.end_at
+        order by s.start_at
+    </query>
+
+    <query key="attendance.findByStudentIdAndSessionId">
+        select
+            id,
+            student_id,
+            session_id,
+            attendance_status,
+            checked_at
+        from attendance
+        where student_id = ?
+            and session_id = ?
+    </query>
+
+    <query key="attendance.insertAttendance">
+        insert into attendance (
+            student_id,
+            session_id,
+            attendance_status,
+            checked_at
+        ) values (
+            ?, ?, ?, now()
+        )
+    </query>
+
+    <query key="attendance.updateAttendanceCheck">
+        update attendance
+        set attendance_status = ?,
+            checked_at = now()
+        where id = ?
+    </query>
+
 </properties>
