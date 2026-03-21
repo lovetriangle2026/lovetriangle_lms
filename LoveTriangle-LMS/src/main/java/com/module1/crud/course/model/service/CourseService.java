@@ -3,17 +3,24 @@ package com.module1.crud.course.model.service;
 import com.module1.crud.course.model.dao.CourseDAO;
 import com.module1.crud.course.model.dto.CourseDTO;
 import com.module1.crud.global.config.JDBCTemplate;
+import com.module1.crud.course.model.dao.SessionDAO;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+
 
 public class CourseService {
 
     private final CourseDAO courseDAO;
+    private final SessionDAO sessionDAO;
 
     public CourseService() {
         this.courseDAO = new CourseDAO();
+        this.sessionDAO = new SessionDAO();
     }
 
     public List<CourseDTO> findAllCourses() {
@@ -32,14 +39,59 @@ public class CourseService {
         }
     }
 
-    public int insertCourse(CourseDTO course) {
-        String autoCode = "c-" + (int)(Math.random() * 900) + 100;
+    public boolean insertCourse(CourseDTO course) {
+        String autoCode = "c-" + ((int)(Math.random() * 900) + 100);
         course.setCourse_code(autoCode);
 
         try (Connection con = JDBCTemplate.getConnection()) {
-            return courseDAO.insertCourse(con, course);
+            con.setAutoCommit(false);
+
+            try {
+                int courseId = courseDAO.insertCourse(con, course);
+
+                if (courseId <= 0) {
+                    con.rollback();
+                    return false;
+                }
+
+                LocalDate firstDate = LocalDate.of(2026, 3, 6);
+
+                for (int week = 1; week <= 15; week++) {
+                    LocalDate currentDate = firstDate.plusWeeks(week - 1);
+
+                    LocalDateTime startDateTime = currentDate.atTime(9, 0);
+                    LocalDateTime endDateTime = currentDate.atTime(12, 0);
+
+                    Timestamp startAt = Timestamp.valueOf(startDateTime);
+                    Timestamp endAt = Timestamp.valueOf(endDateTime);
+
+                    int result = sessionDAO.insertAutoSession(
+                            con,
+                            courseId,
+                            week + "주차",
+                            startAt,
+                            endAt,
+                            week
+                    );
+
+                    if (result <= 0) {
+                        con.rollback();
+                        return false;
+                    }
+                }
+
+                con.commit();
+                return true;
+
+            } catch (SQLException e) {
+                con.rollback();
+                throw new RuntimeException("강의 등록 및 session 자동 생성 중 Error 발생!! 🚨🚨", e);
+            } finally {
+                con.setAutoCommit(true);
+            }
+
         } catch (SQLException e) {
-            throw new RuntimeException("강의 등록 중 Error 발생!! 🚨🚨", e);
+            throw new RuntimeException("강의 등록 DB 연결 중 Error 발생!! 🚨🚨", e);
         }
     }
 
@@ -73,6 +125,7 @@ public class CourseService {
             throw new RuntimeException("수강 신청 DB 연결 중 Error 발생!! 🚨🚨", e);
         }
     }
+
 
     // ✅ 이거 유지해야 함 (핵심 기능)
     public List<CourseDTO> findProfessorCourses(int professorId) {

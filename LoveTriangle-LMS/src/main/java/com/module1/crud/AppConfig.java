@@ -17,7 +17,9 @@ import com.module1.crud.auth.login.view.LoginView;
 import com.module1.crud.auth.signup.controller.SignupController;
 import com.module1.crud.auth.signup.service.SignupService;
 import com.module1.crud.course.controller.CourseController;
+import com.module1.crud.course.controller.SessionController;
 import com.module1.crud.course.model.service.CourseService;
+import com.module1.crud.course.model.service.SessionService;
 import com.module1.crud.course.view.ProfInputView;
 import com.module1.crud.course.view.ProfOutputView;
 import com.module1.crud.course.view.StudentCourseInputView;
@@ -84,7 +86,11 @@ public class AppConfig {
 
     // ================== 교수 전용 뷰 생성 ==================
     public static ProfInputView createProfInputView() {
-        return new ProfInputView(new CourseController(new CourseService()), new ProfOutputView());
+        return new ProfInputView(
+                new CourseController(new CourseService()),
+                new ProfOutputView(),
+                new SessionController(new SessionService())
+        );
     }
 
     public static ProfessorAttendanceInputView createProfessorAttendanceInputView() {

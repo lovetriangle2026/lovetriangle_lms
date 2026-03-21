@@ -1,7 +1,9 @@
 package com.module1.crud.course.view;
 
 import com.module1.crud.course.controller.CourseController;
+import com.module1.crud.course.controller.SessionController;
 import com.module1.crud.course.model.dto.CourseDTO;
+import com.module1.crud.course.model.dto.SessionDTO;
 import com.module1.crud.global.session.SessionManager;
 import com.module1.crud.users.model.dto.UsersDTO;
 
@@ -13,11 +15,13 @@ public class ProfInputView {
     private Scanner sc = new Scanner(System.in);
 private final CourseController controller;
 private final ProfOutputView profOutputView;
+private final SessionController sessionController;
 
 
-    public ProfInputView(CourseController controller, ProfOutputView profOutputView) {
+    public ProfInputView(CourseController controller, ProfOutputView profOutputView,SessionController sessionController) {
         this.controller = controller;
         this.profOutputView = profOutputView;
+        this.sessionController = sessionController;
     }
 
     public void displayProfessorCourseMenu() {
@@ -42,10 +46,10 @@ private final ProfOutputView profOutputView;
                     registerCourse();
                     break;
                 case 3:
-                    System.out.println("주차별 강의 내용 등록 기능은 다음 단계에서 구현");
+                    registerSessionTitle();
                     break;
                 case 4:
-                    System.out.println("주차별 강의 내용 조회 기능은 다음 단계에서 구현");
+                    displaySessionsByCourse();
                     break;
                 case 0:
                     return;
@@ -81,7 +85,7 @@ private final ProfOutputView profOutputView;
             return;
         }
 
-        int result = controller.insertCourse(newCourse);
+        boolean result = controller.insertCourse(newCourse);
         profOutputView.displayResult(result);
     }
     public CourseDTO inputCourse() {
@@ -107,6 +111,94 @@ private final ProfOutputView profOutputView;
         String semester = sc.nextLine();
 
         return new CourseDTO(0L, null, professorId, title, description, semester);
+    }
+    private void registerSessionTitle() {
+        UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
+
+        if (loggedInUser == null) {
+            System.out.println("로그인 정보가 없습니다.");
+            return;
+        }
+        int professorId = (int) loggedInUser.getId();
+        List<CourseDTO> myCourses = controller.findProfessorCourses(professorId);
+
+        if (myCourses == null || myCourses.isEmpty()) {
+            System.out.println("담당 중인 강의가 없습니다.");
+            return;
+        }
+
+        System.out.println("\n=== 담당 강의 목록 ===");
+        for (int i = 0; i < myCourses.size(); i++) {
+            System.out.println((i + 1) + ". " + myCourses.get(i).getTitle());
+        }
+
+        System.out.print("강의 번호 선택 : ");
+        int courseNumber = sc.nextInt();
+        sc.nextLine();
+
+        if (courseNumber < 1 || courseNumber > myCourses.size()) {
+            System.out.println("잘못된 강의 번호입니다.");
+            return;
+        }
+
+        CourseDTO selectedCourse = myCourses.get(courseNumber - 1);
+
+        System.out.print("주차 입력 (1~15) : ");
+        int week = sc.nextInt();
+        sc.nextLine();
+
+        if (week < 1 || week > 15) {
+            System.out.println("잘못된 주차입니다.");
+            return;
+        }
+
+        System.out.print("수업 내용(title) 입력 : ");
+        String title = sc.nextLine();
+
+        boolean result = sessionController.updateSessionTitle(
+                selectedCourse.getId().intValue(),
+                week,
+                title
+        );
+
+        profOutputView.displaySessionUpdateResult(result);
+    }
+    private void displaySessionsByCourse() {
+        UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
+
+        if (loggedInUser == null) {
+            System.out.println("로그인 정보가 없습니다.");
+            return;
+        }
+
+        int professorId = (int) loggedInUser.getId();
+        List<CourseDTO> myCourses = controller.findProfessorCourses(professorId);
+
+        if (myCourses == null || myCourses.isEmpty()) {
+            System.out.println("담당 중인 강의가 없습니다.");
+            return;
+        }
+
+        System.out.println("\n=== 담당 강의 목록 ===");
+        for (int i = 0; i < myCourses.size(); i++) {
+            System.out.println((i + 1) + ". " + myCourses.get(i).getTitle());
+        }
+
+        System.out.print("강의 번호 선택 : ");
+        int courseNumber = sc.nextInt();
+        sc.nextLine();
+
+        if (courseNumber < 1 || courseNumber > myCourses.size()) {
+            System.out.println("잘못된 강의 번호입니다.");
+            return;
+        }
+
+        CourseDTO selectedCourse = myCourses.get(courseNumber - 1);
+
+        List<SessionDTO> sessionList =
+                sessionController.findSessionsByCourse(selectedCourse.getId().intValue());
+
+        profOutputView.displaySessionList(sessionList);
     }
 
 }
