@@ -134,7 +134,29 @@ public class CourseDAO {
             throw new RuntimeException(e);
         }
     }
+    public List<CourseDTO> findProfessorCourses(int professorId) throws SQLException {
+        String query = QueryUtil.getQuery("find professor courses");
+        List<CourseDTO> courselist = new ArrayList<>();
 
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, professorId);
+
+            try (java.sql.ResultSet rset = pstmt.executeQuery()) {
+                while (rset.next()) {
+                    CourseDTO course = new CourseDTO(
+                            rset.getLong("id"),
+                            rset.getString("course_code"),
+                            rset.getInt("professor_id"),
+                            rset.getString("title"),
+                            rset.getString("description"),
+                            rset.getString("semester")
+                    );
+                    courselist.add(course);
+                }
+            }
+        }
+        return courselist;
+    }
 
 
 }

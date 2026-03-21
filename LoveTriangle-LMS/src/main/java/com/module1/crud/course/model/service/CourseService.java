@@ -59,5 +59,13 @@ public class CourseService {
         return result > 0;
     }
 
+    public List<CourseDTO> findProfessorCourses(int professorId) {
+        try {
+            return courseDAO.findProfessorCourses(professorId);
+        } catch (SQLException e) {
+            throw new RuntimeException("담당 강의 조회 중 오류 발생!! 🚨🚨 " + e);
+        }
+    }
+
 
 }
