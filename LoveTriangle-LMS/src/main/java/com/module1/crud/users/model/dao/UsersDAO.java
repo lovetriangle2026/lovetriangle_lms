@@ -12,19 +12,17 @@ import java.util.List;
 
 public class UsersDAO {
 
-    private final Connection connection;
-
-    public UsersDAO(Connection connection) {
-        this.connection = connection;
+    // 💡 생성자 인자 제거 및 필드 삭제
+    public UsersDAO() {
     }
 
-    public List<UsersDTO> findAll() throws SQLException {
+    public List<UsersDTO> findAll(Connection con) throws SQLException {
 
         String query = QueryUtil.getQuery("users.findAll");
         List<UsersDTO> usersDTOList = new ArrayList<>();
 
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
 
             ResultSet rset = pstmt.executeQuery();
 
@@ -38,7 +36,7 @@ public class UsersDAO {
                         // 🚨 DATE 타입은 LocalDate로 변환이 필요합니다!
                         rset.getDate("birth") != null ? rset.getDate("birth").toLocalDate() : null,
                         rset.getString("tel_num"),
-                        rset.getString(" assword"),
+                        rset.getString("password"), // ' assword' 오타 수정 유지
                         rset.getString("pw_answer"),
                         rset.getString("user_type")
                 );
@@ -49,11 +47,11 @@ public class UsersDAO {
 
     }
 
-    public int deleteById(int userId) throws SQLException {
+    public int deleteById(Connection con, int userId) throws SQLException {
         String query = QueryUtil.getQuery("Users.delete");
 
         // DELETE는 키를 생성하지 않으므로 RETURN_GENERATED_KEYS가 필요 없습니다.
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, userId);
 
             // 삭제된 행의 개수를 반환합니다. (정상 삭제 시 1 반환)
@@ -61,12 +59,12 @@ public class UsersDAO {
         }
     }
 
-    public int update(UsersDTO usersDTO) throws SQLException {
+    public int update(Connection con, UsersDTO usersDTO) throws SQLException {
         // QueryUtil에 "Users.update" 키로 쿼리를 미리 작성해두어야 합니다.
         // 쿼리 예시: UPDATE users SET password=?, tel_num=?, name=?, pw_answer=? WHERE id=?
         String query = QueryUtil.getQuery("Users.update");
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             // 수정 가능한 데이터만 바인딩 (교수/학생 타입 등은 제외)
             pstmt.setString(1, usersDTO.getPassword());
             pstmt.setString(2, usersDTO.getTelNum());
@@ -84,11 +82,11 @@ public class UsersDAO {
      * [추가] 로그인 ID를 기반으로 단일 사용자 정보를 조회합니다.
      * 수정 후 세션 갱신을 위해 사용됩니다.
      */
-    public UsersDTO getUserInfo(String loginId) throws SQLException {
+    public UsersDTO getUserInfo(Connection con, String loginId) throws SQLException {
         // 💡 QueryUtil에 "Users.findByLoginId" 키가 등록되어 있어야 합니다.
         String query = QueryUtil.getQuery("Users.findByLoginId");
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setString(1, loginId);
 
             try (ResultSet rset = pstmt.executeQuery()) {
