@@ -1,4 +1,4 @@
-package com.module1.crud.global.loginpage.view;
+package com.module1.crud.auth.login.view;
 
 public class LoginOutputView {
 
