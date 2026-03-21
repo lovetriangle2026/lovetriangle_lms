@@ -92,9 +92,15 @@ public class StudentAssignmentInputView {
                         continue;
                     }
 
-                    // 3. 삭제 확인
-                    System.out.print("정말 삭제하시겠습니까? (Y/N): ");
-                    String confirm = sc.nextLine().trim();
+                    boolean deadlinePassed = controller.isAssignmentDeadlinePassed(assignmentId);
+
+                    String confirm;
+                    if (deadlinePassed) {
+                        System.out.print("마감일이 지난 과제입니다. 삭제하시겠습니까? (Y/N): ");
+                    } else {
+                        System.out.print("정말 삭제하시겠습니까? (Y/N): ");
+                    }
+                    confirm = sc.nextLine().trim();
 
                     if (confirm.equalsIgnoreCase("N")) {
                         outputView.printMessage("과제 제출 삭제를 취소했습니다.");
@@ -106,10 +112,9 @@ public class StudentAssignmentInputView {
                         continue;
                     }
 
-                    // 4. 삭제 실행
+// 4. 삭제 실행
                     controller.deleteSubmission(assignmentId, studentId);
                     outputView.printMessage("✅ 과제 제출 삭제가 완료되었습니다.");
-                    return;
 
                 } catch (NumberFormatException e) {
                     outputView.printError("과제 번호는 숫자로 입력해주세요.");
@@ -149,6 +154,23 @@ public class StudentAssignmentInputView {
                 if (!alreadySubmitted) {
                     outputView.printError("아직 제출하지 않은 과제입니다. 수정할 수 없습니다.");
                     continue;
+                }
+
+                boolean deadlinePassed = controller.isAssignmentDeadlinePassed(assignmentId);
+
+                if (deadlinePassed) {
+                    System.out.print("마감일이 지난 과제입니다. 수정하시겠습니까? (Y/N): ");
+                    String confirmLateUpdate = sc.nextLine().trim();
+
+                    if (confirmLateUpdate.equalsIgnoreCase("N")) {
+                        outputView.printMessage("과제 수정을 취소했습니다.");
+                        return;
+                    }
+
+                    if (!confirmLateUpdate.equalsIgnoreCase("Y")) {
+                        outputView.printError("Y 또는 N만 입력해주세요.");
+                        continue;
+                    }
                 }
 
                 // 3. 새 제출 내용 입력
@@ -201,17 +223,29 @@ public class StudentAssignmentInputView {
 
                 if (alreadySubmitted) {
                     outputView.printError("이미 제출한 과제입니다.");
-                    return;
+                    continue;
                 }
 
+                boolean deadlinePassed = controller.isAssignmentDeadlinePassed(assignmentId);
+
                 System.out.print("제출 내용을 입력하세요: ");
-                String content = sc.nextLine();
+                String content = sc.nextLine().trim();
+
+                if (content.isEmpty()) {
+                    outputView.printError("제출 내용은 비워둘 수 없습니다.");
+                    continue;
+                }
 
                 StudentAssignmentSubmissionDTO submissionDTO =
                         new StudentAssignmentSubmissionDTO(assignmentId, studentId, content);
 
                 controller.createSubmission(submissionDTO);
-                outputView.printMessage("과제 제출이 완료되었습니다.");
+
+                if (deadlinePassed) {
+                    outputView.printMessage("과제가 성공적으로 제출되었습니다. (마감일 이후에 제출했습니다.)");
+                } else {
+                    outputView.printMessage("과제가 성공적으로 제출되었습니다.");
+                }
                 return;
 
             } catch (NumberFormatException e) {
@@ -221,6 +255,7 @@ public class StudentAssignmentInputView {
                 return;
             }
         }
+
     }
     // ======================== 과제 조회 파트 ===========================
     private void findMyAssignments() {

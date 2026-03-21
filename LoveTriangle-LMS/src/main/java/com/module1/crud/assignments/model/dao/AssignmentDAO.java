@@ -65,6 +65,22 @@ public class AssignmentDAO {
 
         return false;
     }
+    // 제출할 때 마감일이 지났는지 확인하기 위한 코드
+    public Timestamp findAssignmentDeadline(Long assignmentId) throws SQLException {
+        String query = "SELECT deadline FROM assignments WHERE id = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setLong(1, assignmentId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return rset.getTimestamp("deadline");
+                }
+            }
+        }
+
+        return null;
+    }
 
 
     // ====================================== 교수 파트 ========================================
@@ -197,6 +213,27 @@ public class AssignmentDAO {
             pstmt.setLong(4, assignmentId);
             pstmt.setLong(5, professorId);
 
+            return pstmt.executeUpdate();
+        }
+    }
+
+    // ===================== 과제 삭제 ======================
+    public int deleteProfessorAssignment(Long assignmentId, Long professorId) throws SQLException {
+        String query = QueryUtil.getQuery("professorAssignment.delete");
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setLong(1, assignmentId);
+            pstmt.setLong(2, professorId);
+
+            return pstmt.executeUpdate();
+        }
+    }
+
+    public int deleteSubmissionsByAssignment(Long assignmentId) throws SQLException {
+        String query = QueryUtil.getQuery("professorAssignment.deleteSubmissionsByAssignment");
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setLong(1, assignmentId);
             return pstmt.executeUpdate();
         }
     }

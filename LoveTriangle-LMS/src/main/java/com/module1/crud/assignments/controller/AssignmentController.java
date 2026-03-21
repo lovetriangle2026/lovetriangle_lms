@@ -34,6 +34,10 @@ public class AssignmentController {
         return service.isAlreadySubmitted(assignmentId, studentId);
     }
 
+    public boolean isAssignmentDeadlinePassed(Long assignmentId) {
+        return service.isAssignmentDeadlinePassed(assignmentId);
+    }
+
     public void createSubmission(StudentAssignmentSubmissionDTO submissionDTO) {
         service.createSubmission(submissionDTO);
     }
@@ -82,6 +86,11 @@ public class AssignmentController {
                                           String newTitle, String newDescription,
                                           java.sql.Timestamp newDeadline) {
         service.updateProfessorAssignment(assignmentId, professorId, newTitle, newDescription, newDeadline);
+    }
+
+    // ================= 과제 삭제 ===================
+    public void deleteProfessorAssignment(Long assignmentId, Long professorId) {
+        service.deleteProfessorAssignment(assignmentId, professorId);
     }
 
 }

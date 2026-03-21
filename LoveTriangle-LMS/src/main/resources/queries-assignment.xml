@@ -145,4 +145,18 @@ WHERE assignment_id = ? AND student_id = ?
         AND c.professor_id = ?
     </query>
 
+    <query key="professorAssignment.deleteSubmissionsByAssignment">
+        DELETE FROM assignment_submissions
+        WHERE assignment_id = ?
+    </query>
+
+    <query key="professorAssignment.delete">
+        DELETE a
+        FROM assignments a
+        JOIN courses c ON a.course_id = c.id
+        WHERE a.id = ?
+        AND c.professor_id = ?
+    </query>
+
+
 </properties>

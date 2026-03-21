@@ -62,8 +62,85 @@ public class ProfessorAssignmentInputView {
 
 
     }
-
+    // ============== 과제 삭제 ====================
     private void deleteAssignment() {
+        UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
+        Long professorId = (long) loggedInUser.getId();
+
+        try {
+            List<ProfessorAssignmentDTO> assignmentList =
+                    controller.findAssignmentsByProfessor(professorId);
+
+            outputView.printProfessorAssignments(assignmentList);
+
+            if (assignmentList == null || assignmentList.isEmpty()) {
+                return;
+            }
+
+            while (true) {
+                System.out.print("삭제할 과제 번호를 입력하세요 (취소: 0): ");
+
+                Long assignmentId;
+                try {
+                    assignmentId = Long.parseLong(sc1.nextLine());
+                } catch (NumberFormatException e) {
+                    outputView.printError("과제 번호는 숫자로 입력해주세요.");
+                    continue;
+                }
+
+                if (assignmentId == 0L) {
+                    outputView.printMessage("과제 삭제를 취소했습니다.");
+                    return;
+                }
+
+                boolean exists = controller.existsProfessorAssignment(assignmentId, professorId);
+
+                if (!exists) {
+                    outputView.printError("본인이 생성한 과제가 아닙니다. 다시 입력해주세요.");
+                    continue;
+                }
+
+                ProfessorAssignmentDTO selectedAssignment = null;
+                for (ProfessorAssignmentDTO dto : assignmentList) {
+                    if (dto.getAssignmentId().equals(assignmentId)) {
+                        selectedAssignment = dto;
+                        break;
+                    }
+                }
+
+                if (selectedAssignment == null) {
+                    outputView.printError("해당 과제를 찾을 수 없습니다.");
+                    continue;
+                }
+
+                System.out.println("\n삭제 대상 과제 정보");
+                System.out.println("과제 번호 : " + selectedAssignment.getAssignmentId());
+                System.out.println("강의 번호 : " + selectedAssignment.getCourseId());
+                System.out.println("과제명   : " + selectedAssignment.getAssignmentTitle());
+                System.out.println("설명     : " + selectedAssignment.getDescription());
+                System.out.println("마감일   : " + selectedAssignment.getDeadline());
+
+                System.out.print("정말 삭제하시겠습니까? (Y/N): ");
+                String confirm = sc1.nextLine().trim();
+
+                if (confirm.equalsIgnoreCase("N")) {
+                    outputView.printMessage("과제 삭제를 취소했습니다.");
+                    return;
+                }
+
+                if (!confirm.equalsIgnoreCase("Y")) {
+                    outputView.printError("Y 또는 N만 입력해주세요.");
+                    continue;
+                }
+
+                controller.deleteProfessorAssignment(assignmentId, professorId);
+                outputView.printMessage("✅ 과제 삭제가 완료되었습니다.");
+                return;
+            }
+
+        } catch (RuntimeException e) {
+            outputView.printError(e.getMessage());
+        }
 
     }
 
@@ -107,7 +184,7 @@ public class ProfessorAssignmentInputView {
 
                 ProfessorAssignmentDTO selectedAssignment = null;
                 for (ProfessorAssignmentDTO dto : assignmentList) {
-                    if (dto.getAssignmentId() == assignmentId) {
+                    if (dto.getAssignmentId().equals(assignmentId)) {
                         selectedAssignment = dto;
                         break;
                     }
@@ -148,6 +225,10 @@ public class ProfessorAssignmentInputView {
                         outputView.printError("마감일 형식이 올바르지 않습니다. 예: 2026-03-25 23:59:59");
                         continue;
                     }
+                }
+                if (newDeadline.before(new Timestamp(System.currentTimeMillis()))) {
+                    outputView.printError("마감일은 현재 시각 이후로 입력해야 합니다.");
+                    continue;
                 }
 
                 controller.updateProfessorAssignment(assignmentId, professorId, newTitle, newDescription, newDeadline);
@@ -214,6 +295,9 @@ public class ProfessorAssignmentInputView {
                     deadline = Timestamp.valueOf(deadlineInput);
                 } catch (IllegalArgumentException e) {
                     outputView.printError("마감일 형식이 올바르지 않습니다. 예: 2026-03-25 23:59:59");
+                    continue;
+                } if (deadline.before(new Timestamp(System.currentTimeMillis()))) {
+                    outputView.printError("마감일은 현재 시각 이후로 입력해야 합니다.");
                     continue;
                 }
 
