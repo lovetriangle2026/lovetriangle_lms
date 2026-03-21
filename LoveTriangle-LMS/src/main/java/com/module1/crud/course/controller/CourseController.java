@@ -32,21 +32,13 @@ public class CourseController {
         return service.enrollCourse(userId, courseId);
     }
 
-    public void registerNewCourse() {
-        ProfOutputView profOutputView = new ProfOutputView();
-        ProfInputView profInputView = new ProfInputView(this, profOutputView);
 
-        CourseDTO newCourse = profInputView.inputCourse();
-        int result = service.insertCourse(newCourse);
-        profOutputView.displayResult(result);
-    }
-
-    public List<CourseDTO> findProfessorCourses(int professorId) throws SQLException {
+    public List<CourseDTO> findProfessorCourses(int professorId) {
         return service.findProfessorCourses(professorId);
     }
 
 
-    public int insertCourse(CourseDTO newCourse) {
+    public boolean insertCourse(CourseDTO newCourse) {
         return service.insertCourse(newCourse);
     }
 }

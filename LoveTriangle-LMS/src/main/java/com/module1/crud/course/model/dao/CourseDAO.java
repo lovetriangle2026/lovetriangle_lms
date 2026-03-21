@@ -62,17 +62,26 @@ public class CourseDAO {
     }
 
     public int insertCourse(Connection con, CourseDTO course) throws SQLException {
-        String sql = QueryUtil.getQuery("insert course");
+        String query = QueryUtil.getQuery("insert course");
 
-        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, course.getCourse_code());
             pstmt.setInt(2, course.getProfessor_id());
             pstmt.setString(3, course.getTitle());
             pstmt.setString(4, course.getDescription());
             pstmt.setString(5, course.getSemester());
 
-            return pstmt.executeUpdate();
+            int result = pstmt.executeUpdate();
+
+            if (result > 0) {
+                try (ResultSet rset = pstmt.getGeneratedKeys()) {
+                    if (rset.next()) {
+                        return rset.getInt(1);   // 생성된 course id 반환
+                    }
+                }
+            }
         }
+        return 0;
     }
 
     public boolean isAlreadyEnrolled(Connection con, int userId, int courseId) throws SQLException {
