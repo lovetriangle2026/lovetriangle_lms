@@ -123,7 +123,7 @@ public class SystemRouter {
 
             String choice = sc.nextLine();
             switch (choice) {
-                case "1": professorCourseInputView.displayProfessorCourseMenu(); break;
+                case "1": AppConfig.createProfInputView().displayProfessorCourseMenu(); break;
                 case "2": AppConfig.createProfessorAttendanceInputView().displayMenu(); break;
                 case "3": AppConfig.createProfessorGradeInputView().displayProfessorMainMenu(); break;
                 case "4": AppConfig.createProfessorAssignmentInputView().displayMainmenu(); break;
@@ -137,4 +137,3 @@ public class SystemRouter {
             }
         }
     }
-}

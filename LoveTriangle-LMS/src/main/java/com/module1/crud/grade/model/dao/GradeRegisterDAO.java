@@ -12,7 +12,7 @@ import java.util.List;
 
 public class GradeRegisterDAO {
 
-    // 💡 생성자와 필드 제거
+    // 💡 생성자와 필드 제거 (상태를 가지지 않는 가벼운 DAO)
     public GradeRegisterDAO() {
     }
 
@@ -24,19 +24,18 @@ public class GradeRegisterDAO {
         try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, professorId);
 
-            ResultSet rset = pstmt.executeQuery();
-
-            while (rset.next()) {
-                GradeRegisterDTO dto = new GradeRegisterDTO(
-                        rset.getInt("student_id"),
-                        rset.getString("student_name"),
-                        rset.getInt("course_id"),
-                        rset.getString("course_title")
-                );
-                registerList.add(dto);
+            try (ResultSet rset = pstmt.executeQuery()) {
+                while (rset.next()) {
+                    GradeRegisterDTO dto = new GradeRegisterDTO(
+                            rset.getInt("student_id"),
+                            rset.getString("student_name"),
+                            rset.getInt("course_id"),
+                            rset.getString("course_title")
+                    );
+                    registerList.add(dto);
+                }
             }
         }
-
         return registerList;
     }
 
@@ -47,9 +46,6 @@ public class GradeRegisterDAO {
         try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, score);
             pstmt.setInt(2, studentId);
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setInt(1, studentId);
-            pstmt.setInt(2, score);
             pstmt.setInt(3, courseId);
 
             return pstmt.executeUpdate();
@@ -63,19 +59,18 @@ public class GradeRegisterDAO {
         try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, professorId);
 
-            ResultSet rset = pstmt.executeQuery();
-
-            while (rset.next()) {
-                GradeRegisterDTO dto = new GradeRegisterDTO(
-                        rset.getInt("student_id"),
-                        rset.getString("student_name"),
-                        rset.getInt("course_id"),
-                        rset.getString("course_title")
-                );
-                registerList.add(dto);
+            try (ResultSet rset = pstmt.executeQuery()) {
+                while (rset.next()) {
+                    GradeRegisterDTO dto = new GradeRegisterDTO(
+                            rset.getInt("student_id"),
+                            rset.getString("student_name"),
+                            rset.getInt("course_id"),
+                            rset.getString("course_title")
+                    );
+                    registerList.add(dto);
+                }
             }
         }
-
         return registerList;
     }
 
@@ -86,10 +81,6 @@ public class GradeRegisterDAO {
             pstmt.setInt(1, score);
             pstmt.setInt(2, studentId);
             pstmt.setInt(3, courseId);
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setInt(1, studentId);
-            pstmt.setInt(2, courseId);
-            pstmt.setInt(3, score);
 
             return pstmt.executeUpdate();
         }
@@ -102,19 +93,18 @@ public class GradeRegisterDAO {
         try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, professorId);
 
-            ResultSet rset = pstmt.executeQuery();
-
-            while (rset.next()) {
-                GradeRegisterDTO dto = new GradeRegisterDTO(
-                        rset.getInt("student_id"),
-                        rset.getString("student_name"),
-                        rset.getInt("course_id"),
-                        rset.getString("course_title")
-                );
-                registerList.add(dto);
+            try (ResultSet rset = pstmt.executeQuery()) {
+                while (rset.next()) {
+                    GradeRegisterDTO dto = new GradeRegisterDTO(
+                            rset.getInt("student_id"),
+                            rset.getString("student_name"),
+                            rset.getInt("course_id"),
+                            rset.getString("course_title")
+                    );
+                    registerList.add(dto);
+                }
             }
         }
-
         return registerList;
     }
 
@@ -125,10 +115,6 @@ public class GradeRegisterDAO {
             pstmt.setInt(1, score);
             pstmt.setInt(2, studentId);
             pstmt.setInt(3, courseId);
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setInt(1, studentId);
-            pstmt.setInt(2, courseId);
-            pstmt.setInt(3, score);
 
             return pstmt.executeUpdate();
         }

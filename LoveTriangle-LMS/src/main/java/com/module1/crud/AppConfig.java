@@ -97,20 +97,7 @@ public class AppConfig {
 
     public static ProfessorAssignmentInputView createProfessorAssignmentInputView() {
         return new ProfessorAssignmentInputView(new AssignmentController(new AssignmentService()), new AssignmentOutputView());
-        // 💡 8. 최종 조립: 메인 메뉴 진입점(Router)에 모든 부품을 순서대로 꽂아서 반환합니다.
-        return new SystemRouter(
-                loginView,
-                signupView,
-                findAccountView,
-                studentCourseView,
-                profInputView,
-                studentAttendanceView,
-                professorAttendanceView,
-                studentGradeView,
-                professorGradeView,
-                studentAssignmentView,
-                professorAssignmentView,
-                usersInputView
-        );
+
+
     }
 }
