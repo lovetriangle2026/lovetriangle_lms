@@ -1,56 +1,27 @@
 package com.module1.crud.course.model.dao;
 
 import com.module1.crud.course.model.dto.CourseDTO;
-import com.module1.crud.global.config.JDBCTemplate;
 import com.module1.crud.global.utils.QueryUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class CourseDAO {
 
-    private final Connection connection;
-
-    public CourseDAO(Connection connection) {
-        this.connection = connection;
+    // 💡 생성자에서 Connection 인자 제거!
+    public CourseDAO() {
     }
 
-    public List<CourseDTO> findall() throws SQLException {
-
+    public List<CourseDTO> findall(Connection con) throws SQLException {
         String query = QueryUtil.getQuery("find all courses");
         List<CourseDTO> courselist = new ArrayList<>();
 
-        try (java.sql.PreparedStatement pstmt = connection.prepareStatement(query)) {
-            java.sql.ResultSet rset = pstmt.executeQuery();
-
-            while(rset.next()){
-                CourseDTO course = new CourseDTO(
-                        rset.getLong("id"),
-                        rset.getString("course_code"),
-                        rset.getInt("professor_id"),
-                        rset.getString("title"),
-                        rset.getString("description"),
-                        rset.getString("semester")
-                );
-                courselist.add(course);
-
-            }
-        }
-        return courselist;
-
-    }
-    public List<CourseDTO> findMyCourses(int userId) {
-        String query = com.module1.crud.global.utils.QueryUtil.getQuery("find my courses");
-        List<CourseDTO> courselist = new java.util.ArrayList<>();
-
-        try(java.sql.PreparedStatement pstmt = connection.prepareStatement(query)){
-            pstmt.setLong(1, userId);
-
-            try (java.sql.ResultSet rset = pstmt.executeQuery()) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            try (ResultSet rset = pstmt.executeQuery()) {
                 while (rset.next()) {
                     CourseDTO course = new CourseDTO(
                             rset.getLong("id"),
@@ -58,83 +29,78 @@ public class CourseDAO {
                             rset.getInt("professor_id"),
                             rset.getString("title"),
                             rset.getString("description"),
-                            rset.getString("semester"));
-
+                            rset.getString("semester")
+                    );
                     courselist.add(course);
-
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-
-        }return courselist;
-
+        }
+        return courselist;
     }
-    public int insertCourse(CourseDTO course){
-        Connection con = null;
-        PreparedStatement pstmt = null;
-        int result = 0; // 등록 성공 여부
 
+    public List<CourseDTO> findMyCourses(Connection con, int userId) throws SQLException {
+        String query = QueryUtil.getQuery("find my courses");
+        List<CourseDTO> courselist = new ArrayList<>();
+
+        // 💡 DAO 내부에 있던 복잡한 try-catch를 없애고 Service로 책임을 넘겼습니다.
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setLong(1, userId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                while (rset.next()) {
+                    CourseDTO course = new CourseDTO(
+                            rset.getLong("id"),
+                            rset.getString("course_code"),
+                            rset.getInt("professor_id"),
+                            rset.getString("title"),
+                            rset.getString("description"),
+                            rset.getString("semester")
+                    );
+                    courselist.add(course);
+                }
+            }
+        }
+        return courselist;
+    }
+
+    public int insertCourse(Connection con, CourseDTO course) throws SQLException {
         String sql = QueryUtil.getQuery("insert course");
 
-        try {
-            pstmt = connection.prepareStatement(sql);
-
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setString(1, course.getCourse_code());
             pstmt.setInt(2, course.getProfessor_id());
             pstmt.setString(3, course.getTitle());
             pstmt.setString(4, course.getDescription());
-            pstmt.setString(5,course.getSemester());
+            pstmt.setString(5, course.getSemester());
 
-            result = pstmt.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            return pstmt.executeUpdate();
         }
-
-        return result;
-
-
     }
-    public boolean isAlreadyEnrolled(int userId, int courseId) {
-        String query = com.module1.crud.global.utils.QueryUtil.getQuery("course.checkEnrollment");
 
-        try (java.sql.PreparedStatement pstmt = connection.prepareStatement(query)) {
+    public boolean isAlreadyEnrolled(Connection con, int userId, int courseId) throws SQLException {
+        String query = QueryUtil.getQuery("course.checkEnrollment");
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, userId);
             pstmt.setInt(2, courseId);
 
-            try (java.sql.ResultSet rset = pstmt.executeQuery()) {
+            try (ResultSet rset = pstmt.executeQuery()) {
                 if (rset.next()) {
                     return rset.getInt(1) > 0;
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
-
         return false;
     }
 
-    public int insertEnrollment(int userId, int courseId) {
-        String query = com.module1.crud.global.utils.QueryUtil.getQuery("course.insertEnrollment");
+    public int insertEnrollment(Connection con, int userId, int courseId) throws SQLException {
+        String query = QueryUtil.getQuery("course.insertEnrollment");
 
-        try (java.sql.PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, userId);
             pstmt.setInt(2, courseId);
 
             return pstmt.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
-
-
-
 }

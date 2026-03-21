@@ -14,21 +14,19 @@ import java.util.List;
 
 public class AttendanceDAO {
 
-    private final Connection connection;
-
-    public AttendanceDAO(Connection connection) {
-        this.connection = connection;
+    // 💡 DAO는 가볍게! 필드와 생성자에서 Connection을 지웁니다.
+    public AttendanceDAO() {
     }
 
     /**
      * 전체 출결 조회
      */
-    public List<AttendanceDTO> findAll() throws SQLException {
+    public List<AttendanceDTO> findAll(Connection con) throws SQLException {
 
         String query = QueryUtil.getQuery("attendance.findAll");
         List<AttendanceDTO> attendanceList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             ResultSet rset = pstmt.executeQuery();
 
             while (rset.next()) {
@@ -54,11 +52,11 @@ public class AttendanceDAO {
     /**
      * 강의별 출결 조회
      */
-    public List<AttendanceDTO> findByCourseIdAndProfessorId(int courseId, int professorId) throws SQLException {
+    public List<AttendanceDTO> findByCourseIdAndProfessorId(Connection con, int courseId, int professorId) throws SQLException {
         String query = QueryUtil.getQuery("attendance.findByCourseIdAndProfessorId");
         List<AttendanceDTO> attendanceList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, courseId);
             pstmt.setInt(2, professorId);
 
@@ -85,12 +83,12 @@ public class AttendanceDAO {
     }
 
     // -----------------------------------------------------------------------------------
-    public List<ProfessorCourseDTO> findCoursesByProfessorId(int professorId) throws SQLException {
+    public List<ProfessorCourseDTO> findCoursesByProfessorId(Connection con, int professorId) throws SQLException {
 
         String query = QueryUtil.getQuery("attendance.findCoursesByProfessorId");
         List<ProfessorCourseDTO> courseList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, professorId);
 
             ResultSet rset = pstmt.executeQuery();
@@ -110,12 +108,12 @@ public class AttendanceDAO {
     /**
      * 주차별 출결 조회
      */
-    public List<AttendanceDTO> findByWeek(int week) throws SQLException {
+    public List<AttendanceDTO> findByWeek(Connection con, int week) throws SQLException {
 
         String query = QueryUtil.getQuery("attendance.findByWeek");
         List<AttendanceDTO> attendanceList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, week);
 
             ResultSet rset = pstmt.executeQuery();
@@ -141,12 +139,12 @@ public class AttendanceDAO {
     }
 
     // -----------------------------------------------------------------------------------
-    public List<AttendanceDTO> findByWeekAndProfessorId(int week, int professorId) throws SQLException {
+    public List<AttendanceDTO> findByWeekAndProfessorId(Connection con, int week, int professorId) throws SQLException {
 
         String query = QueryUtil.getQuery("attendance.findByWeekAndProfessorId");
         List<AttendanceDTO> attendanceList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, week);
             pstmt.setInt(2, professorId);
 
@@ -175,12 +173,12 @@ public class AttendanceDAO {
     /**
      * 출결 유형별 조회
      */
-    public List<AttendanceDTO> findByStatus(String status) throws SQLException {
+    public List<AttendanceDTO> findByStatus(Connection con, String status) throws SQLException {
 
         String query = QueryUtil.getQuery("attendance.findByStatus");
         List<AttendanceDTO> attendanceList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setString(1, status);
 
             ResultSet rset = pstmt.executeQuery();
@@ -204,15 +202,16 @@ public class AttendanceDAO {
 
         return attendanceList;
     }
+
     /**
      * 학생별 출결 조회
      */
-    public List<AttendanceDTO> findByStudentId(int studentId) throws SQLException {
+    public List<AttendanceDTO> findByStudentId(Connection con, int studentId) throws SQLException {
 
         String query = QueryUtil.getQuery("attendance.findByStudentId");
         List<AttendanceDTO> attendanceList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, studentId);
 
             ResultSet rset = pstmt.executeQuery();
@@ -237,12 +236,12 @@ public class AttendanceDAO {
         return attendanceList;
     }
 
-    public List<AttendanceDTO> findByCourseIdAndWeekAndProfessorId(int courseId, int professorId, int week) throws SQLException {
+    public List<AttendanceDTO> findByCourseIdAndWeekAndProfessorId(Connection con, int courseId, int professorId, int week) throws SQLException {
 
         String query = QueryUtil.getQuery("attendance.findByCourseIdAndWeekAndProfessorId");
         List<AttendanceDTO> attendanceList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, courseId);
             pstmt.setInt(2, professorId);
             pstmt.setInt(3, week);
@@ -269,12 +268,12 @@ public class AttendanceDAO {
         return attendanceList;
     }
 
-    public List<AttendanceDTO> findByCourseIdAndStatusAndProfessorId(int courseId, int professorId, String status) throws SQLException {
+    public List<AttendanceDTO> findByCourseIdAndStatusAndProfessorId(Connection con, int courseId, int professorId, String status) throws SQLException {
 
         String query = QueryUtil.getQuery("attendance.findByCourseIdAndStatusAndProfessorId");
         List<AttendanceDTO> attendanceList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, courseId);
             pstmt.setInt(2, professorId);
             pstmt.setString(3, status);
@@ -301,12 +300,12 @@ public class AttendanceDAO {
         return attendanceList;
     }
 
-    public List<ProfessorCourseDTO> findCoursesByStudentId(int studentId) throws SQLException {
+    public List<ProfessorCourseDTO> findCoursesByStudentId(Connection con, int studentId) throws SQLException {
 
         String query = QueryUtil.getQuery("attendance.findCoursesByStudentId");
         List<ProfessorCourseDTO> courseList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, studentId);
 
             ResultSet rset = pstmt.executeQuery();
@@ -323,12 +322,12 @@ public class AttendanceDAO {
         return courseList;
     }
 
-    public List<AttendanceDTO> findByStudentIdAndCourseId(int studentId, int courseId) throws SQLException {
+    public List<AttendanceDTO> findByStudentIdAndCourseId(Connection con, int studentId, int courseId) throws SQLException {
 
         String query = QueryUtil.getQuery("attendance.findByStudentIdAndCourseId");
         List<AttendanceDTO> attendanceList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, studentId);
             pstmt.setInt(2, courseId);
 
@@ -357,11 +356,11 @@ public class AttendanceDAO {
     /**
      * 교수가 학생 출결 수정
      * */
-    public boolean updateAttendanceStatus(int attendanceId, String status) throws SQLException {
+    public boolean updateAttendanceStatus(Connection con, int attendanceId, String status) throws SQLException {
 
         String query = QueryUtil.getQuery("attendance.updateAttendanceStatus");
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setString(1, status);
             pstmt.setInt(2, attendanceId);
 
@@ -372,12 +371,12 @@ public class AttendanceDAO {
     /**
      * 학생 출석체크
      * */
-    public List<SessionDTO> findAvailableSessionByStudentId(int studentId) throws SQLException {
+    public List<SessionDTO> findAvailableSessionByStudentId(Connection con, int studentId) throws SQLException {
 
         String query = QueryUtil.getQuery("attendance.findAvailableSessionByStudentId");
         List<SessionDTO> sessionList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, studentId);
 
             ResultSet rset = pstmt.executeQuery();
@@ -398,11 +397,11 @@ public class AttendanceDAO {
         return sessionList;
     }
 
-    public AttendanceDTO findByStudentIdAndSessionId(int studentId, int sessionId) throws SQLException {
+    public AttendanceDTO findByStudentIdAndSessionId(Connection con, int studentId, int sessionId) throws SQLException {
 
         String query = QueryUtil.getQuery("attendance.findByStudentIdAndSessionId");
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, studentId);
             pstmt.setInt(2, sessionId);
 
@@ -422,11 +421,11 @@ public class AttendanceDAO {
         return null;
     }
 
-    public boolean insertAttendance(int studentId, int sessionId, String status) throws SQLException {
+    public boolean insertAttendance(Connection con, int studentId, int sessionId, String status) throws SQLException {
 
         String query = QueryUtil.getQuery("attendance.insertAttendance");
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, studentId);
             pstmt.setInt(2, sessionId);
             pstmt.setString(3, status);
@@ -435,11 +434,11 @@ public class AttendanceDAO {
         }
     }
 
-    public boolean updateAttendanceCheck(int attendanceId, String status) throws SQLException {
+    public boolean updateAttendanceCheck(Connection con, int attendanceId, String status) throws SQLException {
 
         String query = QueryUtil.getQuery("attendance.updateAttendanceCheck");
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setString(1, status);
             pstmt.setInt(2, attendanceId);
 

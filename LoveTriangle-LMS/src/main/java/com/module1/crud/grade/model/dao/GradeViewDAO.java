@@ -11,10 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GradeViewDAO {
-    private final Connection connection;
 
-    public GradeViewDAO(Connection connection) {
-        this.connection = connection;
+    // 💡 생성자와 필드 제거
+    public GradeViewDAO() {
     }
 
     private Integer getNullableInt(ResultSet rset, String columnLabel) throws SQLException {
@@ -27,11 +26,11 @@ public class GradeViewDAO {
         return value == null ? null : value.doubleValue();
     }
 
-    public List<GradeViewDTO> findGrade(long studentId) throws SQLException {
+    public List<GradeViewDTO> findGrade(Connection con, long studentId) throws SQLException {
         String query = QueryUtil.getQuery("grade.findall");
         List<GradeViewDTO> gradeList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, studentId);
             ResultSet rset = pstmt.executeQuery();
 
@@ -57,11 +56,11 @@ public class GradeViewDAO {
         return gradeList;
     }
 
-    public List<GradeViewDTO> findByStudentName(long professorId, String studentName) throws SQLException {
+    public List<GradeViewDTO> findByStudentName(Connection con, long professorId, String studentName) throws SQLException {
         String query = QueryUtil.getQuery("grade.findById");
         List<GradeViewDTO> gradeList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, professorId);
             pstmt.setString(2, studentName);
 
@@ -88,11 +87,11 @@ public class GradeViewDAO {
         return gradeList;
     }
 
-    public List<GradeViewDTO> findAllGradeByProfessor(long professorId) throws SQLException {
+    public List<GradeViewDTO> findAllGradeByProfessor(Connection con, long professorId) throws SQLException {
         String query = QueryUtil.getQuery("grade.findAllByProfessor");
         List<GradeViewDTO> gradeList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, professorId);
 
             ResultSet rset = pstmt.executeQuery();

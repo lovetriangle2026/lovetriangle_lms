@@ -12,19 +12,17 @@ import java.util.List;
 
 public class GradeEditDAO {
 
-    private final Connection connection;
-
-    public GradeEditDAO(Connection connection) {
-        this.connection = connection;
+    // 💡 생성자와 필드 제거
+    public GradeEditDAO() {
     }
 
     // 교수의 강의를 듣는 학생 목록 조회
-    public List<GradeEditDTO> findEditableGradeListByProfessor(long professorId) throws SQLException {
+    public List<GradeEditDTO> findEditableGradeListByProfessor(Connection con, long professorId) throws SQLException {
         String query = QueryUtil.getQuery("grade.editListByProfessor");
 
         List<GradeEditDTO> gradeList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, professorId);
 
             ResultSet rset = pstmt.executeQuery();
@@ -47,10 +45,10 @@ public class GradeEditDAO {
     }
 
     // 중간고사 점수 수정
-    public int updateMidtermScore(int studentId, int courseId, int midtermScore) throws SQLException {
+    public int updateMidtermScore(Connection con, int studentId, int courseId, int midtermScore) throws SQLException {
         String query = QueryUtil.getQuery("grade.updateMidtermScore");
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, midtermScore);
             pstmt.setInt(2, studentId);
             pstmt.setInt(3, courseId);
@@ -60,10 +58,10 @@ public class GradeEditDAO {
     }
 
     // 기말고사 점수 수정
-    public int updateFinalScore(int studentId, int courseId, int finalScore) throws SQLException {
+    public int updateFinalScore(Connection con, int studentId, int courseId, int finalScore) throws SQLException {
         String query = QueryUtil.getQuery("grade.updateFinalScore");
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, finalScore);
             pstmt.setInt(2, studentId);
             pstmt.setInt(3, courseId);
@@ -73,10 +71,10 @@ public class GradeEditDAO {
     }
 
     // 과제 점수 수정
-    public int updateAssignmentScore(int studentId, int courseId, int assignmentScore) throws SQLException {
+    public int updateAssignmentScore(Connection con, int studentId, int courseId, int assignmentScore) throws SQLException {
         String query = QueryUtil.getQuery("grade.updateAssignmentScore");
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, assignmentScore);
             pstmt.setInt(2, studentId);
             pstmt.setInt(3, courseId);

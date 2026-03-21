@@ -10,16 +10,15 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class AuthDAO {
-    private final Connection connection;
 
-    public AuthDAO(Connection connection) {
-        this.connection = connection;
+    // 💡 DAO는 가볍게! 필드와 생성자에서 Connection을 지웁니다.
+    public AuthDAO() {
     }
 
     // 1. [로그인] 아이디로 회원 조회
-    public UsersDTO findByLoginId(String loginId) throws SQLException {
+    public UsersDTO findByLoginId(Connection con, String loginId) throws SQLException {
         String query = QueryUtil.getQuery("Users.findByLoginId");
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setString(1, loginId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
@@ -35,9 +34,9 @@ public class AuthDAO {
     }
 
     // 2. [회원가입] 학적 확인
-    public boolean checkSchoolMember(String userCode, String name, LocalDate birth, String userType) throws SQLException {
+    public boolean checkSchoolMember(Connection con, String userCode, String name, LocalDate birth, String userType) throws SQLException {
         String query = QueryUtil.getQuery("Users.checkSchoolMember");
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setString(1, userCode);
             pstmt.setString(2, name);
             pstmt.setDate(3, java.sql.Date.valueOf(birth));
@@ -50,9 +49,9 @@ public class AuthDAO {
     }
 
     // 3. [회원가입] 중복 가입 확인
-    public boolean checkAlreadyRegistered(String userCode) throws SQLException {
+    public boolean checkAlreadyRegistered(Connection con, String userCode) throws SQLException {
         String query = QueryUtil.getQuery("Users.checkAlreadyRegistered");
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setString(1, userCode);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
@@ -65,9 +64,9 @@ public class AuthDAO {
     }
 
     // 4. [회원가입] 계정 정보 업데이트 (생성)
-    public Long save(UsersDTO usersDTO) throws SQLException {
+    public Long save(Connection con, UsersDTO usersDTO) throws SQLException {
         String updateQuery = QueryUtil.getQuery("Users.updateAccount");
-        try (PreparedStatement pstmt = connection.prepareStatement(updateQuery)) {
+        try (PreparedStatement pstmt = con.prepareStatement(updateQuery)) {
             pstmt.setString(1, usersDTO.getLoginId());
             pstmt.setString(2, usersDTO.getPassword());
             pstmt.setString(3, usersDTO.getTelNum());
@@ -76,7 +75,8 @@ public class AuthDAO {
 
             if (pstmt.executeUpdate() > 0) {
                 String selectQuery = QueryUtil.getQuery("Users.findIdByUserCode");
-                try (PreparedStatement selectPstmt = connection.prepareStatement(selectQuery)) {
+                // 💡 안쪽 try에서도 위에서 받은 con을 그대로 재사용합니다!
+                try (PreparedStatement selectPstmt = con.prepareStatement(selectQuery)) {
                     selectPstmt.setString(1, usersDTO.getUserCode());
                     try (ResultSet rs = selectPstmt.executeQuery()) {
                         if (rs.next()) return rs.getLong("id");
@@ -88,9 +88,9 @@ public class AuthDAO {
     }
 
     // 5. [아이디 찾기]
-    public String findLoginId(String userCode, String name) throws SQLException {
+    public String findLoginId(Connection con, String userCode, String name) throws SQLException {
         String query = QueryUtil.getQuery("Users.findLoginId");
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setString(1, userCode);
             pstmt.setString(2, name);
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -101,9 +101,9 @@ public class AuthDAO {
     }
 
     // 6. [비밀번호 찾기] 힌트 검증
-    public boolean verifyPasswordHint(String loginId, String userCode, String answer) throws SQLException {
+    public boolean verifyPasswordHint(Connection con, String loginId, String userCode, String answer) throws SQLException {
         String query = QueryUtil.getQuery("Users.verifyPasswordHint");
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setString(1, loginId);
             pstmt.setString(2, userCode);
             pstmt.setString(3, answer);
@@ -115,9 +115,9 @@ public class AuthDAO {
     }
 
     // 7. [비밀번호 변경] 업데이트
-    public int updatePassword(String loginId, String hashedPassword) throws SQLException {
+    public int updatePassword(Connection con, String loginId, String hashedPassword) throws SQLException {
         String query = QueryUtil.getQuery("Users.updatePassword");
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setString(1, hashedPassword);
             pstmt.setString(2, loginId);
             return pstmt.executeUpdate();
