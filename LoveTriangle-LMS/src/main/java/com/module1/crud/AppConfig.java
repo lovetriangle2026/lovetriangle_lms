@@ -108,6 +108,7 @@ public class AppConfig {
                 signupView,
                 findAccountView,
                 studentCourseView,
+                profInputView,
                 studentAttendanceView,
                 professorAttendanceView,
                 studentGradeView,
