@@ -5,6 +5,7 @@ import com.module1.crud.assignments.view.StudentAssignmentInputView;
 import com.module1.crud.attendance.view.ProfessorAttendanceInputView;
 import com.module1.crud.attendance.view.StudentAttendanceInputView;
 import com.module1.crud.auth.find.view.FindAccountView;
+import com.module1.crud.course.view.ProfInputView;
 import com.module1.crud.course.view.StudentCourseInputView;
 import com.module1.crud.global.session.SessionManager;
 import com.module1.crud.grade.view.ProfessorGradeInputView;
@@ -24,6 +25,7 @@ public class SystemRouter {
         private final LoginView loginView;
         private final SignupView signupView;
         private final StudentCourseInputView studentCourseInputView;
+        private final ProfInputView professorCourseInputView;
         private final StudentAttendanceInputView studentAttendanceInputView;
         private final ProfessorAttendanceInputView professorAttendanceInputView;
         private final StudentGradeInputView studentGradeInputView;
@@ -38,6 +40,7 @@ public class SystemRouter {
                             SignupView signupView,
                             FindAccountView findAccountView,
                             StudentCourseInputView studentCourseInputView,
+                            ProfInputView professorCourseInputView,
                             StudentAttendanceInputView studentAttendanceInputView,
                             ProfessorAttendanceInputView professorAttendanceInputView,
                             StudentGradeInputView studentGradeInputView,
@@ -50,6 +53,7 @@ public class SystemRouter {
             this.signupView = signupView;
             this.findAccountView = findAccountView; // 👈 추가!
             this.studentCourseInputView = studentCourseInputView;
+            this.professorCourseInputView = professorCourseInputView;
             this.studentAttendanceInputView = studentAttendanceInputView;
             this.professorAttendanceInputView = professorAttendanceInputView;
             this.studentGradeInputView = studentGradeInputView;
@@ -152,6 +156,7 @@ public class SystemRouter {
                 String choice = sc.nextLine();
                 switch (choice) {
                     // ... 기존 professorMainMenu 스위치문 내용과 동일하게 위임 ...
+                    case "1": professorCourseInputView.displayProfessorCourseMenu(); break;
                     case "2": professorAttendanceInputView.displayMenu(); break;
                     case "3": professorGradeInputView.displayProfessorMainMenu(); break;
                     case "5": usersInputView.profMainPage(user); break;
