@@ -12,7 +12,6 @@ import java.util.List;
 
 public class CourseDAO {
 
-    // 💡 생성자에서 Connection 인자 제거!
     public CourseDAO() {
     }
 
@@ -42,7 +41,6 @@ public class CourseDAO {
         String query = QueryUtil.getQuery("find my courses");
         List<CourseDTO> courselist = new ArrayList<>();
 
-        // 💡 DAO 내부에 있던 복잡한 try-catch를 없애고 Service로 책임을 넘겼습니다.
         try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, userId);
 
@@ -102,5 +100,29 @@ public class CourseDAO {
 
             return pstmt.executeUpdate();
         }
+    }
+
+    public List<CourseDTO> findProfessorCourses(Connection con, int professorId) throws SQLException {
+        String query = QueryUtil.getQuery("find professor courses");
+        List<CourseDTO> courselist = new ArrayList<>();
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setInt(1, professorId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                while (rset.next()) {
+                    CourseDTO course = new CourseDTO(
+                            rset.getLong("id"),
+                            rset.getString("course_code"),
+                            rset.getInt("professor_id"),
+                            rset.getString("title"),
+                            rset.getString("description"),
+                            rset.getString("semester")
+                    );
+                    courselist.add(course);
+                }
+            }
+        }
+        return courselist;
     }
 }

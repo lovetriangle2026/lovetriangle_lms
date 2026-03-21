@@ -12,7 +12,6 @@ public class CourseService {
 
     private final CourseDAO courseDAO;
 
-    // 💡 생성자에서 Connection 인자 제거 및 DAO 기본 생성
     public CourseService() {
         this.courseDAO = new CourseDAO();
     }
@@ -26,7 +25,6 @@ public class CourseService {
     }
 
     public List<CourseDTO> findMyCourses(int userId) {
-        // 💡 수동으로 con.close() 하던 것을 try-with-resources 로 안전하게 변경!
         try (Connection con = JDBCTemplate.getConnection()) {
             return courseDAO.findMyCourses(con, userId);
         } catch (SQLException e) {
@@ -35,7 +33,6 @@ public class CourseService {
     }
 
     public int insertCourse(CourseDTO course) {
-        // 강의코드 자동생성
         String autoCode = "c-" + (int)(Math.random() * 900) + 100;
         course.setCourse_code(autoCode);
 
@@ -47,36 +44,42 @@ public class CourseService {
     }
 
     public boolean enrollCourse(int userId, int courseId) {
-        // 💡 조회 후 등록(Check-then-Act) 패턴이므로 트랜잭션으로 안전하게 묶습니다!
         try (Connection con = JDBCTemplate.getConnection()) {
-            con.setAutoCommit(false); // 🔒 트랜잭션 시작
+            con.setAutoCommit(false);
 
             try {
-                // 1. 이미 수강 중인지 확인
                 if (courseDAO.isAlreadyEnrolled(con, userId, courseId)) {
-                    return false; // 변경된 게 없으므로 롤백 없이 그냥 리턴
+                    return false;
                 }
 
-                // 2. 수강 신청 진행
                 int result = courseDAO.insertEnrollment(con, userId, courseId);
 
                 if (result > 0) {
-                    con.commit(); // 🔓 성공 시 확정
+                    con.commit();
                     return true;
                 } else {
-                    con.rollback(); // 실패 시 원상복구
+                    con.rollback();
                     return false;
                 }
 
             } catch (SQLException e) {
-                con.rollback(); // 🚨 에러 시 원상복구
+                con.rollback();
                 throw new RuntimeException("수강 신청 트랜잭션 중 Error 발생!! 🚨🚨", e);
             } finally {
-                con.setAutoCommit(true); // 자동 커밋 복구
+                con.setAutoCommit(true);
             }
 
         } catch (SQLException e) {
             throw new RuntimeException("수강 신청 DB 연결 중 Error 발생!! 🚨🚨", e);
+        }
+    }
+
+    // ✅ 이거 유지해야 함 (핵심 기능)
+    public List<CourseDTO> findProfessorCourses(int professorId) {
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return courseDAO.findProfessorCourses(con, professorId);
+        } catch (SQLException e) {
+            throw new RuntimeException("담당 강의 조회 중 오류 발생!! 🚨🚨", e);
         }
     }
 }

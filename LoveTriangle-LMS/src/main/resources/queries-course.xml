@@ -33,7 +33,17 @@
         INSERT INTO courses (course_code, professor_id, title, description, semester)
         VALUES (?, ?, ?, ?, ?)
     </query>
-
+    <query key="find professor courses">
+        SELECT
+        id,
+        course_code,
+        professor_id,
+        title,
+        description,
+        semester
+        FROM courses
+        WHERE professor_id = ?
+    </query>
 
 
 </properties>

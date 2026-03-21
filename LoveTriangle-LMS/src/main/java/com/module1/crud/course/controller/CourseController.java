@@ -41,7 +41,9 @@ public class CourseController {
         profOutputView.displayResult(result);
     }
 
-
+    public List<CourseDTO> findProfessorCourses(int professorId) throws SQLException {
+        return service.findProfessorCourses(professorId);
+    }
 
 
 

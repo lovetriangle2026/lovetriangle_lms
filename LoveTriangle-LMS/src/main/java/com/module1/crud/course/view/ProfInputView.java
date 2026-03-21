@@ -2,6 +2,10 @@ package com.module1.crud.course.view;
 
 import com.module1.crud.course.controller.CourseController;
 import com.module1.crud.course.model.dto.CourseDTO;
+import com.module1.crud.global.session.SessionManager;
+import com.module1.crud.users.model.dto.UsersDTO;
+
+import java.util.List;
 import java.util.Scanner;
 
 
@@ -35,7 +39,7 @@ private final ProfOutputView profOutputView;
                     displayMyCourses();
                     break;
                 case 2:
-                    controller.registerNewCourse();
+                    registerCourse();
                     break;
                 case 3:
                     System.out.println("주차별 강의 내용 등록 기능은 다음 단계에서 구현");
@@ -52,31 +56,57 @@ private final ProfOutputView profOutputView;
     }
 
     private void displayMyCourses() {
-    }
+        UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
 
-
-    public CourseDTO inputCourse () {
-
-
-
-            System.out.println("=== 신규 강의 등록 ===");
-
-            System.out.println("교수번호 (ID) : ");
-            int professorId = sc.nextInt();
-            sc.nextLine();
-
-            System.out.println("강의 제목 : ");
-            String title = sc.nextLine();
-
-            System.out.println("강의 설명 : ");
-            String description = sc.nextLine();
-
-            System.out.println("학기(예 : 2026-1) : ");
-            String semester = sc.nextLine();
-            //주의 id(0)랑 course_code(null)  은 여기서 안채움
-            // id는 db가 course_code 는 서비스가 채움
-            return new CourseDTO(0L, null, professorId, title, description, semester);
+        if (loggedInUser == null) {
+            System.out.println("로그인 정보가 없습니다.");
+            return;
         }
 
+        long professorId = loggedInUser.getId();
+
+        try {
+            List<CourseDTO> courseList = controller.findProfessorCourses((int) professorId);
+            profOutputView.displayCourseList(courseList);
+        } catch (Exception e) {
+            System.out.println("강의 조회 중 오류 발생!");
+        }
+    }
+
+    private void registerCourse() {
+        CourseDTO newCourse = inputCourse();
+
+        if (newCourse == null) {
+            System.out.println("강의 등록에 실패했습니다.");
+            return;
+        }
+
+        int result = controller.insertCourse(newCourse);
+        profOutputView.displayResult(result);
+    }
+    public CourseDTO inputCourse() {
+        UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
+
+        if (loggedInUser == null) {
+            System.out.println("로그인 정보가 없습니다.");
+            return null;
+        }
+
+        int professorId = (int) loggedInUser.getId();
+
+        sc.nextLine();
+        System.out.println("=== 신규 강의 등록 ===");
+
+        System.out.println("강의 제목 : ");
+        String title = sc.nextLine();
+
+        System.out.println("강의 설명 : ");
+        String description = sc.nextLine();
+
+        System.out.println("학기(예 : 2026-1) : ");
+        String semester = sc.nextLine();
+
+        return new CourseDTO(0L, null, professorId, title, description, semester);
+    }
 
 }
