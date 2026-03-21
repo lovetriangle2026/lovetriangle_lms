@@ -152,6 +152,7 @@ public class SystemRouter {
                     // ... 기존 professorMainMenu 스위치문 내용과 동일하게 위임 ...
                     case "2": professorAttendanceInputView.displayMenu(); break;
                     case "3": professorGradeInputView.displayProfessorMainMenu(); break;
+                    case "4": professorAssignmentInputView.displayMainmenu(); break;
                     case "5": usersInputView.profMainPage(user); break;
                     case "0":
                         SessionManager.getInstance().clearSession();
