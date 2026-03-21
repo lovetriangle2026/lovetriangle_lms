@@ -2,6 +2,9 @@ package com.module1.crud.attendance.view;
 
 import com.module1.crud.attendance.controller.AttendanceController;
 import com.module1.crud.attendance.model.dto.AttendanceDTO;
+import com.module1.crud.attendance.model.dto.ProfessorCourseDTO;
+import com.module1.crud.global.session.SessionManager;
+import com.module1.crud.users.model.dto.UsersDTO;
 
 import java.util.List;
 import java.util.Scanner;
@@ -18,7 +21,6 @@ public class StudentAttendanceInputView {
     }
 
     public void displayMenu() {
-
         while (true) {
             System.out.println();
             System.out.println("=================================");
@@ -52,12 +54,46 @@ public class StudentAttendanceInputView {
     }
 
     private void findMyAttendance() {
-        System.out.print("학생 ID를 입력해주세요 : ");
-        int studentId = inputInt();
+        UsersDTO loginUser = SessionManager.getInstance().getLoggedInUser();
+        int studentId = loginUser.getId();
 
-        List<AttendanceDTO> attendanceList = controller.findAttendanceByStudentId(studentId);
+        List<ProfessorCourseDTO> courseList = controller.findCoursesByStudentId(studentId);
 
-        outputView.printAttendanceList(attendanceList);
+        if (courseList == null || courseList.isEmpty()) {
+            outputView.printError("수강 중인 강의가 없습니다.");
+            return;
+        }
+
+        System.out.println("\n===== 수강 강의 목록 =====");
+        for (int i = 0; i < courseList.size(); i++) {
+            System.out.println((i + 1) + ". " + courseList.get(i).getTitle());
+        }
+
+        System.out.println("0. 돌아가기");
+        System.out.print("선택해주세요 : ");
+        int choice = inputInt();
+
+        if (choice == 0) {
+            outputView.printMessage("이전 메뉴로 돌아갑니다.");
+            return;
+        }
+
+        if (choice < 1 || choice > courseList.size()) {
+            outputView.printError("잘못된 번호입니다.");
+            return;
+        }
+
+        int courseId = courseList.get(choice - 1).getId();
+
+        List<AttendanceDTO> attendanceList =
+                controller.findAttendanceByStudentIdAndCourseId(studentId, courseId);
+
+        if (attendanceList == null || attendanceList.isEmpty()) {
+            outputView.printError("해당 강의의 출결 데이터가 없습니다.");
+            return;
+        }
+
+        outputView.printAttendanceByWeek(attendanceList);
     }
 
     private int inputInt() {

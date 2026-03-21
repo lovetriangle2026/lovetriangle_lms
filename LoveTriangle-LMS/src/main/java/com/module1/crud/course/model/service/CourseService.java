@@ -50,7 +50,14 @@ public class CourseService {
         return result;
     }
 
+    public boolean enrollCourse(int userId, int courseId) {
+        if (courseDAO.isAlreadyEnrolled(userId, courseId)) {
+            return false;
+        }
 
+        int result = courseDAO.insertEnrollment(userId, courseId);
+        return result > 0;
+    }
 
 
 }

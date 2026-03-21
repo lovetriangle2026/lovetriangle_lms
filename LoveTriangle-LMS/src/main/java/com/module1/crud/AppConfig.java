@@ -19,6 +19,8 @@ import com.module1.crud.auth.signup.controller.SignupController;
 import com.module1.crud.auth.signup.service.SignupService;
 import com.module1.crud.course.controller.CourseController;
 import com.module1.crud.course.model.service.CourseService;
+import com.module1.crud.course.view.ProfInputView;
+import com.module1.crud.course.view.ProfOutputView;
 import com.module1.crud.course.view.StudentCourseInputView;
 import com.module1.crud.course.view.StudentCourseOutputView;
 
@@ -77,6 +79,8 @@ public class AppConfig {
         CourseService courseService = new CourseService(con);
         CourseController courseController = new CourseController(courseService);
         StudentCourseInputView studentCourseView = new StudentCourseInputView(courseController, new StudentCourseOutputView());
+        ProfInputView profInputView = new ProfInputView(courseController, new ProfOutputView());
+
 
         AuthDAO authDAO = new AuthDAO(con);
 

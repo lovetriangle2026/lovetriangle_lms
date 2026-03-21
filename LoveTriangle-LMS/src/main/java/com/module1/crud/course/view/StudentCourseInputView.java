@@ -24,6 +24,7 @@ public class StudentCourseInputView {
         Scanner sc = new Scanner(System.in); //입력 받짜.
         System.out.println("1. 전체 강의 목록 조회");
         System.out.println("2. 수강 강의 조회");
+        System.out.println("3. 수강 신청");
         System.out.println("0. 뒤로 가기");
         System.out.println("번호 선택 : ");
 
@@ -34,14 +35,16 @@ public class StudentCourseInputView {
             displayAllCourse();
 
         } else if(choice == 2) {
-        displayEnrollCourse();
+        displayEnrollableCourse();
+        }else if(choice == 3) {
+            enrollCourse();
         }
         else if (choice ==0) {
             System.out.println("메뉴 종료합니다");
         }
     }
 
-    private void displayEnrollCourse() {
+    private void displayEnrollableCourse() {
         UsersDTO user = SessionManager.getInstance().getLoggedInUser();
 
         if (user == null) {
@@ -67,8 +70,8 @@ public class StudentCourseInputView {
     private void displayAllCourse() {
 
         outputView.printMessage("\n--- [기초 실습] 강좌 목록 전체 조회 ---");
-        List<CourseDTO> courseList = controller.findAllCourses();
-        outputView.printCourses(courseList);
+        controller.findAllCourses();
+//        outputView.printCourses(courseList);
 
     }
     //여기부터 본인이 신청한 강의 조회 기능
@@ -81,6 +84,29 @@ public class StudentCourseInputView {
         // 2. 출력 담당(outputView)에게 목록을 보여달라시키기
         outputView.printCourses(myCourseList);
 
+    }
+
+    private void enrollCourse() {
+        UsersDTO user = SessionManager.getInstance().getLoggedInUser();
+
+        if (user == null) {
+            System.out.println("🚨 로그인 정보가 없습니다.");
+            return;
+        }
+
+        List<CourseDTO> courseList = controller.findAllCourses();
+        outputView.printCourses(courseList);
+
+        System.out.print("수강신청할 course_id를 입력하세요 : ");
+        int courseId = Integer.parseInt(sc.nextLine());
+
+        boolean result = controller.enrollCourse(user.getId(), courseId);
+
+        if (result) {
+            System.out.println("✅ 수강신청이 완료되었습니다.");
+        } else {
+            System.out.println("🚨 이미 신청한 강의입니다.");
+        }
     }
 
 }

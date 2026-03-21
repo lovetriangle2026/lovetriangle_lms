@@ -99,7 +99,41 @@ public class CourseDAO {
 
 
     }
+    public boolean isAlreadyEnrolled(int userId, int courseId) {
+        String query = com.module1.crud.global.utils.QueryUtil.getQuery("course.checkEnrollment");
 
+        try (java.sql.PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, courseId);
+
+            try (java.sql.ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return rset.getInt(1) > 0;
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return false;
+    }
+
+    public int insertEnrollment(int userId, int courseId) {
+        String query = com.module1.crud.global.utils.QueryUtil.getQuery("course.insertEnrollment");
+
+        try (java.sql.PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, courseId);
+
+            return pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
 
