@@ -3,9 +3,11 @@ package com.module1.crud.attendance.model.service;
 import com.module1.crud.attendance.model.dao.AttendanceDAO;
 import com.module1.crud.attendance.model.dto.AttendanceDTO;
 import com.module1.crud.attendance.model.dto.ProfessorCourseDTO;
+import com.module1.crud.attendance.model.dto.SessionDTO;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class AttendanceService {
@@ -138,6 +140,48 @@ public class AttendanceService {
             return attendanceDAO.updateAttendanceStatus(attendanceId, status);
         } catch (SQLException e) {
             throw new RuntimeException("출결 수정 중 Error 발생!! 🚨🚨 " + e);
+        }
+    }
+
+    /**
+     * 학생 출석체크
+     * */
+    public List<SessionDTO> findAvailableSessionByStudentId(int studentId) {
+        try {
+            return attendanceDAO.findAvailableSessionByStudentId(studentId);
+        } catch (SQLException e) {
+            throw new RuntimeException("출석 가능한 수업 조회 중 Error 발생!! 🚨🚨 " + e);
+        }
+    }
+
+    public boolean checkAttendance(int studentId, SessionDTO session) {
+        try {
+            AttendanceDTO attendance = attendanceDAO.findByStudentIdAndSessionId(studentId, session.getId());
+
+            String status = calculateAttendanceStatus(session);
+
+            if (attendance == null) {
+                return attendanceDAO.insertAttendance(studentId, session.getId(), status);
+            } else {
+                return attendanceDAO.updateAttendanceCheck(attendance.getId(), status);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("출석체크 중 Error 발생!! 🚨🚨 " + e);
+        }
+    }
+
+    private String calculateAttendanceStatus(SessionDTO session) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startAt = session.getStartAt().toLocalDateTime();
+
+        LocalDateTime presentStart = startAt.minusMinutes(10);
+        LocalDateTime lateStart = startAt.plusMinutes(10);
+
+        if (!now.isBefore(presentStart) && now.isBefore(lateStart)) {
+            return "PRESENT";
+        } else {
+            return "LATE";
         }
     }
 

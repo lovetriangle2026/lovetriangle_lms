@@ -2,6 +2,7 @@ package com.module1.crud.attendance.controller;
 
 import com.module1.crud.attendance.model.dto.AttendanceDTO;
 import com.module1.crud.attendance.model.dto.ProfessorCourseDTO;
+import com.module1.crud.attendance.model.dto.SessionDTO;
 import com.module1.crud.attendance.model.service.AttendanceService;
 
 import java.util.List;
@@ -87,5 +88,16 @@ public class AttendanceController {
      * */
     public boolean updateAttendanceStatus(int attendanceId, String status) {
         return service.updateAttendanceStatus(attendanceId, status);
+    }
+
+    /**
+     * 학생 출석체크
+     * */
+    public List<SessionDTO> findAvailableSessionByStudentId(int studentId) {
+        return service.findAvailableSessionByStudentId(studentId);
+    }
+
+    public boolean checkAttendance(int studentId, SessionDTO session) {
+        return service.checkAttendance(studentId, session);
     }
 }

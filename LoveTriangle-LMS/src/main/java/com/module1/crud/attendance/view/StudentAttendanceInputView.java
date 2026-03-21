@@ -3,6 +3,7 @@ package com.module1.crud.attendance.view;
 import com.module1.crud.attendance.controller.AttendanceController;
 import com.module1.crud.attendance.model.dto.AttendanceDTO;
 import com.module1.crud.attendance.model.dto.ProfessorCourseDTO;
+import com.module1.crud.attendance.model.dto.SessionDTO;
 import com.module1.crud.global.session.SessionManager;
 import com.module1.crud.users.model.dto.UsersDTO;
 
@@ -39,7 +40,7 @@ public class StudentAttendanceInputView {
                     findMyAttendance();
                     break;
                 case 2:
-                    outputView.printMessage("출석하기 기능은 아직 구현 전입니다.");
+                    checkAttendance();
                     break;
                 case 3:
                     outputView.printMessage("공결 신청 기능은 아직 구현 전입니다.");
@@ -94,6 +95,68 @@ public class StudentAttendanceInputView {
         }
 
         outputView.printAttendanceByWeek(attendanceList);
+    }
+
+    private void checkAttendance() {
+        UsersDTO loginUser = SessionManager.getInstance().getLoggedInUser();
+        int studentId = loginUser.getId();
+
+        List<SessionDTO> sessionList = controller.findAvailableSessionByStudentId(studentId);
+
+        if (sessionList == null || sessionList.isEmpty()) {
+            outputView.printError("현재 출석 가능한 수업이 없습니다.");
+            return;
+        }
+
+        SessionDTO selectedSession;
+
+        if (sessionList.size() == 1) {
+            selectedSession = sessionList.get(0);
+        } else {
+            System.out.println("\n===== 현재 출석 가능한 수업 목록 =====");
+            System.out.println("0. 돌아가기");
+
+            for (int i = 0; i < sessionList.size(); i++) {
+                SessionDTO session = sessionList.get(i);
+                System.out.println((i + 1) + ". "
+                        + session.getCourseTitle()
+                        + " - "
+                        + session.getWeek() + "주차");
+            }
+
+            System.out.print("선택해주세요 : ");
+            int choice = inputInt();
+
+            if (choice == 0) {
+                outputView.printMessage("이전 메뉴로 돌아갑니다.");
+                return;
+            }
+
+            if (choice < 1 || choice > sessionList.size()) {
+                outputView.printError("잘못된 번호입니다.");
+                return;
+            }
+
+            selectedSession = sessionList.get(choice - 1);
+        }
+
+        System.out.print("[" + selectedSession.getCourseTitle() + "] "
+                + selectedSession.getWeek() + "주차 수업에 출석체크를 하시겠습니까? (Y/N) : ");
+
+        String confirm = sc.nextLine().trim().toUpperCase();
+
+        if (!confirm.equals("Y")) {
+            outputView.printMessage("이전 메뉴로 돌아갑니다.");
+            return;
+        }
+
+        boolean result = controller.checkAttendance(studentId, selectedSession);
+
+        if (result) {
+            outputView.printSuccess("출석체크가 완료되었습니다.");
+        } else {
+            outputView.printError("출석체크에 실패했습니다.");
+        }
     }
 
     private int inputInt() {

@@ -194,6 +194,7 @@ public class ProfessorAttendanceInputView {
             System.out.println("학생명 : " + selectedAttendance.getStudentName());
             System.out.println("강의명 : " + selectedAttendance.getCourseTitle());
             System.out.println("주차 : " + selectedAttendance.getWeek() + "주차");
+            System.out.println("변경 전 출결 상태 : " + selectedAttendance.getAttendanceStatus());
             System.out.println("변경된 출결 상태 : " + newStatus);
         } else {
             outputView.printError("출결 수정에 실패했습니다.");

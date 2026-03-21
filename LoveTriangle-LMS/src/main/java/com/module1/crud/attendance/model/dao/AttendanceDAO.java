@@ -2,6 +2,7 @@ package com.module1.crud.attendance.model.dao;
 
 import com.module1.crud.attendance.model.dto.AttendanceDTO;
 import com.module1.crud.attendance.model.dto.ProfessorCourseDTO;
+import com.module1.crud.attendance.model.dto.SessionDTO;
 import com.module1.crud.global.utils.QueryUtil;
 
 import java.sql.Connection;
@@ -359,6 +360,84 @@ public class AttendanceDAO {
     public boolean updateAttendanceStatus(int attendanceId, String status) throws SQLException {
 
         String query = QueryUtil.getQuery("attendance.updateAttendanceStatus");
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, status);
+            pstmt.setInt(2, attendanceId);
+
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * 학생 출석체크
+     * */
+    public List<SessionDTO> findAvailableSessionByStudentId(int studentId) throws SQLException {
+
+        String query = QueryUtil.getQuery("attendance.findAvailableSessionByStudentId");
+        List<SessionDTO> sessionList = new ArrayList<>();
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, studentId);
+
+            ResultSet rset = pstmt.executeQuery();
+
+            while (rset.next()) {
+                SessionDTO session = new SessionDTO();
+                session.setId(rset.getInt("session_id"));
+                session.setCourseId(rset.getInt("course_id"));
+                session.setCourseTitle(rset.getString("course_title"));
+                session.setWeek(rset.getInt("week"));
+                session.setStartAt(rset.getTimestamp("start_at"));
+                session.setEndAt(rset.getTimestamp("end_at"));
+
+                sessionList.add(session);
+            }
+        }
+
+        return sessionList;
+    }
+
+    public AttendanceDTO findByStudentIdAndSessionId(int studentId, int sessionId) throws SQLException {
+
+        String query = QueryUtil.getQuery("attendance.findByStudentIdAndSessionId");
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, studentId);
+            pstmt.setInt(2, sessionId);
+
+            ResultSet rset = pstmt.executeQuery();
+
+            if (rset.next()) {
+                AttendanceDTO attendance = new AttendanceDTO();
+                attendance.setId(rset.getInt("id"));
+                attendance.setStudentId(rset.getInt("student_id"));
+                attendance.setSessionId(rset.getInt("session_id"));
+                attendance.setAttendanceStatus(rset.getString("attendance_status"));
+                attendance.setCheckedAt(rset.getTimestamp("checked_at"));
+                return attendance;
+            }
+        }
+
+        return null;
+    }
+
+    public boolean insertAttendance(int studentId, int sessionId, String status) throws SQLException {
+
+        String query = QueryUtil.getQuery("attendance.insertAttendance");
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, studentId);
+            pstmt.setInt(2, sessionId);
+            pstmt.setString(3, status);
+
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
+    public boolean updateAttendanceCheck(int attendanceId, String status) throws SQLException {
+
+        String query = QueryUtil.getQuery("attendance.updateAttendanceCheck");
 
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setString(1, status);
