@@ -47,8 +47,8 @@ public class GradeRegisterDAO {
         String query = QueryUtil.getQuery("grade.registerAssignmentScore");
 
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setInt(1, score);
-            pstmt.setInt(2, studentId);
+            pstmt.setInt(1, studentId);
+            pstmt.setInt(2, score);
             pstmt.setInt(3, courseId);
 
             return pstmt.executeUpdate();
@@ -80,9 +80,9 @@ public class GradeRegisterDAO {
         String query = QueryUtil.getQuery("grade.registerMidtermScore");
 
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setInt(1, score);
-            pstmt.setInt(2, studentId);
-            pstmt.setInt(3, courseId);
+            pstmt.setInt(1, studentId);
+            pstmt.setInt(2, courseId);
+            pstmt.setInt(3, score);
 
             return pstmt.executeUpdate();
         }
@@ -113,9 +113,9 @@ public class GradeRegisterDAO {
         String query = QueryUtil.getQuery("grade.registerFinalScore");
 
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setInt(1, score);
-            pstmt.setInt(2, studentId);
-            pstmt.setInt(3, courseId);
+            pstmt.setInt(1, studentId);
+            pstmt.setInt(2, courseId);
+            pstmt.setInt(3, score);
 
             return pstmt.executeUpdate();
         }
