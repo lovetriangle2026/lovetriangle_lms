@@ -46,8 +46,7 @@ public class CourseController {
     }
 
 
-
-
-
-
+    public int insertCourse(CourseDTO newCourse) {
+        return service.insertCourse(newCourse);
+    }
 }

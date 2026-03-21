@@ -29,7 +29,7 @@
         INSERT INTO enrollments (user_id, course_id)
         VALUES (?, ?)
     </query>
-    <query key = "insert course">
+    <query key="insert course">
         INSERT INTO courses (course_code, professor_id, title, description, semester)
         VALUES (?, ?, ?, ?, ?)
     </query>
@@ -43,6 +43,30 @@
         semester
         FROM courses
         WHERE professor_id = ?
+    </query>
+
+    <query key="insert auto session">
+        INSERT INTO sessions (course_id, title, start_at, end_at, week)
+        VALUES (?, ?, ?, ?, ?)
+    </query>
+
+    <query key="find sessions by course">
+        SELECT
+        id,
+        course_id,
+        title,
+        start_at,
+        end_at,
+        week
+        FROM sessions
+        WHERE course_id = ?
+        ORDER BY week
+    </query>
+
+    <query key="update session title">
+        UPDATE sessions
+        SET title = ?
+        WHERE course_id = ? AND week = ?
     </query>
 
 
