@@ -367,70 +367,84 @@
     </query>
     <query key="grade.findAssignmentRegisterTargets">
         SELECT
-        sub.student_id,
+        e.user_id AS student_id,
         u.name AS student_name,
-        a.course_id,
+        e.course_id,
         c.title AS course_title
-        FROM assignment_submissions sub
-        JOIN assignments a
-        ON sub.assignment_id = a.id
-        JOIN courses c
-        ON a.course_id = c.id
+        FROM enrollments e
         JOIN users u
-        ON sub.student_id = u.id
+        ON e.user_id = u.id
+        JOIN courses c
+        ON e.course_id = c.id
+        JOIN assignments a
+        ON a.course_id = e.course_id
+        LEFT JOIN assignment_submissions sub
+        ON sub.student_id = e.user_id
+        AND sub.assignment_id = a.id
         WHERE c.professor_id = ?
         AND sub.score IS NULL
         ORDER BY c.title, u.name
     </query>
 
     <query key="grade.registerAssignmentScore">
-        UPDATE assignment_submissions sub
-        JOIN assignments a
-        ON sub.assignment_id = a.id
-        SET sub.score = ?
-        WHERE sub.student_id = ?
-        AND a.course_id = ?
-        AND sub.score IS NULL
+        INSERT INTO assignment_submissions (student_id, assignment_id, content_title, score)
+        SELECT ?, a.id, NULL, ?
+        FROM assignments a
+        WHERE a.course_id = ?
+        ON DUPLICATE KEY UPDATE
+        score = VALUES(score)
     </query>
 
     <query key="grade.findMidtermRegisterTargets">
         SELECT
-        ex.student_id,
+        e.user_id AS student_id,
         u.name AS student_name,
-        ex.course_id,
+        e.course_id,
         c.title AS course_title
-        FROM exams ex
-        JOIN users u ON ex.student_id = u.id
-        JOIN courses c ON ex.course_id = c.id
+        FROM enrollments e
+        JOIN users u
+        ON e.user_id = u.id
+        JOIN courses c
+        ON e.course_id = c.id
+        LEFT JOIN exams ex
+        ON ex.student_id = e.user_id
+        AND ex.course_id = e.course_id
         WHERE c.professor_id = ?
         AND ex.midterm_score IS NULL
         ORDER BY c.title, u.name
     </query>
 
     <query key="grade.registerMidtermScore">
-        UPDATE exams
-        SET midterm_score = ?
-        WHERE student_id = ? AND course_id = ?
+        INSERT INTO exams (student_id, course_id, midterm_score, final_score)
+        VALUES (?, ?, ?, NULL)
+        ON DUPLICATE KEY UPDATE
+        midterm_score = VALUES(midterm_score)
     </query>
 
     <query key="grade.findFinalRegisterTargets">
         SELECT
-        ex.student_id,
+        e.user_id AS student_id,
         u.name AS student_name,
-        ex.course_id,
+        e.course_id,
         c.title AS course_title
-        FROM exams ex
-        JOIN users u ON ex.student_id = u.id
-        JOIN courses c ON ex.course_id = c.id
+        FROM enrollments e
+        JOIN users u
+        ON e.user_id = u.id
+        JOIN courses c
+        ON e.course_id = c.id
+        LEFT JOIN exams ex
+        ON ex.student_id = e.user_id
+        AND ex.course_id = e.course_id
         WHERE c.professor_id = ?
         AND ex.final_score IS NULL
         ORDER BY c.title, u.name
     </query>
 
     <query key="grade.registerFinalScore">
-        UPDATE exams
-        SET final_score = ?
-        WHERE student_id = ? AND course_id = ?
+        INSERT INTO exams (student_id, course_id, midterm_score, final_score)
+        VALUES (?, ?, NULL, ?)
+        ON DUPLICATE KEY UPDATE
+        final_score = VALUES(final_score)
     </query>
 
 

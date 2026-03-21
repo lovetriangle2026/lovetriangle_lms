@@ -16,10 +16,49 @@ private final ProfOutputView profOutputView;
         this.profOutputView = profOutputView;
     }
 
+    public void displayProfessorCourseMenu() {
+        while (true) {
+            System.out.println("\n=================================");
+            System.out.println("         교수 강의관리 메뉴");
+            System.out.println("=================================");
+            System.out.println("1. 담당 강의 조회");
+            System.out.println("2. 신규 강의 등록");
+            System.out.println("3. 주차별 강의 내용 등록");
+            System.out.println("4. 주차별 강의 내용 조회");
+            System.out.println("0. 이전 메뉴");
+            System.out.print("번호를 입력해주세요 : ");
+
+            int menu = sc.nextInt();
+
+            switch (menu) {
+                case 1:
+                    displayMyCourses();
+                    break;
+                case 2:
+                    controller.registerNewCourse();
+                    break;
+                case 3:
+                    System.out.println("주차별 강의 내용 등록 기능은 다음 단계에서 구현");
+                    break;
+                case 4:
+                    System.out.println("주차별 강의 내용 조회 기능은 다음 단계에서 구현");
+                    break;
+                case 0:
+                    return;
+                default:
+                    System.out.println("잘못된 입력입니다.");
+            }
+        }
+    }
+
+    private void displayMyCourses() {
+    }
 
 
-        public CourseDTO inputCourse () {
-            sc.nextLine();
+    public CourseDTO inputCourse () {
+
+
+
             System.out.println("=== 신규 강의 등록 ===");
 
             System.out.println("교수번호 (ID) : ");
@@ -38,4 +77,6 @@ private final ProfOutputView profOutputView;
             // id는 db가 course_code 는 서비스가 채움
             return new CourseDTO(0L, null, professorId, title, description, semester);
         }
-    }
+
+
+}

@@ -238,6 +238,38 @@ public class ProfessorGradeInputView {
     }
 
     private void handleFinalRegister(long professorId) {
+        List<GradeRegisterDTO> list = controller.getFinalRegisterTargets(professorId);
+        if (list == null || list.isEmpty()) {
+            outputView.printError("등록할 대상이 없습니다.");
+            return;
+        }
+        outputView.printAssignmentRegisterTargets(list);
+        System.out.print("번호를 선택하세요 : ");
+        int choice = inputInt();
+
+        if (choice < 1 || choice > list.size()) {
+            outputView.printError("잘못된 번호입니다.");
+            return;
+        }
+
+        GradeRegisterDTO selected = list.get(choice - 1);
+
+        System.out.println("학생 : " + selected.getStudentName());
+        System.out.println("과목 : " + selected.getCourseTitle());
+
+        System.out.print("기말고사 점수 입력 : ");
+        int score = inputInt();
+
+        int result = controller.registerFinalScore(
+                selected.getStudentId(),
+                selected.getCourseId(),
+                score
+        );
+        if (result > 0) {
+            outputView.printmessage("중간고사 등록 완료 🎉");
+        } else {
+            outputView.printError("등록 실패 🚨");
+        }
     }
 
     private void handleMidtermRegister(long professorId) {

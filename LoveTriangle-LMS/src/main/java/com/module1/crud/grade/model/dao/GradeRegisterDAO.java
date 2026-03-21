@@ -47,6 +47,9 @@ public class GradeRegisterDAO {
         try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, score);
             pstmt.setInt(2, studentId);
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, studentId);
+            pstmt.setInt(2, score);
             pstmt.setInt(3, courseId);
 
             return pstmt.executeUpdate();
@@ -83,6 +86,10 @@ public class GradeRegisterDAO {
             pstmt.setInt(1, score);
             pstmt.setInt(2, studentId);
             pstmt.setInt(3, courseId);
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, studentId);
+            pstmt.setInt(2, courseId);
+            pstmt.setInt(3, score);
 
             return pstmt.executeUpdate();
         }
@@ -118,6 +125,10 @@ public class GradeRegisterDAO {
             pstmt.setInt(1, score);
             pstmt.setInt(2, studentId);
             pstmt.setInt(3, courseId);
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, studentId);
+            pstmt.setInt(2, courseId);
+            pstmt.setInt(3, score);
 
             return pstmt.executeUpdate();
         }

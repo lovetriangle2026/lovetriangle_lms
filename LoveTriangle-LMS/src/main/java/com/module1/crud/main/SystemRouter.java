@@ -123,7 +123,7 @@ public class SystemRouter {
 
             String choice = sc.nextLine();
             switch (choice) {
-                case "1": // 💡 ProfInputView 메서드명 확인 필요
+                case "1": professorCourseInputView.displayProfessorCourseMenu(); break;
                 case "2": AppConfig.createProfessorAttendanceInputView().displayMenu(); break;
                 case "3": AppConfig.createProfessorGradeInputView().displayProfessorMainMenu(); break;
                 case "4": AppConfig.createProfessorAssignmentInputView().displayMainmenu(); break;
@@ -133,6 +133,7 @@ public class SystemRouter {
                     System.out.println("✅ 로그아웃 되었습니다.");
                     return;
                 default: System.out.println("🚨 잘못된 입력입니다.");
+                }
             }
         }
     }
