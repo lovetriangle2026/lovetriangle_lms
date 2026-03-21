@@ -8,6 +8,7 @@ import com.module1.crud.assignments.model.service.AssignmentService;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 public class AssignmentController {
 
@@ -34,6 +35,10 @@ public class AssignmentController {
         return service.isAlreadySubmitted(assignmentId, studentId);
     }
 
+    public boolean isAssignmentDeadlinePassed(Long assignmentId) {
+        return service.isAssignmentDeadlinePassed(assignmentId);
+    }
+
     public void createSubmission(StudentAssignmentSubmissionDTO submissionDTO) {
         service.createSubmission(submissionDTO);
     }
@@ -51,6 +56,10 @@ public class AssignmentController {
 
     // ============================= 교수 파트 =================================
     // =============== 과제 조회 =================
+    public Map<Long, String> findProfessorCourses(Long professorId) {
+        return service.findProfessorCourses(professorId);
+    }
+
     public List<ProfessorAssignmentDTO> findAssignmentsByProfessor(Long professorId) {
         return service.findAssignmentsByProfessor(professorId);
     }
@@ -82,6 +91,11 @@ public class AssignmentController {
                                           String newTitle, String newDescription,
                                           java.sql.Timestamp newDeadline) {
         service.updateProfessorAssignment(assignmentId, professorId, newTitle, newDescription, newDeadline);
+    }
+
+    // ================= 과제 삭제 ===================
+    public void deleteProfessorAssignment(Long assignmentId, Long professorId) {
+        service.deleteProfessorAssignment(assignmentId, professorId);
     }
 
 }

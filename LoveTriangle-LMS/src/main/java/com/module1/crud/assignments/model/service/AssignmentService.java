@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 public class AssignmentService {
 
@@ -47,6 +48,20 @@ public class AssignmentService {
             return assignmentSubmissionDAO.existsByAssignmentAndStudent(assignmentId, studentId);
         } catch (SQLException e) {
             throw new RuntimeException("제출 여부 확인 중 오류 발생 🚨 " + e.getMessage());
+        }
+    }
+
+    public boolean isAssignmentDeadlinePassed(Long assignmentId) {
+        try {
+            Timestamp deadline = assignmentDAO.findAssignmentDeadline(assignmentId);
+
+            if (deadline == null) {
+                throw new RuntimeException("과제 마감일 정보를 찾을 수 없습니다.");
+            }
+
+            return deadline.before(new Timestamp(System.currentTimeMillis()));
+        } catch (SQLException e) {
+            throw new RuntimeException("과제 마감일 확인 중 오류 발생 🚨 " + e.getMessage());
         }
     }
 
@@ -93,6 +108,14 @@ public class AssignmentService {
 
     // ======================================= 교수 파트 =====================================
     // ========================== 과제 조회 =========================
+    public Map<Long, String> findProfessorCourses(Long professorId) {
+        try {
+            return assignmentDAO.findProfessorCourses(professorId);
+        } catch (SQLException e) {
+            throw new RuntimeException("교수 강의 조회 중 오류 발생 🚨 " + e.getMessage());
+        }
+    }
+
     public List<ProfessorAssignmentDTO> findAssignmentsByProfessor(Long professorId) {
         try {
             return assignmentDAO.findAssignmentsByProfessor(professorId);
@@ -165,4 +188,43 @@ public class AssignmentService {
             throw new RuntimeException("교수 과제 수정 중 오류 발생 🚨 " + e.getMessage());
         }
     }
+
+    // ===================== 과제 삭제 =====================
+    public void deleteProfessorAssignment(Long assignmentId, Long professorId) {
+        try {
+            connection.setAutoCommit(false);
+
+            boolean exists = assignmentDAO.existsProfessorAssignment(assignmentId, professorId);
+            if (!exists) {
+                throw new RuntimeException("본인이 생성한 과제가 아닙니다.");
+            }
+
+            assignmentDAO.deleteSubmissionsByAssignment(assignmentId);
+
+            int result = assignmentDAO.deleteProfessorAssignment(assignmentId, professorId);
+
+            if (result <= 0) {
+                throw new RuntimeException("과제 삭제에 실패했습니다.");
+            }
+
+            connection.commit();
+
+        } catch (Exception e) {
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackException) {
+                throw new RuntimeException("과제 삭제 롤백 중 오류 발생 🚨 " + rollbackException.getMessage());
+            }
+
+            throw new RuntimeException("교수 과제 삭제 중 오류 발생 🚨 " + e.getMessage());
+
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                throw new RuntimeException("오토커밋 복구 중 오류 발생 🚨 " + e.getMessage());
+            }
+        }
+    }
+
 }
