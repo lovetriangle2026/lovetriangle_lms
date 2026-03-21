@@ -353,4 +353,19 @@ public class AttendanceDAO {
         return attendanceList;
     }
 
+    /**
+     * 교수가 학생 출결 수정
+     * */
+    public boolean updateAttendanceStatus(int attendanceId, String status) throws SQLException {
+
+        String query = QueryUtil.getQuery("attendance.updateAttendanceStatus");
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, status);
+            pstmt.setInt(2, attendanceId);
+
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
 }

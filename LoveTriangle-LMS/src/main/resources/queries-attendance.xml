@@ -257,4 +257,10 @@
         order by s.week
     </query>
 
+    <query key="attendance.updateAttendanceStatus">
+        update attendance
+        set attendance_status = ?
+        where id = ?
+    </query>
+
 </properties>

@@ -130,4 +130,15 @@ public class AttendanceService {
         }
     }
 
+    /**
+     * 교수가 학생 출결 수정
+     * */
+    public boolean updateAttendanceStatus(int attendanceId, String status) {
+        try {
+            return attendanceDAO.updateAttendanceStatus(attendanceId, status);
+        } catch (SQLException e) {
+            throw new RuntimeException("출결 수정 중 Error 발생!! 🚨🚨 " + e);
+        }
+    }
+
 }

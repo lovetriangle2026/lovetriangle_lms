@@ -81,4 +81,11 @@ public class AttendanceController {
     public List<AttendanceDTO> findAttendanceByStudentIdAndCourseId(int studentId, int courseId) {
         return service.findAttendanceByStudentIdAndCourseId(studentId, courseId);
     }
+
+    /**
+     * 교수가 학생의 출결 수정
+     * */
+    public boolean updateAttendanceStatus(int attendanceId, String status) {
+        return service.updateAttendanceStatus(attendanceId, status);
+    }
 }
