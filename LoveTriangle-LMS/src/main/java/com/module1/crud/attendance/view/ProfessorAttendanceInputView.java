@@ -86,13 +86,118 @@ public class ProfessorAttendanceInputView {
                     findAttendanceByCourseIdAndStatus(courseId, professorId);
                     break;
                 case 4:
-                    outputView.printMessage("출결 수정 기능은 아직 구현 전입니다.");
+                    updateAttendance(courseId, professorId, courseTitle);
                     break;
                 case 0:
                     return;
                 default:
                     outputView.printError("다시 선택해주세요.");
             }
+        }
+    }
+
+    private void updateAttendance(int courseId, int professorId, String courseTitle) {
+        System.out.print("수정할 주차를 입력해주세요 : ");
+        int week = inputInt();
+
+        List<AttendanceDTO> attendanceList =
+                controller.findAttendanceByCourseIdAndWeek(courseId, professorId, week);
+
+        if (attendanceList == null || attendanceList.isEmpty()) {
+            outputView.printError("해당 강의의 해당 주차 출결 데이터가 없습니다.");
+            return;
+        }
+
+        System.out.println();
+        System.out.println("=================================");
+        System.out.println(" [" + courseTitle + " - " + week + "주차] 출결 수정");
+        System.out.println("=================================");
+
+        for (int i = 0; i < attendanceList.size(); i++) {
+            AttendanceDTO attendance = attendanceList.get(i);
+            System.out.println((i + 1) + ". "
+                    + attendance.getStudentName()
+                    + " - "
+                    + attendance.getAttendanceStatus());
+        }
+        System.out.println("0. 돌아가기");
+        System.out.print("수정할 학생 번호를 선택해주세요 : ");
+        int choice = inputInt();
+
+        if (choice == 0) {
+            outputView.printMessage("이전 메뉴로 돌아갑니다.");
+            return;
+        }
+
+        if (choice < 1 || choice > attendanceList.size()) {
+            outputView.printError("잘못된 번호입니다.");
+            return;
+        }
+
+        AttendanceDTO selectedAttendance = attendanceList.get(choice - 1);
+
+        System.out.println();
+        System.out.println("===== 선택한 학생 출결 정보 =====");
+        System.out.println("학생명 : " + selectedAttendance.getStudentName());
+        System.out.println("강의명 : " + selectedAttendance.getCourseTitle());
+        System.out.println("주차 : " + selectedAttendance.getWeek() + "주차");
+        System.out.println("현재 출결 상태 : " + selectedAttendance.getAttendanceStatus());
+
+        // ===== 출결 상태 선택 =====
+        System.out.println();
+        System.out.println("변경할 출결 상태를 선택해주세요.");
+        System.out.println("1. PRESENT");
+        System.out.println("2. LATE");
+        System.out.println("3. ABSENT");
+        System.out.println("4. EXCUSED");
+        System.out.println("0. 돌아가기");
+
+        System.out.print("번호 선택 : ");
+        int statusChoice = inputInt();
+
+        if (statusChoice == 0) {
+            outputView.printMessage("이전 메뉴로 돌아갑니다.");
+            return;
+        }
+
+        String newStatus;
+
+        switch (statusChoice) {
+            case 1: newStatus = "PRESENT"; break;
+            case 2: newStatus = "LATE"; break;
+            case 3: newStatus = "ABSENT"; break;
+            case 4: newStatus = "EXCUSED"; break;
+            default:
+                outputView.printError("잘못된 번호입니다.");
+                return;
+        }
+
+        // ===== 최종 확인 =====
+        System.out.print("정말 수정하시겠습니까? (Y/N) : ");
+        String confirm = sc.nextLine().trim().toUpperCase();
+
+        if (!confirm.equals("Y")) {
+            outputView.printMessage("수정이 취소되었습니다.");
+            return;
+        }
+
+        // ===== DB 업데이트 =====
+        boolean result = controller.updateAttendanceStatus(
+                selectedAttendance.getId(),
+                newStatus
+        );
+
+        // ===== 결과 출력 =====
+        if (result) {
+            System.out.println();
+            System.out.println("수정이 완료되었습니다.");
+            System.out.println("학생명 : " + selectedAttendance.getStudentName());
+            System.out.println("강의명 : " + selectedAttendance.getCourseTitle());
+            System.out.println("주차 : " + selectedAttendance.getWeek() + "주차");
+            System.out.println("변경 전 출결 상태 : " + selectedAttendance.getAttendanceStatus());
+            System.out.println("변경된 출결 상태 : " + newStatus);
+        } else {
+            outputView.printError("출결 수정에 실패했습니다.");
         }
     }
 
