@@ -29,7 +29,7 @@ public class SystemRouter {
         private final StudentGradeInputView studentGradeInputView;
         private final ProfessorGradeInputView professorGradeInputView;
         private final StudentAssignmentInputView studentAssignmentInputView;
-        private final ProfessorAssignmentInputView professorAssignmentInputView; // 👈 추가됨!
+        private final ProfessorAssignmentInputView professorAssignmentInputView;
         private final UsersInputView usersInputView;
         private final FindAccountView findAccountView;
 
@@ -43,19 +43,19 @@ public class SystemRouter {
                             StudentGradeInputView studentGradeInputView,
                             ProfessorGradeInputView professorGradeInputView,
                             StudentAssignmentInputView studentAssignmentInputView,
-                            ProfessorAssignmentInputView professorAssignmentInputView, // 👈 추가됨!
+                            ProfessorAssignmentInputView professorAssignmentInputView,
                             UsersInputView usersInputView) {
 
             this.loginView = loginView;
             this.signupView = signupView;
-            this.findAccountView = findAccountView; // 👈 추가!
+            this.findAccountView = findAccountView;
             this.studentCourseInputView = studentCourseInputView;
             this.studentAttendanceInputView = studentAttendanceInputView;
             this.professorAttendanceInputView = professorAttendanceInputView;
             this.studentGradeInputView = studentGradeInputView;
             this.professorGradeInputView = professorGradeInputView;
             this.studentAssignmentInputView = studentAssignmentInputView;
-            this.professorAssignmentInputView = professorAssignmentInputView; // 👈 추가됨!
+            this.professorAssignmentInputView = professorAssignmentInputView;
             this.usersInputView = usersInputView;
         }
 
@@ -74,14 +74,12 @@ public class SystemRouter {
 
                 switch (choice) {
                     case "1":
-                        // 💡 로그인을 LoginView에게 위임하고 결과만 받습니다!
                         boolean isLoginSuccess = loginView.showLoginMenu();
                         if (isLoginSuccess) {
                             routeToMainMenu(); // 성공했으면 메인 메뉴로 이동
                         }
                         break;
                     case "2":
-                        // 💡 회원가입을 SignupView에게 위임합니다!
                         signupView.showSignupMenu();
                         break;
                     case "3":

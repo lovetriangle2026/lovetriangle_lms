@@ -80,5 +80,33 @@ public class UsersDAO {
         }
     }
 
+    /**
+     * [추가] 로그인 ID를 기반으로 단일 사용자 정보를 조회합니다.
+     * 수정 후 세션 갱신을 위해 사용됩니다.
+     */
+    public UsersDTO getUserInfo(String loginId) throws SQLException {
+        // 💡 QueryUtil에 "Users.findByLoginId" 키가 등록되어 있어야 합니다.
+        String query = QueryUtil.getQuery("Users.findByLoginId");
 
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, loginId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return new UsersDTO(
+                            rset.getInt("id"),
+                            rset.getString("user_code"),
+                            rset.getString("login_id"),
+                            rset.getString("name"),
+                            rset.getDate("birth") != null ? rset.getDate("birth").toLocalDate() : null,
+                            rset.getString("tel_num"),
+                            rset.getString("password"), // 💡 기존 코드의 ' assword' 오타 수정했습니다!
+                            rset.getString("pw_answer"),
+                            rset.getString("user_type")
+                    );
+                }
+            }
+        }
+        return null; // 일치하는 유저가 없을 경우
+    }
 }

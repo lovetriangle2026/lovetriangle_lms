@@ -54,4 +54,14 @@ public class UsersService {
         }
     }
 
+    // UsersService.java 예시
+    public UsersDTO getUserInfo(String loginId) {
+        // DAO를 호출하여 DB에서 해당 ID의 정보를 한 줄 읽어옴
+        try {
+            return usersDAO.getUserInfo(loginId);
+        } catch (SQLException e) {
+            throw new RuntimeException("비밀번호 변경 처리 중 Error 발생!!! 🚨", e);
+        }
+    }
+
 }
