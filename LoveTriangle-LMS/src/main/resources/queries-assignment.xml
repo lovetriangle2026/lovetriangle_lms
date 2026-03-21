@@ -45,6 +45,7 @@ WHERE assignment_id = ? AND student_id = ?
         SELECT
         a.id,
         a.course_id,
+        c.title AS course_title,
         a.title,
         a.description,
         a.deadline,
@@ -52,16 +53,18 @@ WHERE assignment_id = ? AND student_id = ?
         WHEN s.id IS NOT NULL THEN '제출완료'
         ELSE '미제출'
         END AS submission_status,
-        s.content_title AS submission_content,
+        s.content AS submission_content,
         s.submitted_at
         FROM assignments a
+        JOIN courses c
+        ON a.course_id = c.id
         JOIN enrollments e
         ON a.course_id = e.course_id
         LEFT JOIN assignment_submissions s
         ON a.id = s.assignment_id
-        AND e.user_id = s.student_id
-        WHERE e.user_id = ?
-        ORDER BY a.deadline ASC
+        AND e.student_id = s.student_id
+        WHERE e.student_id = ?
+        ORDER BY c.title ASC, a.deadline ASC
     </query>
 
     <query key="professorAssignment.findAssignmentsByProfessor">
@@ -156,6 +159,15 @@ WHERE assignment_id = ? AND student_id = ?
         JOIN courses c ON a.course_id = c.id
         WHERE a.id = ?
         AND c.professor_id = ?
+    </query>
+
+    <query key="professorAssignment.findProfessorCourses">
+        SELECT
+        c.id AS course_id,
+        c.title AS course_title
+        FROM courses c
+        WHERE c.professor_id = ?
+        ORDER BY c.title ASC
     </query>
 
 

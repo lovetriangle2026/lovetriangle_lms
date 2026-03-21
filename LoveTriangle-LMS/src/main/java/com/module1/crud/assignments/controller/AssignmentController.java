@@ -8,6 +8,7 @@ import com.module1.crud.assignments.model.service.AssignmentService;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 public class AssignmentController {
 
@@ -55,6 +56,10 @@ public class AssignmentController {
 
     // ============================= 교수 파트 =================================
     // =============== 과제 조회 =================
+    public Map<Long, String> findProfessorCourses(Long professorId) {
+        return service.findProfessorCourses(professorId);
+    }
+
     public List<ProfessorAssignmentDTO> findAssignmentsByProfessor(Long professorId) {
         return service.findAssignmentsByProfessor(professorId);
     }

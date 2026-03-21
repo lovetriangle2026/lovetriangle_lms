@@ -7,7 +7,9 @@ import com.module1.crud.global.session.SessionManager;
 import com.module1.crud.users.model.dto.UsersDTO;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class ProfessorAssignmentInputView {
@@ -16,15 +18,12 @@ public class ProfessorAssignmentInputView {
     private final AssignmentOutputView outputView;
     private final Scanner sc1 = new Scanner(System.in);
 
-
     public ProfessorAssignmentInputView(AssignmentController controller, AssignmentOutputView outputView) {
         this.controller = controller;
         this.outputView = outputView;
-
     }
 
     public void displayMainmenu() {
-
         while (true) {
             System.out.println();
             System.out.println("=================================");
@@ -59,262 +58,303 @@ public class ProfessorAssignmentInputView {
                     outputView.printError("다시 선택해주세요.");
             }
         }
-
-
     }
-    // ============== 과제 삭제 ====================
+
+    private Map<Long, String> getProfessorCourses(Long professorId) {
+        return controller.findProfessorCourses(professorId);
+    }
+
+    private List<ProfessorAssignmentDTO> getProfessorAssignments(Long professorId) {
+        return controller.findAssignmentsByProfessor(professorId);
+    }
+
+    private List<ProfessorAssignmentDTO> filterAssignmentsByCourseId(List<ProfessorAssignmentDTO> assignmentList, Long courseId) {
+        List<ProfessorAssignmentDTO> filteredList = new ArrayList<>();
+
+        for (ProfessorAssignmentDTO dto : assignmentList) {
+            if (dto.getCourseId().equals(courseId)) {
+                filteredList.add(dto);
+            }
+        }
+
+        return filteredList;
+    }
+
+    private Long selectCourseId(Map<Long, String> courseMap, String actionName) {
+        if (courseMap == null || courseMap.isEmpty()) {
+            outputView.printError("담당 중인 강의가 없습니다.");
+            return null;
+        }
+
+        List<Long> courseIds = new ArrayList<>(courseMap.keySet());
+
+        while (true) {
+            outputView.printMessage("\n--- " + actionName + "할 강의 선택 ---");
+            outputView.printProfessorCourseMenu(courseMap);
+            System.out.print("번호를 입력해주세요: ");
+
+            try {
+                int choice = Integer.parseInt(sc1.nextLine());
+
+                if (choice == 0) {
+                    return null;
+                }
+
+                if (choice < 1 || choice > courseIds.size()) {
+                    outputView.printError("목록에 있는 번호만 입력해주세요.");
+                    continue;
+                }
+
+                return courseIds.get(choice - 1);
+
+            } catch (NumberFormatException e) {
+                outputView.printError("숫자로 입력해주세요.");
+            }
+        }
+    }
+
+    private ProfessorAssignmentDTO selectAssignment(List<ProfessorAssignmentDTO> filteredList, String courseTitle, String actionName) {
+        if (filteredList == null || filteredList.isEmpty()) {
+            outputView.printError("선택한 강의에 등록된 과제가 없습니다.");
+            return null;
+        }
+
+        while (true) {
+            outputView.printMessage("\n--- " + actionName + "할 과제 선택 ---");
+            outputView.printProfessorAssignmentMenu(courseTitle, filteredList);
+            System.out.print("번호를 입력해주세요: ");
+
+            try {
+                int choice = Integer.parseInt(sc1.nextLine());
+
+                if (choice == 0) {
+                    return null;
+                }
+
+                if (choice < 1 || choice > filteredList.size()) {
+                    outputView.printError("목록에 있는 번호만 입력해주세요.");
+                    continue;
+                }
+
+                return filteredList.get(choice - 1);
+
+            } catch (NumberFormatException e) {
+                outputView.printError("숫자로 입력해주세요.");
+            }
+        }
+    }
+
+    // ====================== 과제 삭제 ========================
     private void deleteAssignment() {
         UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
         Long professorId = (long) loggedInUser.getId();
 
         try {
-            List<ProfessorAssignmentDTO> assignmentList =
-                    controller.findAssignmentsByProfessor(professorId);
-
-            outputView.printProfessorAssignments(assignmentList);
+            List<ProfessorAssignmentDTO> assignmentList = getProfessorAssignments(professorId);
 
             if (assignmentList == null || assignmentList.isEmpty()) {
+                outputView.printError("삭제할 과제가 없습니다.");
                 return;
             }
 
-            while (true) {
-                System.out.print("삭제할 과제 번호를 입력하세요 (취소: 0): ");
+            Map<Long, String> courseMap = getProfessorCourses(professorId);
+            Long selectedCourseId = selectCourseId(courseMap, "삭제");
 
-                Long assignmentId;
-                try {
-                    assignmentId = Long.parseLong(sc1.nextLine());
-                } catch (NumberFormatException e) {
-                    outputView.printError("과제 번호는 숫자로 입력해주세요.");
-                    continue;
-                }
-
-                if (assignmentId == 0L) {
-                    outputView.printMessage("과제 삭제를 취소했습니다.");
-                    return;
-                }
-
-                boolean exists = controller.existsProfessorAssignment(assignmentId, professorId);
-
-                if (!exists) {
-                    outputView.printError("본인이 생성한 과제가 아닙니다. 다시 입력해주세요.");
-                    continue;
-                }
-
-                ProfessorAssignmentDTO selectedAssignment = null;
-                for (ProfessorAssignmentDTO dto : assignmentList) {
-                    if (dto.getAssignmentId().equals(assignmentId)) {
-                        selectedAssignment = dto;
-                        break;
-                    }
-                }
-
-                if (selectedAssignment == null) {
-                    outputView.printError("해당 과제를 찾을 수 없습니다.");
-                    continue;
-                }
-
-                System.out.println("\n삭제 대상 과제 정보");
-                System.out.println("과제 번호 : " + selectedAssignment.getAssignmentId());
-                System.out.println("강의 번호 : " + selectedAssignment.getCourseId());
-                System.out.println("과제명   : " + selectedAssignment.getAssignmentTitle());
-                System.out.println("설명     : " + selectedAssignment.getDescription());
-                System.out.println("마감일   : " + selectedAssignment.getDeadline());
-
-                System.out.print("정말 삭제하시겠습니까? (Y/N): ");
-                String confirm = sc1.nextLine().trim();
-
-                if (confirm.equalsIgnoreCase("N")) {
-                    outputView.printMessage("과제 삭제를 취소했습니다.");
-                    return;
-                }
-
-                if (!confirm.equalsIgnoreCase("Y")) {
-                    outputView.printError("Y 또는 N만 입력해주세요.");
-                    continue;
-                }
-
-                controller.deleteProfessorAssignment(assignmentId, professorId);
-                outputView.printMessage("✅ 과제 삭제가 완료되었습니다.");
+            if (selectedCourseId == null) {
+                outputView.printMessage("과제 삭제를 취소했습니다.");
                 return;
             }
+
+            String selectedCourseTitle = courseMap.get(selectedCourseId);
+            List<ProfessorAssignmentDTO> filteredList = filterAssignmentsByCourseId(assignmentList, selectedCourseId);
+
+            ProfessorAssignmentDTO selectedAssignment = selectAssignment(filteredList, selectedCourseTitle, "삭제");
+
+            if (selectedAssignment == null) {
+                outputView.printMessage("과제 삭제를 취소했습니다.");
+                return;
+            }
+
+            outputView.printProfessorAssignmentDetail(selectedAssignment);
+
+            System.out.print("정말 삭제하시겠습니까? (Y/N): ");
+            String confirm = sc1.nextLine().trim();
+
+            if (confirm.equalsIgnoreCase("N")) {
+                outputView.printMessage("과제 삭제를 취소했습니다.");
+                return;
+            }
+
+            if (!confirm.equalsIgnoreCase("Y")) {
+                outputView.printError("Y 또는 N만 입력해주세요.");
+                return;
+            }
+
+            controller.deleteProfessorAssignment(selectedAssignment.getAssignmentId(), professorId);
+            outputView.printMessage("✅ 과제 삭제가 완료되었습니다.");
 
         } catch (RuntimeException e) {
             outputView.printError(e.getMessage());
         }
-
     }
 
-    // =============== 과제 수정 =================
+    // ====================== 과제 수정 ========================
     private void updateAssignment() {
         UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
         Long professorId = (long) loggedInUser.getId();
 
         try {
-            List<ProfessorAssignmentDTO> assignmentList =
-                    controller.findAssignmentsByProfessor(professorId);
-
-            outputView.printProfessorAssignments(assignmentList);
+            List<ProfessorAssignmentDTO> assignmentList = getProfessorAssignments(professorId);
 
             if (assignmentList == null || assignmentList.isEmpty()) {
+                outputView.printError("수정할 과제가 없습니다.");
                 return;
             }
 
-            while (true) {
-                System.out.print("수정할 과제 번호를 입력하세요 (취소: 0): ");
+            Map<Long, String> courseMap = getProfessorCourses(professorId);
+            Long selectedCourseId = selectCourseId(courseMap, "수정");
 
-                Long assignmentId;
+            if (selectedCourseId == null) {
+                outputView.printMessage("과제 수정을 취소했습니다.");
+                return;
+            }
+
+            String selectedCourseTitle = courseMap.get(selectedCourseId);
+            List<ProfessorAssignmentDTO> filteredList = filterAssignmentsByCourseId(assignmentList, selectedCourseId);
+
+            ProfessorAssignmentDTO selectedAssignment = selectAssignment(filteredList, selectedCourseTitle, "수정");
+
+            if (selectedAssignment == null) {
+                outputView.printMessage("과제 수정을 취소했습니다.");
+                return;
+            }
+
+            outputView.printProfessorAssignmentDetail(selectedAssignment);
+
+            System.out.print("새 과제명을 입력하세요 (수정하지 않으려면 엔터): ");
+            String newTitle = sc1.nextLine().trim();
+            if (newTitle.isEmpty()) {
+                newTitle = selectedAssignment.getAssignmentTitle();
+            }
+
+            System.out.print("새 과제 내용을 입력하세요 (수정하지 않으려면 엔터): ");
+            String newDescription = sc1.nextLine().trim();
+            if (newDescription.isEmpty()) {
+                newDescription = selectedAssignment.getDescription();
+            }
+
+            System.out.print("새 마감일을 입력하세요 (예: 2026-03-25 23:59:59 / 수정하지 않으려면 엔터): ");
+            String deadlineInput = sc1.nextLine().trim();
+
+            Timestamp newDeadline;
+            if (deadlineInput.isEmpty()) {
+                newDeadline = selectedAssignment.getDeadline();
+            } else {
                 try {
-                    assignmentId = Long.parseLong(sc1.nextLine());
-                } catch (NumberFormatException e) {
-                    outputView.printError("과제 번호는 숫자로 입력해주세요.");
-                    continue;
-                }
-
-                if (assignmentId == 0L) {
-                    outputView.printMessage("과제 수정을 취소했습니다.");
+                    newDeadline = Timestamp.valueOf(deadlineInput);
+                } catch (IllegalArgumentException e) {
+                    outputView.printError("마감일 형식이 올바르지 않습니다. 예: 2026-03-25 23:59:59");
                     return;
                 }
 
-                boolean exists = controller.existsProfessorAssignment(assignmentId, professorId);
-
-                if (!exists) {
-                    outputView.printError("본인이 생성한 과제가 아닙니다. 다시 입력해주세요.");
-                    continue;
-                }
-
-                ProfessorAssignmentDTO selectedAssignment = null;
-                for (ProfessorAssignmentDTO dto : assignmentList) {
-                    if (dto.getAssignmentId().equals(assignmentId)) {
-                        selectedAssignment = dto;
-                        break;
-                    }
-                }
-
-                if (selectedAssignment == null) {
-                    outputView.printError("해당 과제를 찾을 수 없습니다.");
-                    continue;
-                }
-
-                System.out.println("\n현재 과제 정보");
-                System.out.println("과제명 : " + selectedAssignment.getAssignmentTitle());
-                System.out.println("설명   : " + selectedAssignment.getDescription());
-                System.out.println("마감일 : " + selectedAssignment.getDeadline());
-
-                System.out.print("새 과제명을 입력하세요 (수정하지 않으려면 엔터): ");
-                String newTitle = sc1.nextLine().trim();
-                if (newTitle.isEmpty()) {
-                    newTitle = selectedAssignment.getAssignmentTitle();
-                }
-
-                System.out.print("새 과제 설명을 입력하세요 (수정하지 않으려면 엔터): ");
-                String newDescription = sc1.nextLine().trim();
-                if (newDescription.isEmpty()) {
-                    newDescription = selectedAssignment.getDescription();
-                }
-
-                System.out.print("새 마감일을 입력하세요 (예: 2026-03-25 23:59:59 / 수정하지 않으려면 엔터): ");
-                String deadlineInput = sc1.nextLine().trim();
-
-                java.sql.Timestamp newDeadline;
-                if (deadlineInput.isEmpty()) {
-                    newDeadline = selectedAssignment.getDeadline();
-                } else {
-                    try {
-                        newDeadline = java.sql.Timestamp.valueOf(deadlineInput);
-                    } catch (IllegalArgumentException e) {
-                        outputView.printError("마감일 형식이 올바르지 않습니다. 예: 2026-03-25 23:59:59");
-                        continue;
-                    }
-                }
                 if (newDeadline.before(new Timestamp(System.currentTimeMillis()))) {
                     outputView.printError("마감일은 현재 시각 이후로 입력해야 합니다.");
-                    continue;
+                    return;
                 }
-
-                controller.updateProfessorAssignment(assignmentId, professorId, newTitle, newDescription, newDeadline);
-                outputView.printMessage("✅ 과제 수정이 완료되었습니다.");
-                return;
             }
+
+            controller.updateProfessorAssignment(
+                    selectedAssignment.getAssignmentId(),
+                    professorId,
+                    newTitle,
+                    newDescription,
+                    newDeadline
+            );
+
+            outputView.printMessage("✅ 과제 수정이 완료되었습니다.");
 
         } catch (RuntimeException e) {
             outputView.printError(e.getMessage());
         }
     }
 
-
-    // ============================ 과제 생성 ============================
+    // ====================== 과제 생성 ========================
     private void createAssignment() {
         outputView.printMessage("\n--- 과제 생성 ---");
 
         UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
         Long professorId = (long) loggedInUser.getId();
 
-        while (true) {
-            try {
-                System.out.print("과제를 생성할 강의 번호를 입력하세요 (취소: 0): ");
-                Long courseId = Long.parseLong(sc1.nextLine());
+        try {
+            Map<Long, String> courseMap = getProfessorCourses(professorId);
 
-                if (courseId == 0L) {
-                    outputView.printMessage("과제 생성을 취소했습니다.");
-                    return;
-                }
-
-                boolean canCreate = controller.existsProfessorCourse(courseId, professorId);
-
-                if (!canCreate) {
-                    outputView.printError("본인이 담당하는 강의가 아닙니다. 다시 입력해주세요.");
-                    continue;
-                }
-
-                boolean alreadyExists = controller.existsAssignmentByCourse(courseId);
-
-                if (alreadyExists) {
-                    outputView.printError("이미 과제가 생성되어 있습니다!");
-                    continue;
-                }
-
-                System.out.print("과제명을 입력하세요: ");
-                String title = sc1.nextLine().trim();
-                if (title.isEmpty()) {
-                    outputView.printError("과제명은 비워둘 수 없습니다.");
-                    continue;
-                }
-
-                System.out.print("과제 설명을 입력하세요: ");
-                String description = sc1.nextLine().trim();
-                if (description.isEmpty()) {
-                    outputView.printError("과제 설명은 비워둘 수 없습니다.");
-                    continue;
-                }
-
-                System.out.print("마감일을 입력하세요 (예: 2026-03-25 23:59:59): ");
-                String deadlineInput = sc1.nextLine().trim();
-
-                Timestamp deadline;
-                try {
-                    deadline = Timestamp.valueOf(deadlineInput);
-                } catch (IllegalArgumentException e) {
-                    outputView.printError("마감일 형식이 올바르지 않습니다. 예: 2026-03-25 23:59:59");
-                    continue;
-                } if (deadline.before(new Timestamp(System.currentTimeMillis()))) {
-                    outputView.printError("마감일은 현재 시각 이후로 입력해야 합니다.");
-                    continue;
-                }
-
-                controller.createAssignment(courseId, title, description, deadline);
-                outputView.printMessage("✅ 과제 생성이 완료되었습니다.");
-                return;
-
-            } catch (NumberFormatException e) {
-                outputView.printError("강의 번호는 숫자로 입력해주세요.");
-            } catch (RuntimeException e) {
-                outputView.printError(e.getMessage());
+            if (courseMap == null || courseMap.isEmpty()) {
+                outputView.printError("담당 중인 강의가 없습니다.");
                 return;
             }
+
+            Long selectedCourseId = selectCourseId(courseMap, "생성");
+            if (selectedCourseId == null) {
+                outputView.printMessage("과제 생성을 취소했습니다.");
+                return;
+            }
+
+            String selectedCourseTitle = courseMap.get(selectedCourseId);
+
+            boolean canCreate = controller.existsProfessorCourse(selectedCourseId, professorId);
+            if (!canCreate) {
+                outputView.printError("본인이 담당하는 강의가 아닙니다.");
+                return;
+            }
+
+            boolean alreadyExists = controller.existsAssignmentByCourse(selectedCourseId);
+            if (alreadyExists) {
+                outputView.printError("이미 해당 강의에 과제가 생성되어 있습니다.");
+                return;
+            }
+
+            System.out.println("\n선택한 강의");
+            System.out.println("강의명 : " + selectedCourseTitle);
+
+            System.out.print("과제명을 입력하세요: ");
+            String title = sc1.nextLine().trim();
+            if (title.isEmpty()) {
+                outputView.printError("과제명은 비워둘 수 없습니다.");
+                return;
+            }
+
+            System.out.print("과제 내용을 입력하세요: ");
+            String description = sc1.nextLine().trim();
+            if (description.isEmpty()) {
+                outputView.printError("과제 내용은 비워둘 수 없습니다.");
+                return;
+            }
+
+            System.out.print("마감일을 입력하세요 (예: 2026-03-25 23:59:59): ");
+            String deadlineInput = sc1.nextLine().trim();
+
+            Timestamp deadline;
+            try {
+                deadline = Timestamp.valueOf(deadlineInput);
+            } catch (IllegalArgumentException e) {
+                outputView.printError("마감일 형식이 올바르지 않습니다. 예: 2026-03-25 23:59:59");
+                return;
+            }
+
+            if (deadline.before(new Timestamp(System.currentTimeMillis()))) {
+                outputView.printError("마감일은 현재 시각 이후로 입력해야 합니다.");
+                return;
+            }
+
+            controller.createAssignment(selectedCourseId, title, description, deadline);
+            outputView.printMessage("✅ 과제 생성이 완료되었습니다.");
+
+        } catch (RuntimeException e) {
+            outputView.printError(e.getMessage());
         }
     }
 
-    // ====================== 과제 조회 ========================
+    // ====================== 과제 조회 메뉴 ========================
     private void findAllAssignments() {
         while (true) {
             System.out.println("\n---------------------------------");
@@ -347,38 +387,42 @@ public class ProfessorAssignmentInputView {
         UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
         Long professorId = (long) loggedInUser.getId();
 
-        while (true) {
-            System.out.print("제출 현황을 조회할 과제 번호를 입력하세요 (취소: 0): ");
+        try {
+            List<ProfessorAssignmentDTO> assignmentList = getProfessorAssignments(professorId);
 
-            try {
-                Long assignmentId = Long.parseLong(sc1.nextLine());
-
-                if (assignmentId == 0L) {
-                    outputView.printMessage("조회가 취소되었습니다.");
-                    return;
-                }
-
-                boolean exists = controller.existsProfessorAssignment(assignmentId, professorId);
-
-                if (!exists) {
-                    outputView.printError("본인이 생성한 과제가 아닙니다. 다시 입력해주세요.");
-                    continue;
-                }
-
-                List<ProfessorAssignmentSubmissionDTO> list =
-                        controller.findSubmissionStatusByAssignment(assignmentId, professorId);
-
-                outputView.printProfessorSubmissionStatus(list);
-                return;
-
-            } catch (NumberFormatException e) {
-                outputView.printError("과제 번호는 숫자로 입력해주세요.");
-            } catch (RuntimeException e) {
-                outputView.printError(e.getMessage());
+            if (assignmentList == null || assignmentList.isEmpty()) {
+                outputView.printError("조회할 과제가 없습니다.");
                 return;
             }
-        }
 
+            Map<Long, String> courseMap = getProfessorCourses(professorId);
+            Long selectedCourseId = selectCourseId(courseMap, "제출 현황 조회");
+
+            if (selectedCourseId == null) {
+                outputView.printMessage("조회가 취소되었습니다.");
+                return;
+            }
+
+            String selectedCourseTitle = courseMap.get(selectedCourseId);
+            List<ProfessorAssignmentDTO> filteredList = filterAssignmentsByCourseId(assignmentList, selectedCourseId);
+
+            ProfessorAssignmentDTO selectedAssignment = selectAssignment(filteredList, selectedCourseTitle, "제출 현황 조회");
+
+            if (selectedAssignment == null) {
+                outputView.printMessage("조회가 취소되었습니다.");
+                return;
+            }
+
+            outputView.printProfessorAssignmentDetail(selectedAssignment);
+
+            List<ProfessorAssignmentSubmissionDTO> list =
+                    controller.findSubmissionStatusByAssignment(selectedAssignment.getAssignmentId(), professorId);
+
+            outputView.printProfessorSubmissionStatus(list);
+
+        } catch (RuntimeException e) {
+            outputView.printError(e.getMessage());
+        }
     }
 
     private void findMyAssignmentsOnly() {
@@ -386,27 +430,45 @@ public class ProfessorAssignmentInputView {
         Long professorId = (long) loggedInUser.getId();
 
         try {
-            List<ProfessorAssignmentDTO> assignmentList =
-                    controller.findAssignmentsByProfessor(professorId);
+            List<ProfessorAssignmentDTO> assignmentList = getProfessorAssignments(professorId);
 
-            outputView.printProfessorAssignments(assignmentList);
+            if (assignmentList == null || assignmentList.isEmpty()) {
+                outputView.printError("조회할 과제가 없습니다.");
+                return;
+            }
+
+            Map<Long, String> courseMap = getProfessorCourses(professorId);
+            Long selectedCourseId = selectCourseId(courseMap, "조회");
+
+            if (selectedCourseId == null) {
+                outputView.printMessage("조회가 취소되었습니다.");
+                return;
+            }
+
+            String selectedCourseTitle = courseMap.get(selectedCourseId);
+            List<ProfessorAssignmentDTO> filteredList = filterAssignmentsByCourseId(assignmentList, selectedCourseId);
+
+            ProfessorAssignmentDTO selectedAssignment = selectAssignment(filteredList, selectedCourseTitle, "조회");
+
+            if (selectedAssignment == null) {
+                outputView.printMessage("조회가 취소되었습니다.");
+                return;
+            }
+
+            outputView.printProfessorAssignmentDetail(selectedAssignment);
 
         } catch (RuntimeException e) {
             outputView.printError(e.getMessage());
         }
     }
 
-
     private int inputInt() {
         while (true) {
             try {
-                int value = Integer.parseInt(sc1.nextLine());
-                return value;
+                return Integer.parseInt(sc1.nextLine());
             } catch (NumberFormatException e) {
                 System.out.print("숫자만 입력해주세요 : ");
             }
         }
     }
-
-
 }

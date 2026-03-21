@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 public class AssignmentService {
 
@@ -107,6 +108,14 @@ public class AssignmentService {
 
     // ======================================= 교수 파트 =====================================
     // ========================== 과제 조회 =========================
+    public Map<Long, String> findProfessorCourses(Long professorId) {
+        try {
+            return assignmentDAO.findProfessorCourses(professorId);
+        } catch (SQLException e) {
+            throw new RuntimeException("교수 강의 조회 중 오류 발생 🚨 " + e.getMessage());
+        }
+    }
+
     public List<ProfessorAssignmentDTO> findAssignmentsByProfessor(Long professorId) {
         try {
             return assignmentDAO.findAssignmentsByProfessor(professorId);

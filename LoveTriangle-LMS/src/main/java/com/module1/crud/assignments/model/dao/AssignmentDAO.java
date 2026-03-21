@@ -9,6 +9,8 @@ import com.module1.crud.global.utils.QueryUtil;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class AssignmentDAO {
 
@@ -32,6 +34,7 @@ public class AssignmentDAO {
                     StudentAssignmentDTO assignment = new StudentAssignmentDTO(
                             rset.getLong("id"),
                             rset.getLong("course_id"),
+                            rset.getString("course_title"),
                             rset.getString("title"),
                             rset.getString("description"),
                             rset.getTimestamp("deadline"),
@@ -85,6 +88,26 @@ public class AssignmentDAO {
 
     // ====================================== 교수 파트 ========================================
     // ================= 과제 조회 ====================
+    public Map<Long, String> findProfessorCourses(Long professorId) throws SQLException {
+        String query = QueryUtil.getQuery("professorAssignment.findProfessorCourses");
+        Map<Long, String> courseMap = new LinkedHashMap<>();
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setLong(1, professorId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                while (rset.next()) {
+                    courseMap.put(
+                            rset.getLong("course_id"),
+                            rset.getString("course_title")
+                    );
+                }
+            }
+        }
+
+        return courseMap;
+    }
+
     public List<ProfessorAssignmentDTO> findAssignmentsByProfessor(Long professorId) throws SQLException {
         String query = QueryUtil.getQuery("professorAssignment.findAssignmentsByProfessor");
         List<ProfessorAssignmentDTO> assignmentList = new ArrayList<>();
