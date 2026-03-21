@@ -18,6 +18,11 @@ dependencies {
     implementation("com.zaxxer:HikariCP:5.1.0")
     // Source: https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     testImplementation("org.slf4j:slf4j-simple:2.0.17")
+    dependencies {
+        // 비밀번호 암호화를 위한 jBcrypt 라이브러리
+        implementation 'org.mindrot:jbcrypt:0.4'
+        // (나머지 기존 설정들...)
+    }
 }
 
 test {

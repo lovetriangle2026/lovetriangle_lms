@@ -32,5 +32,9 @@ public class UsersController {
          * */
         return service.updateUser(updatedUser);
     }
+    public UsersDTO getUserInfo(String loginId) {
+        // Service 계층으로 조회를 요청합니다.
+        return service.getUserInfo(loginId);
+    }
 
 }

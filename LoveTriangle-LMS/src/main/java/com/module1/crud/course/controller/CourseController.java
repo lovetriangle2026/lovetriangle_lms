@@ -16,16 +16,20 @@ public class CourseController {
     }
 
 
-    public void findAllCourses() { // 반환타입을 void로!
+    public List<CourseDTO> findAllCourses() { // 반환타입을 void로!
         List<CourseDTO> courseList = service.findAllCourses();
         ProfOutputView profOutputView = new ProfOutputView();
         profOutputView.displayCourseList(courseList); //
+        return courseList;
     }
 
 
 
     public List<CourseDTO> findMyCourses(int userId) throws SQLException {
         return service.findMyCourses(userId);
+    }
+    public boolean enrollCourse(int userId, int courseId) {
+        return service.enrollCourse(userId, courseId);
     }
 
     public void registerNewCourse() {
