@@ -111,7 +111,7 @@ public class AppConfig {
 
     public static ProfessorAssignmentInputView createProfessorAssignmentInputView() {
         return new ProfessorAssignmentInputView(new AssignmentController(new AssignmentService()), new AssignmentOutputView());
-
-
     }
+
+
 }

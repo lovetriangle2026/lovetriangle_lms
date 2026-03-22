@@ -18,24 +18,25 @@ public class SystemRouter {
     // 1. 시스템 최초 진입점
     public void start() {
 
-// 🚀 [백그라운드 예열]
         new Thread(() -> {
-            long dbStart = System.currentTimeMillis(); // DB 예열 시작 시간
-
             try (Connection warmup = JDBCTemplate.getConnection()) {
-                long dbEnd = System.currentTimeMillis(); // DB 예열 완료 시간
-
-                // 유저가 메뉴를 보고 있는 도중에 슬쩍 출력됩니다.
-                System.out.printf("\n [System] DB 커넥션 풀 예열 완료! (소요 시간: %.2f초)%n", (dbEnd - dbStart) / 1000.0);
-                System.out.print("▶ 메뉴 선택: "); // 출력 후 커서 위치 보정용
-
             } catch (Exception e) {
-                // 예열 실패 시 무시
             }
         }).start();
 
         while (true) {
-            System.out.println("\n========= [LMS 시스템 시작] =========");
+            System.out.println("\n");
+            System.out.println("      🌿🍃🌿🍃🌿🍃🌿🍃🌿🍃🌿🍃🌿🍃🌿🍃🌿🍃🌿🍃🌿");
+            System.out.println("      🌿                                           🌿");
+            System.out.println("      🍃      ╔══════════════════════════════╗     🍃");
+            System.out.println("      🌿      ║                              ║     🌿");
+            System.out.println("      🍃      ║      AMAZON UNIVERSITY       ║     🍃");
+            System.out.println("      🌿      ║         LMS SYSTEM           ║     🌿");
+            System.out.println("      🍃      ║                              ║     🍃");
+            System.out.println("      🌿      ╚══════════════════════════════╝     🌿");
+            System.out.println("      🍃                                           🍃");
+            System.out.println("      🌿🍃🌿🍃🌿🍃🌿🍃🌿🍃🌿🍃🌿🍃🌿🍃🌿🍃🌿🍃🌿");
+            System.out.println("\n========= [메인 메뉴] ==========");
             System.out.println("1. 로그인");
             System.out.println("2. 회원가입");
             System.out.println("3. 아이디/비밀번호 찾기");
@@ -92,7 +93,10 @@ public class SystemRouter {
 
             System.out.println("\n========= [학생 메인 메뉴] =========");
             System.out.println("로그인 유저: " + user.getName() + " (" + user.getUserCode() + ")");
-            System.out.println("1. 강의관리 | 2. 출결관리 | 3. 성적관리 | 4. 과제관리 | 5. 내 정보 수정 | 0. 로그아웃");
+            System.out.println(" 1. 로그인");
+            System.out.println(" 2. 회원가입");
+            System.out.println(" 3. 아이디/비밀번호 찾기");
+            System.out.println(" 0. 로그아웃");
             System.out.print("▶ 메뉴 선택: ");
 
             String choice = sc.nextLine();
@@ -117,7 +121,12 @@ public class SystemRouter {
             if (SessionManager.getInstance().getLoggedInUser() == null) return;
 
             System.out.println("\n========= [교수 메인 메뉴] =========");
-            System.out.println("1. 강의관리 | 2. 출결관리 | 3. 성적관리 | 4. 과제관리 | 5. 회원관리 | 0. 로그아웃");
+            System.out.println(" 1. 강의관리");
+            System.out.println(" 2. 출결관리");
+            System.out.println(" 3. 성적관리");
+            System.out.println(" 4. 과제관리");
+            System.out.println(" 5. 회원관리");
+            System.out.println(" 0. 로그아웃");
             System.out.print("▶ 메뉴 선택: ");
 
             String choice = sc.nextLine();
