@@ -12,14 +12,13 @@ public class SystemRouter {
 
     private final Scanner sc = new Scanner(System.in);
 
-    // 💡 10개나 되던 뷰 필드와 거대한 생성자가 전부 사라졌습니다!
     public SystemRouter() {
     }
 
     // 1. 시스템 최초 진입점
     public void start() {
 
-// 🚀 [백그라운드 예열 타이머]
+// 🚀 [백그라운드 예열]
         new Thread(() -> {
             long dbStart = System.currentTimeMillis(); // DB 예열 시작 시간
 
