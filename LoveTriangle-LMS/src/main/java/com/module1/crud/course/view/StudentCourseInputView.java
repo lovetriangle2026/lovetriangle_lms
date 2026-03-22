@@ -75,7 +75,7 @@ public class StudentCourseInputView {
 
     private void displayAllCourse() {
 
-        outputView.printMessage("\n--- [기초 실습] 강좌 목록 전체 조회 ---");
+        outputView.printMessage("\n============[기초 실습] 강좌 목록 전체 조회 ============");
         controller.findAllCourses();
 //        outputView.printCourses(courseList);
 
@@ -83,7 +83,7 @@ public class StudentCourseInputView {
     //여기부터 본인이 신청한 강의 조회 기능
     private void FindMyCourses(int userId) throws SQLException {
 
-        outputView.printMessage("--- 내가 신청한 강의 목록 조회 ---");
+        outputView.printMessage("============ 내가 신청한 강의 목록 조회 ============");
         // 1. 컨트롤러를 불러서 내 강의 목록 가져오기
         List<CourseDTO> myCourseList = controller.findMyCourses(userId);
 
@@ -131,7 +131,7 @@ public class StudentCourseInputView {
             return;
         }
 
-        System.out.println("\n=== 수강 중인 강의 목록 ===");
+        System.out.println("\n============수강 중인 강의 목록 ============");
         for (int i = 0; i < myCourses.size(); i++) {
             System.out.println((i + 1) + ". " + myCourses.get(i).getTitle());
         }

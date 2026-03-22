@@ -31,6 +31,8 @@ public class ProfOutputView {
             System.out.println("========================================\n");
         }
 
+
+
     public void displayResult(boolean result) {
         if (result) {
             System.out.println("성공 !! 새로운 강의가 등록되었습니다.");
@@ -39,25 +41,38 @@ public class ProfOutputView {
         }
     }
 
+    // 기존의 displaySessionList 메서드 내용을 아래로 교체하세요!
     public void displaySessionList(List<SessionDTO> sessionList) {
-        System.out.println("\n========= 주차별 강의 목록 =========");
+        System.out.println("\n==================== 📘 주차별 강의 상세 조회 ====================");
 
         if (sessionList == null || sessionList.isEmpty()) {
-            System.out.println("등록된 주차별 강의가 없습니다.");
+            System.out.println("🚨 등록된 주차별 강의 내용이 없습니다.");
         } else {
+            // 표 헤더 출력
+            System.out.printf("%-10s | %-5s | %-25s | %-20s\n", "과목번호", "주차", "강의 제목", "일시");
+            System.out.println("-----------------------------------------------------------------------");
+
+            int week = 1;
             for (SessionDTO session : sessionList) {
-                System.out.println(session);
+                // 날짜 가공 (T 빼고 초 단위 잘라내기)
+                String formattedDate = session.getStartAt().toString().replace("T", " ").substring(0, 16);
+
+                // 데이터 출력
+                System.out.printf("ID:%-7d | %-5d | %-25s | %-20s\n",
+                        session.getCourseId(),
+                        week++,
+                        session.getTitle(),
+                        formattedDate);
             }
         }
-
-        System.out.println("=================================\n");
+        System.out.println("=======================================================================\n");
     }
 
     public void displaySessionUpdateResult(boolean result) {
         if (result) {
-            System.out.println("주차별 강의 내용 등록 성공!");
+            System.out.println("주차별 강의 내용 수정 성공!");
         } else {
-            System.out.println("주차별 강의 내용 등록 실패!");
+            System.out.println("주차별 강의 내용 수정 실패!");
         }
     }
     }
