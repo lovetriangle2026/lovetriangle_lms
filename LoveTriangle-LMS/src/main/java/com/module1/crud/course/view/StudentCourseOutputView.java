@@ -1,6 +1,7 @@
 package com.module1.crud.course.view;
 
 import com.module1.crud.course.model.dto.CourseDTO;
+import com.module1.crud.course.model.dto.SessionDTO;
 
 import java.util.List;
 
@@ -21,5 +22,19 @@ public class StudentCourseOutputView {
             System.out.println(courseDTO);
         }
 
+    }
+
+    public void displaySessionList(List<SessionDTO> sessionList) {
+        System.out.println("\n========= 주차별 강의 목록 =========");
+
+        if (sessionList == null || sessionList.isEmpty()) {
+            System.out.println("등록된 주차별 강의가 없습니다.");
+        } else {
+            for (SessionDTO session : sessionList) {
+                System.out.println(session);
+            }
+        }
+
+        System.out.println("=================================\n");
     }
 }
