@@ -445,5 +445,43 @@ public class AttendanceDAO {
             return pstmt.executeUpdate() > 0;
         }
     }
+    public List<SessionDTO> findSessionsByCourseId(Connection con, int courseId) throws SQLException {
+
+        String query = QueryUtil.getQuery("attendance.findSessionsByCourseId");
+        List<SessionDTO> sessionList = new ArrayList<>();
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setInt(1, courseId);
+
+            ResultSet rset = pstmt.executeQuery();
+
+            while (rset.next()) {
+                SessionDTO session = new SessionDTO();
+                session.setId(rset.getInt("session_id"));
+                session.setCourseId(rset.getInt("course_id"));
+                session.setWeek(rset.getInt("week"));
+                session.setStartAt(rset.getTimestamp("start_at"));
+                session.setEndAt(rset.getTimestamp("end_at"));
+
+                sessionList.add(session);
+            }
+        }
+
+        return sessionList;
+    }
+
+    public int updateToExcusedPending(Connection con, int studentId, int sessionId) throws SQLException {
+
+        String query = QueryUtil.getQuery("attendance.updateToExcusedPending");
+        System.out.println("🔥 쿼리 확인 = [" + query + "]");
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setInt(1, studentId);
+            pstmt.setInt(2, sessionId);
+
+            return pstmt.executeUpdate();
+        }
+    }
+
 
 }

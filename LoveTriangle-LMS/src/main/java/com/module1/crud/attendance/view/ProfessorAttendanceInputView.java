@@ -1,6 +1,7 @@
 package com.module1.crud.attendance.view;
 
 import com.module1.crud.attendance.controller.AttendanceController;
+import com.module1.crud.attendance.controller.AttendanceStatusConverter;
 import com.module1.crud.attendance.model.dto.AttendanceDTO;
 import com.module1.crud.attendance.model.dto.ProfessorCourseDTO;
 import com.module1.crud.global.session.SessionManager;
@@ -146,10 +147,10 @@ public class ProfessorAttendanceInputView {
         // ===== 출결 상태 선택 =====
         System.out.println();
         System.out.println("변경할 출결 상태를 선택해주세요.");
-        System.out.println("1. PRESENT");
-        System.out.println("2. LATE");
-        System.out.println("3. ABSENT");
-        System.out.println("4. EXCUSED");
+        System.out.println("1. 출석");
+        System.out.println("2. 지각");
+        System.out.println("3. 결석");
+        System.out.println("4. 공결");
         System.out.println("0. 돌아가기");
 
         System.out.print("번호 선택 : ");
@@ -194,8 +195,8 @@ public class ProfessorAttendanceInputView {
             System.out.println("학생명 : " + selectedAttendance.getStudentName());
             System.out.println("강의명 : " + selectedAttendance.getCourseTitle());
             System.out.println("주차 : " + selectedAttendance.getWeek() + "주차");
-            System.out.println("변경 전 출결 상태 : " + selectedAttendance.getAttendanceStatus());
-            System.out.println("변경된 출결 상태 : " + newStatus);
+            System.out.println("변경 전 출결 상태 : " + AttendanceStatusConverter.toKorean(selectedAttendance.getAttendanceStatus()));
+            System.out.println("변경된 출결 상태 : " + AttendanceStatusConverter.toKorean(newStatus));
         } else {
             outputView.printError("출결 수정에 실패했습니다.");
         }

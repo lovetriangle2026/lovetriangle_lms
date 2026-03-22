@@ -198,5 +198,33 @@ public class AttendanceService {
             return "LATE";
         }
     }
+    public List<SessionDTO> findSessionsByCourseId(int courseId) {
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return attendanceDAO.findSessionsByCourseId(con, courseId);
+        } catch (SQLException e) {
+            throw new RuntimeException("주차 조회 중 오류 🚨 " + e);
+        }
+    }
 
+    public boolean applyExcuseRequest(int studentId, int sessionId) {
+        try (Connection con = JDBCTemplate.getConnection()) {
+            AttendanceDTO attendance =
+                    attendanceDAO.findByStudentIdAndSessionId(con, studentId, sessionId);
+
+            if (attendance == null) {
+                return false;
+            }
+
+            if ("EXCUSED".equals(attendance.getAttendanceStatus())
+                    || "EXCUSED_PENDING".equals(attendance.getAttendanceStatus())) {
+                return false;
+            }
+
+            int result = attendanceDAO.updateToExcusedPending(con, studentId, sessionId);
+            return result > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("공결 신청 중 오류 🚨 " + e);
+        }
+    }
 }
