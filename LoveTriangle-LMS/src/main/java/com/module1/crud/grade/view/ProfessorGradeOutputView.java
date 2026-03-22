@@ -23,36 +23,45 @@ public class ProfessorGradeOutputView {
             return;
         }
 
-        System.out.println("================================================================================");
-        System.out.printf("%-5s %-10s %-18s %-6s %-6s %-10s%n",
-                "학번", "학생명", "과목명", "중간", "기말", "환산점수");
-        System.out.println("================================================================================");
+        String line = "==========================================================================================================";
+        String headLine = "----------------------------------------------------------------------------------------------------------";
 
-        String prevCourse = null; // ⭐ 이전 과목 저장
+        System.out.println("\n" + line);
+        System.out.println("                                     📚 학생 성적 통합 조회");
+        System.out.println(line);
+
+        // 헤더 구성 (너비 조정)
+        System.out.println(
+                padRight("학번", 8) + " | " +
+                        padRight("학생명", 10) + " | " +
+                        padRight("과목명", 20) + " | " +
+                        padRight("출석", 8) + " | " + // ⭐ 추가
+                        padRight("중간(원/35)", 12) + " | " +
+                        padRight("기말(원/35)", 12) + " | " +
+                        padRight("과제", 6) + " | " +
+                        padRight("총점", 8) + " | " +
+                        padRight("등급", 5)
+        );
+        System.out.println(headLine);
 
         for (GradeViewDTO dto : gradeList) {
+            // 중간/기말 원점수와 환산점수를 "85 / 29.7" 형태로 결합
+            String midStr = value(dto.getMidterm_score()) + "/" + value(dto.getMidterm_35());
+            String finStr = value(dto.getFinal_score()) + "/" + value(dto.getFinal_35());
 
-            // ⭐ 과목이 바뀌면 구분선 출력
-            if (prevCourse != null && !prevCourse.equals(dto.getCourse_title())) {
-                System.out.println("--------------------------------------------------------------------------------");
-            }
-
-            System.out.printf("%-5d %-10s %-18s %-6s %-6s %-10s%n",
-                    dto.getStudentId(),
-                    dto.getStudentName(),
-                    dto.getCourse_title(),
-                    value(dto.getMidterm_score()),
-                    value(dto.getFinal_score()),
-                    value(dto.getMidterm_35()) // 원하는 값으로 바꿔도 됨
+            System.out.println(
+                    padRight(String.valueOf(dto.getStudentId()), 8) + " | " +
+                            padRight(dto.getStudentName(), 10) + " | " +
+                            padRight(dto.getCourse_title(), 20) + " | " +
+                            padRight(value(dto.getAttendance_score()), 8) + " | " + // ⭐ 추가
+                            padRight(midStr, 12) + " | " +
+                            padRight(finStr, 12) + " | " +
+                            padRight(value(dto.getAssignment_score()), 6) + " | " +
+                            padRight(value(dto.getTotal_score()), 8) + " | " +
+                            padRight(value(dto.getGrade()), 5)
             );
-
-            prevCourse = dto.getCourse_title(); // ⭐ 현재 과목 저장
         }
-
-        System.out.println("================================================================================");
-    }
-    private String value(Object obj) {
-        return obj == null ? "-" : obj.toString();
+        System.out.println(line);
     }
 
     public void printmessage(String s) {
@@ -66,32 +75,29 @@ public class ProfessorGradeOutputView {
             return;
         }
 
-        System.out.println("================================================================================");
-        System.out.printf("%-4s %-10s %-18s %-8s %-8s %-8s%n",
-                "번호", "학생명", "과목명", "중간", "기말", "과제");
-        System.out.println("================================================================================");
+        // 상단 가로선 (전체 너비에 맞춰 조절 가능)
+        String line = "==========================================================================================";
 
-        String prevCourse = null;
+        System.out.println("\n" + padRight("번호", 6) + padRight("학생명", 12) + padRight("과목명", 24) + padRight("중간", 10) + padRight("기말", 10) + padRight("과제", 10));
+        System.out.println(line);
 
         for (int i = 0; i < gradeList.size(); i++) {
             GradeEditDTO grade = gradeList.get(i);
 
-            if (prevCourse != null && !prevCourse.equals(grade.getCourseTitle())) {
-                System.out.println("--------------------------------------------------------------------------------");
-            }
-
-            System.out.printf("%-4d %-10s %-18s %-8s %-8s %-8s%n",
-                    (i + 1),
-                    value(grade.getStudentName()),
-                    value(grade.getCourseTitle()),
-                    value(grade.getMidtermScore()),
-                    value(grade.getFinalScore()),
-                    value(grade.getAssignmentScore()));
-
-            prevCourse = grade.getCourseTitle();
+            // 각 항목을 padRight로 감싸서 출력
+            System.out.println(
+                    padRight(String.valueOf(i + 1), 6) +
+                            padRight(grade.getStudentName(), 12) +
+                            padRight(grade.getCourseTitle(), 24) +
+                            padRight(value(grade.getMidtermScore()), 10) +
+                            padRight(value(grade.getFinalScore()), 10) +
+                            padRight(value(grade.getAssignmentScore()), 10)
+            );
         }
-
-        System.out.println("================================================================================");
+        System.out.println(line);
+    }
+    private String value(Object obj) {
+        return obj == null ? "-" : obj.toString();
     }
 
     public void printAssignmentRegisterTargets(List<GradeRegisterDTO> registerList) {
@@ -104,4 +110,16 @@ public class ProfessorGradeOutputView {
                     + " / 과목명 : " + dto.getCourseTitle());
         }
     }
+
+    private String padRight(String text, int width) {
+        if (text == null) text = "-";
+        int currentWidth = 0;
+        for (char c : text.toCharArray()) {
+            if (c >= 0xAC00 && c <= 0xD7A3) currentWidth += 2; // 한글은 2칸
+            else currentWidth += 1; // 나머지는 1칸
+        }
+        int padding = width - currentWidth;
+        return text + " ".repeat(Math.max(0, padding));
+    }
+
 }

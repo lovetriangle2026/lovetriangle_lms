@@ -395,8 +395,8 @@ public class ProfessorGradeInputView {
 
         int result = controller.registerAssignmentScore(
                 selected.getStudentId(),
-                score,
-                selected.getCourseId()
+                selected.getCourseId(), // 2번째로 이동
+                score                   // 3번째로 이동
         );
 
         if (result > 0) {

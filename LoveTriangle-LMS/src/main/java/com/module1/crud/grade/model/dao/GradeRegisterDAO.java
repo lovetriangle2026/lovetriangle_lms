@@ -44,11 +44,13 @@ public class GradeRegisterDAO {
         String query = QueryUtil.getQuery("grade.registerAssignmentScore");
 
         try (PreparedStatement pstmt = con.prepareStatement(query)) {
-            pstmt.setInt(1, studentId);
-            pstmt.setInt(2, score);
-            pstmt.setInt(3, courseId);
+            // 쿼리문: SELECT ?, a.id, NULL, ? FROM ... WHERE a.course_id = ?
+            pstmt.setInt(1, studentId); // 첫 번째 ?: student_id
+            pstmt.setInt(2, score);     // 두 번째 ?: score
+            pstmt.setInt(3, courseId);  // 세 번째 ?: course_id
 
-            return pstmt.executeUpdate();
+            int result = pstmt.executeUpdate();
+            return result;
         }
     }
 
