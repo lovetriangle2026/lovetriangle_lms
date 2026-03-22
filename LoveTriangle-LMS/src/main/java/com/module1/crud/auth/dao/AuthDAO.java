@@ -123,4 +123,22 @@ public class AuthDAO {
             return pstmt.executeUpdate();
         }
     }
+
+    // AuthDAO.java 에 추가
+
+    public String getPassword(Connection con, String loginId) throws SQLException {
+        String query = "SELECT user_pw FROM users WHERE login_id = ?"; // 💡 테이블/컬럼명은 환경에 맞게 수정
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setString(1, loginId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return rset.getString("user_pw");
+                }
+            }
+        }
+        return null; // 일치하는 아이디가 없을 경우
+    }
+
 }

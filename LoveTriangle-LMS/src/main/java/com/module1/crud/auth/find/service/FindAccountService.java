@@ -39,4 +39,22 @@ public class FindAccountService {
             return false;
         }
     }
+
+    // FindAccountService.java 에 추가
+
+    public boolean verifyCurrentPassword(String loginId, String currentPw) {
+        try (Connection con = JDBCTemplate.getConnection()) {
+            // 1. DB에서 해당 아이디의 암호화된 비밀번호(Hashed PW)를 가져옵니다.
+            String hashedPw = authDAO.getPassword(con, loginId);
+
+            if (hashedPw == null) return false; // 유저가 없으면 실패
+
+            // 2. BCrypt.checkpw(평문 암호, 해싱된 암호)로 일치 여부 확인
+            return BCrypt.checkpw(currentPw, hashedPw);
+
+        } catch (SQLException e) {
+            System.err.println("🚨 비밀번호 검증 중 DB 에러 발생: " + e.getMessage());
+            return false;
+        }
+    }
 }

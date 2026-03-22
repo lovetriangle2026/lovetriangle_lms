@@ -20,7 +20,7 @@ public class LoginView {
      */
     public boolean showLoginMenu() {
         while (true) {
-            System.out.println("\n--------- [로그인] ---------");
+            System.out.println("\n========= [로그인] =========");
             System.out.println("(이전 메뉴로 돌아가려면 '0'을 입력하세요)");
 
             System.out.print("ID: ");
