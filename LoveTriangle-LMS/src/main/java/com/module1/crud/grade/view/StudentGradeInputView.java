@@ -2,29 +2,28 @@ package com.module1.crud.grade.view;
 
 import com.module1.crud.grade.controller.GradeController;
 import com.module1.crud.grade.model.dto.GradeViewDTO;
-
 import java.util.List;
 import java.util.Scanner;
 import com.module1.crud.global.session.SessionManager;
 import com.module1.crud.users.model.dto.UsersDTO;
+
 public class StudentGradeInputView {
     private final GradeController controller;
     private final StudentGradeOutputView outputView;
     private final Scanner sc = new Scanner(System.in);
 
-    // 생성자를 통한 final 변수 초기화
     public StudentGradeInputView(GradeController controller, StudentGradeOutputView outputView) {
         this.controller = controller;
         this.outputView = outputView;
     }
 
     public void displayStudentMainMenu() {
-
         while (true) {
             System.out.println();
             System.out.println("========= [학생 성적관리 메뉴] =========");
             System.out.println("1. 성적 조회");
             System.out.println("0. 이전으로 돌아가기");
+            System.out.print("번호를 입력해주세요 : "); // 원래 있던 입력 안내 문구
 
             int menu = inputInt();
 
@@ -34,13 +33,10 @@ public class StudentGradeInputView {
                     break;
                 case 0:
                     return;
-
                 default:
                     outputView.printError("다시 선택해주세요.");
             }
         }
-
-
     }
 
     private void displayGradeStatus() {
@@ -48,7 +44,8 @@ public class StudentGradeInputView {
         UsersDTO loginUser = SessionManager.getInstance().getLoggedInUser();
         if (loginUser == null) {
             outputView.printError("로그인 정보가 없습니다.");
-            return;}
+            return;
+        }
         long studentId = loginUser.getId();
         List<GradeViewDTO> GradeList = controller.findAllGrade(studentId);
         outputView.printGrades(GradeList);
@@ -57,8 +54,7 @@ public class StudentGradeInputView {
     private int inputInt() {
         while (true) {
             try {
-                int value = Integer.parseInt(sc.nextLine());
-                return value;
+                return Integer.parseInt(sc.nextLine());
             } catch (NumberFormatException e) {
                 System.out.print("숫자만 입력해주세요 : ");
             }
@@ -68,8 +64,7 @@ public class StudentGradeInputView {
     private long inputLong() {
         while (true) {
             try {
-                long value = Long.parseLong(sc.nextLine());
-                return value;
+                return Long.parseLong(sc.nextLine());
             } catch (NumberFormatException e) {
                 System.out.print("숫자만 입력해주세요 : ");
             }

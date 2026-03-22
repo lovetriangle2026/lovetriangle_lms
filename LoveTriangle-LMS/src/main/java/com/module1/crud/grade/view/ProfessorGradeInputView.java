@@ -150,6 +150,8 @@ public class ProfessorGradeInputView {
 
             if (result > 0) {
                 System.out.println("수정 성공!");
+                List<GradeEditDTO> updatedGradeList = controller.getEditableGradeList(professorId);
+                outputView.printEditableGradeList(updatedGradeList);
             } else {
                 System.out.println("수정 실패!");
             }
@@ -303,7 +305,9 @@ public class ProfessorGradeInputView {
         );
 
         if (result > 0) {
-            outputView.printmessage("기말고사 등록 완료 🎉"); // ⭐ 수정됨
+            outputView.printmessage("기말고사 등록 완료 🎉");
+            List<GradeEditDTO> updatedGradeList = controller.getEditableGradeList(professorId);
+            outputView.printEditableGradeList(updatedGradeList);// ⭐ 수정됨
         } else {
             outputView.printError("등록 실패 🚨");
         }
@@ -356,6 +360,8 @@ public class ProfessorGradeInputView {
 
         if (result > 0) {
             outputView.printmessage("중간고사 등록 완료 🎉");
+            List<GradeEditDTO> updatedGradeList = controller.getEditableGradeList(professorId);
+            outputView.printEditableGradeList(updatedGradeList);
         } else {
             outputView.printError("등록 실패 🚨");
         }
@@ -395,12 +401,14 @@ public class ProfessorGradeInputView {
 
         int result = controller.registerAssignmentScore(
                 selected.getStudentId(),
-                score,
-                selected.getCourseId()
+                selected.getCourseId(), // 2번째로 이동
+                score                   // 3번째로 이동
         );
 
         if (result > 0) {
             outputView.printmessage("과제 점수 등록 성공!");
+            List<GradeEditDTO> updatedGradeList = controller.getEditableGradeList(professorId);
+            outputView.printEditableGradeList(updatedGradeList);
         } else {
             outputView.printError("과제 점수 등록 실패!");
         }
