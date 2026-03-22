@@ -26,14 +26,12 @@ private final SessionController sessionController;
 
     public void displayProfessorCourseMenu() {
         while (true) {
-            System.out.println("\n=================================");
-            System.out.println("         교수 강의관리 메뉴");
-            System.out.println("=================================");
+            System.out.println("============ 교수 강의관리 메뉴 ============");
             System.out.println("1. 담당 강의 조회");
             System.out.println("2. 신규 강의 등록");
-            System.out.println("3. 주차별 강의 내용 등록");
+            System.out.println("3. 주차별 강의 내용 수정");
             System.out.println("4. 주차별 강의 내용 조회");
-            System.out.println("0. 이전 메뉴");
+            System.out.println("0. 이전 메뉴로 돌아가기");
             System.out.print("번호를 입력해주세요 : ");
 
             int menu = sc.nextInt();
@@ -99,18 +97,27 @@ private final SessionController sessionController;
         int professorId = (int) loggedInUser.getId();
 
         sc.nextLine();
-        System.out.println("=== 신규 강의 등록 ===");
+        System.out.println("============ 신규 강의 등록 ============");
 
-        System.out.println("강의 제목 : ");
+        System.out.print("강의 제목 : ");
         String title = sc.nextLine();
 
-        System.out.println("강의 설명 : ");
+        System.out.print("강의 설명 : ");
         String description = sc.nextLine();
 
-        System.out.println("학기(예 : 2026-1) : ");
-        String semester = sc.nextLine();
+        String semester;
+        do {
+            System.out.print("학기(예 : 2026-1) : ");
+            semester = sc.nextLine();
+
+            // 입력 형식이 '숫자4개-숫자1개'가 아니면 다시 입력받음
+            if (!semester.matches("\\d{4}-[1-2]")) {
+                System.out.println("⚠️ 형식에 맞춰 '연도-학기(1 또는 2)'를 입력해 주세요.");
+            }
+        } while (!semester.matches("\\d{4}-[1-2]"));
 
         return new CourseDTO(0L, null, professorId, title, description, semester);
+
     }
     private void registerSessionTitle() {
         UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
@@ -127,7 +134,7 @@ private final SessionController sessionController;
             return;
         }
 
-        System.out.println("\n=== 담당 강의 목록 ===");
+        System.out.println("\n============ 담당 강의 목록 ============");
         for (int i = 0; i < myCourses.size(); i++) {
             System.out.println((i + 1) + ". " + myCourses.get(i).getTitle());
         }
@@ -179,7 +186,7 @@ private final SessionController sessionController;
             return;
         }
 
-        System.out.println("\n=== 담당 강의 목록 ===");
+        System.out.println("\n============ 담당 강의 목록 ============");
         for (int i = 0; i < myCourses.size(); i++) {
             System.out.println((i + 1) + ". " + myCourses.get(i).getTitle());
         }
