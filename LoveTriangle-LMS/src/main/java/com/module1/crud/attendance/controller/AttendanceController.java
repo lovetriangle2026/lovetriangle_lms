@@ -100,4 +100,17 @@ public class AttendanceController {
     public boolean checkAttendance(int studentId, SessionDTO session) {
         return service.checkAttendance(studentId, session);
     }
+
+    /**
+     * 학생 공결 신청
+     * */
+    public List<SessionDTO> findSessionsByCourseId(int courseId) {
+        return service.findSessionsByCourseId(courseId);
+    }
+
+    public boolean applyExcuseRequest(int studentId, int sessionId) {
+        return service.applyExcuseRequest(studentId, sessionId);
+    }
+
+
 }

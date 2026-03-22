@@ -1,5 +1,6 @@
 package com.module1.crud.attendance.view;
 
+import com.module1.crud.attendance.controller.AttendanceStatusConverter;
 import com.module1.crud.attendance.model.dto.AttendanceDTO;
 
 import java.util.List;
@@ -41,7 +42,7 @@ public class AttendanceOutputView {
                     attendance.getStudentName(),
                     attendance.getCourseTitle(),
                     attendance.getWeek(),
-                    attendance.getAttendanceStatus(),
+                    AttendanceStatusConverter.toKorean(attendance.getAttendanceStatus()),
                     checkedAt
             );
         }
@@ -57,7 +58,7 @@ public class AttendanceOutputView {
         }
 
         String courseTitle = attendanceList.get(0).getCourseTitle();
-        System.out.println("\n===== " + courseTitle + " 출결 현황 =====");
+        System.out.println("\n======= " + courseTitle + " [출결 현황] =======");
 
         int currentWeek = -1;
 
@@ -73,7 +74,7 @@ public class AttendanceOutputView {
                     : attendance.getCheckedAt().toString();
 
             System.out.println("- " + attendance.getStudentName()
-                    + " : " + attendance.getAttendanceStatus()
+                    + " : " + AttendanceStatusConverter.toKorean(attendance.getAttendanceStatus())
                     + " (" + checkedAt + ")");
         }
     }

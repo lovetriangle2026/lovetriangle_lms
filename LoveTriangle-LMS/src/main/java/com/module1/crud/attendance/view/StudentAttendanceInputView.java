@@ -1,6 +1,7 @@
 package com.module1.crud.attendance.view;
 
 import com.module1.crud.attendance.controller.AttendanceController;
+import com.module1.crud.attendance.controller.AttendanceStatusConverter;
 import com.module1.crud.attendance.model.dto.AttendanceDTO;
 import com.module1.crud.attendance.model.dto.ProfessorCourseDTO;
 import com.module1.crud.attendance.model.dto.SessionDTO;
@@ -43,7 +44,7 @@ public class StudentAttendanceInputView {
                     checkAttendance();
                     break;
                 case 3:
-                    outputView.printMessage("공결 신청 기능은 아직 구현 전입니다.");
+                    requestExcused();
                     break;
                 case 0:
                     outputView.printMessage("이전 메뉴로 돌아갑니다.");
@@ -153,7 +154,7 @@ public class StudentAttendanceInputView {
         boolean result = controller.checkAttendance(studentId, selectedSession);
 
         if (result) {
-            outputView.printSuccess("출석체크가 완료되었습니다.");
+            outputView.printSuccess("출석체크 완료");
         } else {
             outputView.printError("출석체크에 실패했습니다.");
         }
@@ -166,6 +167,86 @@ public class StudentAttendanceInputView {
             } catch (NumberFormatException e) {
                 System.out.print("숫자만 입력해주세요 : ");
             }
+        }
+    }
+
+    private void requestExcused() {
+        UsersDTO loginUser = SessionManager.getInstance().getLoggedInUser();
+        int studentId = loginUser.getId();
+
+        List<ProfessorCourseDTO> courseList = controller.findCoursesByStudentId(studentId);
+
+        if (courseList == null || courseList.isEmpty()) {
+            outputView.printError("수강 중인 강의가 없습니다.");
+            return;
+        }
+
+        System.out.println("\n===== 수강 강의 목록 =====");
+
+        for (int i = 0; i < courseList.size(); i++) {
+            System.out.println((i + 1) + ". " + courseList.get(i).getTitle());
+        }
+
+        System.out.println("0. 돌아가기");
+        System.out.print("공결 신청할 강의를 선택해주세요 : ");
+        int courseChoice = inputInt();
+
+        if (courseChoice == 0) {
+            outputView.printMessage("이전 메뉴로 돌아갑니다.");
+            return;
+        }
+
+        if (courseChoice < 1 || courseChoice > courseList.size()) {
+            outputView.printError("잘못된 번호입니다.");
+            return;
+        }
+
+        ProfessorCourseDTO selectedCourse = courseList.get(courseChoice - 1);
+        int courseId = selectedCourse.getId();
+
+        List<SessionDTO> sessionList = controller.findSessionsByCourseId(courseId);
+
+        if (sessionList == null || sessionList.isEmpty()) {
+            outputView.printError("해당 강의의 주차 정보가 없습니다.");
+            return;
+        }
+
+        System.out.println("\n===== 주차 목록 =====");
+        System.out.println("0. 돌아가기");
+
+        for (int i = 0; i < sessionList.size(); i++) {
+            System.out.println((i + 1) + ". " + sessionList.get(i).getWeek() + "주차");
+        }
+
+        System.out.print("공결 신청할 주차를 선택해주세요 : ");
+        int sessionChoice = inputInt();
+
+        if (sessionChoice == 0) {
+            outputView.printMessage("이전 메뉴로 돌아갑니다.");
+            return;
+        }
+
+        if (sessionChoice < 1 || sessionChoice > sessionList.size()) {
+            outputView.printError("잘못된 번호입니다.");
+            return;
+        }
+
+        SessionDTO selectedSession = sessionList.get(sessionChoice - 1);
+
+        System.out.print("정말 공결 신청하시겠습니까? (Y/N) : ");
+        String confirm = sc.nextLine().trim().toUpperCase();
+
+        if (!confirm.equals("Y")) {
+            outputView.printMessage("공결 신청이 취소되었습니다.");
+            return;
+        }
+
+        boolean result = controller.applyExcuseRequest(studentId, selectedSession.getId());
+
+        if (result) {
+            outputView.printSuccess("공결 신청이 완료되었습니다. 현재 상태: 공결 신청 대기 중");
+        } else {
+            outputView.printError("공결 신청에 실패했습니다.");
         }
     }
 }

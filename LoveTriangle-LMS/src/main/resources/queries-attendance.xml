@@ -312,4 +312,23 @@
         where id = ?
     </query>
 
+    <query key="attendance.findSessionsByCourseId">
+        select
+            id as session_id,
+            course_id,
+            week,
+            start_at,
+            end_at
+        from sessions
+        where course_id = ?
+        order by week
+    </query>
+
+    <query key="attendance.updateToExcusedPending">
+        update attendance
+        set attendance_status = 'EXCUSED_PENDING'
+        where student_id = ?
+            and session_id = ?
+    </query>
+
 </properties>
