@@ -15,29 +15,26 @@ public class ProfOutputView {
     }
 
 
-        // 🚀 2. [추가] 전체 강의 목록을 화면에 예쁘게 찍어주는 메서드
         public void displayCourseList(List<CourseDTO> courseList) {
-            System.out.println("\n============================= 📚 나의 담당 강의 목록 =============================");
+            System.out.println("\n==================== 📚 전체 담당 강의 목록 ====================");
 
             if (courseList == null || courseList.isEmpty()) {
                 System.out.println("🚨 현재 담당하고 계신 강의가 없습니다.");
             } else {
-                // 헤더 출력
-                System.out.printf("%-4s | %-12s | %-6s | %-8s | %-20s\n",
-                        "ID", "강의 코드", "교수ID", "학기", "강의 제목");
-                System.out.println("--------------------------------------------------------------------------------");
+                // 표 헤더 출력 (ID, 과목코드, 강의명, 학기 순)
+                System.out.printf("%-5s | %-12s | %-25s | %-10s\n", "번호", "과목코드", "강의 제목", "학기");
+                System.out.println("-----------------------------------------------------------------------");
 
                 for (CourseDTO course : courseList) {
-                    // DTO의 실제 메서드명에 맞춰 수정했습니다.
-                    System.out.printf("%-4d | %-12s | %-8d | %-8s | %-20s\n",
-                            course.getId(),                             // Long 타입은 %d로 자동 변환됩니다.
-                            (course.getCourse_code() == null ? "N/A" : course.getCourse_code()),
-                            course.getProfessor_id(),                   // getProfessorId -> getProfessor_id로 수정
-                            course.getSemester(),
-                            course.getTitle());
+                    // CourseDTO에서 필요한 정보만 쏙쏙 뽑아서 정렬 출력
+                    System.out.printf("%-5d | %-12s | %-25s | %-10s\n",
+                            course.getId(),
+                            course.getCourse_code() != null ? course.getCourse_code() : "N/A",
+                            course.getTitle(),
+                            course.getSemester());
                 }
             }
-            System.out.println("================================================================================\n");
+            System.out.println("=======================================================================\n");
         }
 
 
@@ -50,7 +47,6 @@ public class ProfOutputView {
         }
     }
 
-    // 기존의 displaySessionList 메서드 내용을 아래로 교체하세요!
     public void displaySessionList(List<SessionDTO> sessionList) {
         System.out.println("\n==================== 📘 주차별 강의 상세 조회 ====================");
 
