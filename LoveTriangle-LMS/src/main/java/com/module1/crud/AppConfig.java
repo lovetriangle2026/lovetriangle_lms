@@ -69,7 +69,15 @@ public class AppConfig {
 
     // ================== 학생 전용 뷰 생성 ==================
     public static StudentCourseInputView createStudentCourseInputView() {
-        return new StudentCourseInputView(new CourseController(new CourseService()), new StudentCourseOutputView());
+
+        SessionController sessionController =
+                new SessionController(new SessionService());
+
+        return new StudentCourseInputView(
+                new CourseController(new CourseService()),
+                new StudentCourseOutputView(),
+                sessionController
+        );
     }
 
     public static StudentAttendanceInputView createStudentAttendanceInputView() {
