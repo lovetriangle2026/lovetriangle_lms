@@ -22,14 +22,9 @@ public class StudentGradeInputView {
 
         while (true) {
             System.out.println();
-            System.out.println("=================================");
-            System.out.println("         학생 성적관리 메뉴");
-            System.out.println("=================================");
+            System.out.println("========= [학생 성적관리 메뉴] =========");
             System.out.println("1. 성적 조회");
-            System.out.println("2. ??");
-            System.out.println("3. ??");
-            System.out.println("4. ??");
-            System.out.print("번호를 입력해주세요 : ");
+            System.out.println("0. 이전으로 돌아가기");
 
             int menu = inputInt();
 
@@ -37,15 +32,9 @@ public class StudentGradeInputView {
                 case 1:
                     displayGradeStatus();
                     break;
-                case 2:
-
-                    break;
-                case 3:
-
-                    break;
-                case 4:
-                    outputView.printMessage("== 실습을 종료합니다. ==");
+                case 0:
                     return;
+
                 default:
                     outputView.printError("다시 선택해주세요.");
             }
