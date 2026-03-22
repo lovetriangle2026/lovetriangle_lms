@@ -16,11 +16,9 @@ public class CourseController {
     }
 
 
-    public List<CourseDTO> findAllCourses() { // 반환타입을 void로!
-        List<CourseDTO> courseList = service.findAllCourses();
-        ProfOutputView profOutputView = new ProfOutputView();
-        profOutputView.displayCourseList(courseList); //
-        return courseList;
+    public List<CourseDTO> findAllCourses() {
+        // 서비스에서 데이터만 가져와서 그대로 넘겨줍니다.
+        return service.findAllCourses();
     }
 
 

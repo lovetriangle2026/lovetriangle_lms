@@ -17,18 +17,27 @@ public class ProfOutputView {
 
         // 🚀 2. [추가] 전체 강의 목록을 화면에 예쁘게 찍어주는 메서드
         public void displayCourseList(List<CourseDTO> courseList) {
-            System.out.println("\n========= 📚 전체 강의 목록 조회 =========");
+            System.out.println("\n============================= 📚 나의 담당 강의 목록 =============================");
 
             if (courseList == null || courseList.isEmpty()) {
-                System.out.println("🚨 등록된 강의가 하나도 없습니다.");
+                System.out.println("🚨 현재 담당하고 계신 강의가 없습니다.");
             } else {
-                // 리스트를 돌면서 강의 정보를 하나씩 출력합니다.
+                // 헤더 출력
+                System.out.printf("%-4s | %-12s | %-6s | %-8s | %-20s\n",
+                        "ID", "강의 코드", "교수ID", "학기", "강의 제목");
+                System.out.println("--------------------------------------------------------------------------------");
+
                 for (CourseDTO course : courseList) {
-                    // CourseDTO 클래스에 @ToString이나 toString()이 구현되어 있어야 잘 보여요!
-                    System.out.println(course);
+                    // DTO의 실제 메서드명에 맞춰 수정했습니다.
+                    System.out.printf("%-4d | %-12s | %-8d | %-8s | %-20s\n",
+                            course.getId(),                             // Long 타입은 %d로 자동 변환됩니다.
+                            (course.getCourse_code() == null ? "N/A" : course.getCourse_code()),
+                            course.getProfessor_id(),                   // getProfessorId -> getProfessor_id로 수정
+                            course.getSemester(),
+                            course.getTitle());
                 }
             }
-            System.out.println("========================================\n");
+            System.out.println("================================================================================\n");
         }
 
 
