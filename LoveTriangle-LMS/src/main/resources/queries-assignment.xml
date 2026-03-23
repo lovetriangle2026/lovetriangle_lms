@@ -191,6 +191,17 @@ WHERE assignment_id = ? AND student_id = ?
     ]]>
     </query>
 
+    <query key="assignment.findMyCourses">
+        SELECT
+        c.id AS course_id,
+        c.title AS course_title
+        FROM enrollments e
+        JOIN courses c
+        ON e.course_id = c.id
+        WHERE e.user_id = ?
+        ORDER BY c.title ASC
+    </query>
+
     <query key="assignmentSubmission.countTotalStudentsByAssignment">
         SELECT COUNT(*)
         FROM enrollments e

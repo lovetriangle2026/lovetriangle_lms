@@ -32,6 +32,14 @@ public class AssignmentService {
         }
     }
 
+    public Map<Long, String> findMyCourses(Long userId) {
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return assignmentDAO.findMyCourses(con, userId);
+        } catch (SQLException e) {
+            throw new RuntimeException("학생 수강 강의 조회 중 오류 발생 🚨 " + e.getMessage());
+        }
+    }
+
     // ============================== 과제 제출 =========================
     public boolean canSubmitAssignment(Long assignmentId, Long studentId) {
         try (Connection con = JDBCTemplate.getConnection()) {

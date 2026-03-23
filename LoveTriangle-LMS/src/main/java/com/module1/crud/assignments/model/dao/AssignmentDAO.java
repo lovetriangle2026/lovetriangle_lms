@@ -48,6 +48,26 @@ public class AssignmentDAO {
         return assignmentList;
     }
 
+    public Map<Long, String> findMyCourses(Connection con, Long userId) throws SQLException {
+        String query = QueryUtil.getQuery("assignment.findMyCourses");
+        Map<Long, String> courseMap = new LinkedHashMap<>();
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setLong(1, userId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                while (rset.next()) {
+                    courseMap.put(
+                            rset.getLong("course_id"),
+                            rset.getString("course_title")
+                    );
+                }
+            }
+        }
+
+        return courseMap;
+    }
+
     // ============================ 과제 제출 ============================
     public boolean existsMyAssignment(Connection con, Long assignmentId, Long studentId) throws SQLException {
         String query = QueryUtil.getQuery("assignment.existsMyAssignment");
