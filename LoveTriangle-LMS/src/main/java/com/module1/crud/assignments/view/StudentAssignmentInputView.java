@@ -3,6 +3,7 @@ package com.module1.crud.assignments.view;
 import com.module1.crud.assignments.controller.AssignmentController;
 import com.module1.crud.assignments.model.dto.StudentAssignmentDTO;
 import com.module1.crud.assignments.model.dto.StudentAssignmentSubmissionDTO;
+import com.module1.crud.assignments.model.dto.SubmissionRankResultDTO;
 import com.module1.crud.global.session.SessionManager;
 import com.module1.crud.users.model.dto.UsersDTO;
 
@@ -239,13 +240,8 @@ public class StudentAssignmentInputView {
                 StudentAssignmentSubmissionDTO submissionDTO =
                         new StudentAssignmentSubmissionDTO(assignmentId, studentId, content);
 
-                controller.createSubmission(submissionDTO);
-
-                if (deadlinePassed) {
-                    outputView.printMessage("과제가 성공적으로 제출되었습니다. (마감일 이후에 제출했습니다.)");
-                } else {
-                    outputView.printMessage("과제가 성공적으로 제출되었습니다.");
-                }
+                SubmissionRankResultDTO result = controller.createSubmission(submissionDTO, deadlinePassed);
+                outputView.printSubmissionResult(result);
                 return;
             }
         }
