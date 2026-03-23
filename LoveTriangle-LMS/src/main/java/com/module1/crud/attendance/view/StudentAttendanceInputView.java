@@ -55,7 +55,7 @@ public class StudentAttendanceInputView {
         }
     }
 
-    private void findMyAttendance() {
+    public void findMyAttendance() {
         UsersDTO loginUser = SessionManager.getInstance().getLoggedInUser();
         int studentId = loginUser.getId();
 

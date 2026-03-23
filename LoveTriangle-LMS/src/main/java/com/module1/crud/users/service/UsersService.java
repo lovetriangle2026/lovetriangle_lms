@@ -2,6 +2,7 @@ package com.module1.crud.users.service;
 
 import com.module1.crud.global.config.JDBCTemplate; // 💡 임포트 추가
 import com.module1.crud.users.model.dao.UsersDAO;
+import com.module1.crud.users.model.dto.HeartStatsDTO;
 import com.module1.crud.users.model.dto.UsersDTO;
 
 import java.sql.Connection;
@@ -61,6 +62,26 @@ public class UsersService {
             return usersDAO.getUserInfo(con, loginId);
         } catch (SQLException e) {
             throw new RuntimeException("비밀번호 변경 처리 중 Error 발생!!! 🚨", e);
+        }
+    }
+
+    public HeartStatsDTO getMyHeartStats(int userId) {
+        try (Connection con = JDBCTemplate.getConnection()) {
+            int totalHearts = usersDAO.getTotalHearts(con, userId);
+            List<String> top3Tags = usersDAO.getTop3Tags(con, userId);
+            return new HeartStatsDTO(totalHearts, top3Tags);
+        } catch (SQLException e) {
+            throw new RuntimeException("마이페이지 하트 통계 조회 중 Error 발생!!! 🚨", e);
+        }
+    }
+
+    public boolean toggleHeartPublic(int userId, int currentStatus) {
+        try (Connection con = JDBCTemplate.getConnection()) {
+            int nextStatus = (currentStatus == 1) ? 0 : 1; // 1이면 0으로, 0이면 1로 토글
+            return usersDAO.updateHeartPublic(con, userId, nextStatus) > 0;
+        } catch (SQLException e) {
+            System.out.println("🚨 공개여부 토글 중 오류 발생: " + e.getMessage());
+            return false;
         }
     }
 

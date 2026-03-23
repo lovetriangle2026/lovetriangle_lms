@@ -63,7 +63,7 @@ public class StudentCourseInputView {
         }
     }
 
-    private void displayEnrollableCourse() {
+    public void displayEnrollableCourse() {
         UsersDTO user = SessionManager.getInstance().getLoggedInUser();
 
         if (user == null) {

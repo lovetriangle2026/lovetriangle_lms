@@ -25,7 +25,7 @@ public class AuthDAO {
                     return new UsersDTO(
                             rs.getInt("id"), rs.getString("user_code"), rs.getString("login_id"),
                             rs.getString("name"), rs.getDate("birth").toLocalDate(), rs.getString("tel_num"),
-                            rs.getString("password"), rs.getString("pw_answer"), rs.getString("user_type")
+                            rs.getString("password"), rs.getString("pw_answer"), rs.getString("user_type"), rs.getInt("is_heart_public")
                     );
                 }
             }

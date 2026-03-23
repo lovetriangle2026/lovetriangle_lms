@@ -38,7 +38,8 @@ public class UsersDAO {
                         rset.getString("tel_num"),
                         rset.getString("password"), // ' assword' 오타 수정 유지
                         rset.getString("pw_answer"),
-                        rset.getString("user_type")
+                        rset.getString("user_type"),
+                        rset.getInt("is_heart_public")
                 );
                 usersDTOList.add(user);
             }
@@ -100,11 +101,51 @@ public class UsersDAO {
                             rset.getString("tel_num"),
                             rset.getString("password"), // 💡 기존 코드의 ' assword' 오타 수정했습니다!
                             rset.getString("pw_answer"),
-                            rset.getString("user_type")
+                            rset.getString("user_type"),
+                            rset.getInt("is_heart_public")
                     );
                 }
             }
         }
         return null; // 일치하는 유저가 없을 경우
+    }
+
+    // 1. 총 하트 개수 조회
+    public int getTotalHearts(Connection con, int userId) throws SQLException {
+        String query = QueryUtil.getQuery("Users.getTotalHearts");
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setInt(1, userId);
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return rset.getInt("total_hearts");
+                }
+            }
+        }
+        return 0;
+    }
+
+    // 2. 상위 3개 태그 조회
+    public List<String> getTop3Tags(Connection con, int userId) throws SQLException {
+        String query = QueryUtil.getQuery("Users.getTop3Tags");
+        List<String> topTags = new ArrayList<>();
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setInt(1, userId);
+            try (ResultSet rset = pstmt.executeQuery()) {
+                while (rset.next()) {
+                    topTags.add(rset.getString("tag_name") + " (" + rset.getInt("tag_count") + "회)");
+                }
+            }
+        }
+        return topTags;
+    }
+
+    // 3. 하트 공개 여부 토글 업데이트
+    public int updateHeartPublic(Connection con, int userId, int isPublic) throws SQLException {
+        String query = QueryUtil.getQuery("Users.updateHeartPublic");
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setInt(1, isPublic);
+            pstmt.setInt(2, userId);
+            return pstmt.executeUpdate();
+        }
     }
 }

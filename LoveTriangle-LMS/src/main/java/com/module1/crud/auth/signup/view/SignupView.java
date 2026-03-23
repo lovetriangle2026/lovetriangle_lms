@@ -109,8 +109,10 @@ public class SignupView {
                 "1~30자 이내로 입력해주세요. ");
         if ("0".equals(pwAnswer)) return;
 
+        int isHeartPublic = 1;
+
         // 최종 생성
-        Long result = controller.createUser(userCode, loginId, name, birth, telNum, password, pwAnswer, userType);
+        Long result = controller.createUser(userCode, loginId, name, birth, telNum, password, pwAnswer, userType, isHeartPublic);
 
         if (result != null && result > 0) {
             System.out.println("🎉 Amazon 대학교의 일원이 되신 것을 환영합니다!");

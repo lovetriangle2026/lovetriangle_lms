@@ -151,7 +151,7 @@ public class StudentAssignmentInputView {
         }
     }
 
-    private void findMyAssignments() {
+    public void findMyAssignments() {
         outputView.printMessage("\n--- 수강 과목 과제 조회 ---");
 
         UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();

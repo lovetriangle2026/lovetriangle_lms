@@ -63,8 +63,17 @@ public class AppConfig {
     }
 
     public static UsersInputView createUsersInputView() {
-        // UsersInputView 생성자에 findAccountView가 필요하므로 공장 메서드 재사용!
-        return new UsersInputView(new UsersController(new UsersService()), new UsersOutputView(), createFindAccountView());
+        return new UsersInputView(
+                new UsersController(new UsersService()),
+                new UsersOutputView(),
+                createStudentCourseInputView(),
+                createFindAccountView(),
+                createStudentAssignmentInputView(),
+                createStudentAttendanceInputView(),
+                createProfessorAssignmentInputView(),
+                createProfessorAttendanceInputView(),
+                createProfInputView() // ⭐ 9번째 인자: 교수 강의 뷰 주입
+        );
     }
 
     // ================== 학생 전용 뷰 생성 ==================
