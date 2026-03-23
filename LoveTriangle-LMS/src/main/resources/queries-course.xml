@@ -69,5 +69,30 @@
         WHERE course_id = ? AND week = ?
     </query>
 
+    <query key="course.findEnrolledStudents">
+        SELECT u.id, u.name, u.is_heart_public
+        FROM users u
+        JOIN enrollments e ON u.id = e.user_id
+        WHERE e.course_id = ? AND u.user_type = 'STUDENT'
+        ORDER BY u.name ASC
+    </query>
+
+    <query key="course.getStudentTotalHearts">
+        SELECT COUNT(pt.tag_id) AS total_hearts
+        FROM peer_reviews pr
+        JOIN peer_review_tags pt ON pr.id = pt.review_id
+        WHERE pr.reviewee_id = ?
+    </query>
+
+    <query key="course.getStudentTop3Tags">
+        SELECT ht.tag_name, COUNT(pt.tag_id) AS tag_count
+        FROM peer_reviews pr
+        JOIN peer_review_tags pt ON pr.id = pt.review_id
+        JOIN heart_tags ht ON pt.tag_id = ht.id
+        WHERE pr.reviewee_id = ?
+        GROUP BY ht.id, ht.tag_name
+        ORDER BY tag_count DESC
+        LIMIT 3
+    </query>
 
 </properties>

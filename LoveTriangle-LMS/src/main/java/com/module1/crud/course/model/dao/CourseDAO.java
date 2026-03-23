@@ -1,6 +1,7 @@
 package com.module1.crud.course.model.dao;
 
 import com.module1.crud.course.model.dto.CourseDTO;
+import com.module1.crud.course.model.dto.CourseStudentStatsDTO;
 import com.module1.crud.global.utils.QueryUtil;
 
 import java.sql.Connection;
@@ -133,5 +134,50 @@ public class CourseDAO {
             }
         }
         return courselist;
+    }
+
+    // 수강생 동료 평가 통계 조회
+    public List<CourseStudentStatsDTO> findStudentStatsByCourse(Connection con, int courseId) throws SQLException {
+        List<CourseStudentStatsDTO> statsList = new ArrayList<>();
+        String studentQuery = QueryUtil.getQuery("course.findEnrolledStudents");
+        String heartQuery = QueryUtil.getQuery("course.getStudentTotalHearts");
+        String tagQuery = QueryUtil.getQuery("course.getStudentTop3Tags");
+
+        try (PreparedStatement pstmt = con.prepareStatement(studentQuery)) {
+            pstmt.setInt(1, courseId);
+            try (ResultSet rset = pstmt.executeQuery()) {
+                while (rset.next()) {
+                    int studentId = rset.getInt("id");
+                    String name = rset.getString("name");
+                    int isHeartPublic = rset.getInt("is_heart_public");
+
+                    int totalHearts = 0;
+                    List<String> top3Tags = new ArrayList<>();
+
+                    // 1. 하트 개수 세기
+                    try (PreparedStatement heartPstmt = con.prepareStatement(heartQuery)) {
+                        heartPstmt.setInt(1, studentId);
+                        try (ResultSet heartRset = heartPstmt.executeQuery()) {
+                            if (heartRset.next()) {
+                                totalHearts = heartRset.getInt("total_hearts");
+                            }
+                        }
+                    }
+
+                    // 2. 상위 태그 3개 가져오기
+                    try (PreparedStatement tagPstmt = con.prepareStatement(tagQuery)) {
+                        tagPstmt.setInt(1, studentId);
+                        try (ResultSet tagRset = tagPstmt.executeQuery()) {
+                            while (tagRset.next()) {
+                                top3Tags.add(tagRset.getString("tag_name") + " (" + tagRset.getInt("tag_count") + "회)");
+                            }
+                        }
+                    }
+
+                    statsList.add(new CourseStudentStatsDTO(studentId, name, isHeartPublic, totalHearts, top3Tags));
+                }
+            }
+        }
+        return statsList;
     }
 }

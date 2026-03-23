@@ -270,5 +270,62 @@ public class AssignmentService {
         } catch (SQLException e) {
             throw new RuntimeException("과제 제출 중 오류 발생 🚨 " + e.getMessage());
         }
+    }// ================== [신규] 상호 평가 (Peer Review) 로직 ==================
+    public List<HeartTagDTO> findAllHeartTags() {
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return assignmentDAO.findAllHeartTags(con);
+        } catch (SQLException e) {
+            throw new RuntimeException("태그 목록 조회 중 오류 발생 🚨", e);
+        }
+    }
+
+    public List<TeamMemberDTO> findTeamMembers(Long studentId, Long assignmentId) {
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return assignmentDAO.findTeamMembers(con, studentId, assignmentId);
+        } catch (SQLException e) {
+            throw new RuntimeException("팀원 목록 조회 중 오류 발생 🚨", e);
+        }
+    }
+
+    // ⭐ 핵심: 다중 INSERT 트랜잭션 관리
+    public void submitPeerReview(Long assignmentId, Long reviewerId, Long revieweeId, List<Integer> tagIds) {
+        try (Connection con = JDBCTemplate.getConnection()) {
+            con.setAutoCommit(false); // 트랜잭션 시작
+
+            try {
+                // 중복 투표 체크 (어뷰징 방지)
+                if (assignmentDAO.existsPeerReview(con, assignmentId, reviewerId, revieweeId)) {
+                    throw new RuntimeException("이미 해당 팀원에 대한 평가를 완료했습니다.");
+                }
+
+                // 리뷰 메인 테이블 INSERT 후 생성된 ID(review_id) 받아오기
+                Long reviewId = assignmentDAO.insertPeerReview(con, assignmentId, reviewerId, revieweeId);
+                if (reviewId == null) {
+                    throw new RuntimeException("리뷰 정보 등록에 실패했습니다.");
+                }
+
+                // 선택된 태그가 있다면 반복해서 태그 테이블에 INSERT
+                for (int tagId : tagIds) {
+                    assignmentDAO.insertPeerReviewTag(con, reviewId, tagId);
+                }
+
+                con.commit(); // 모두 성공 시 커밋
+            } catch (Exception e) {
+                con.rollback(); // 하나라도 실패 시 전체 롤백
+                throw new RuntimeException(e.getMessage());
+            } finally {
+                con.setAutoCommit(true); // 커밋 모드 원상복구
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("동료 평가 저장 중 통신 오류 발생 🚨", e);
+        }
+    }
+
+    public List<StudentTeamAssignmentDTO> findMyTeamAssignments(Long studentId) {
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return assignmentDAO.findMyTeamAssignments(con, studentId);
+        } catch (SQLException e) {
+            throw new RuntimeException("팀플 과제 목록 조회 중 오류 발생 🚨", e);
+        }
     }
 }
