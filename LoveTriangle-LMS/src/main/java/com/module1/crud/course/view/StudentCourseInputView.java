@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
+import com.module1.crud.course.model.dto.CourseStudentStatsDTO;
 import com.module1.crud.course.model.dto.SessionDTO;
 import com.module1.crud.global.session.SessionManager;
 import com.module1.crud.users.model.dto.UsersDTO;
@@ -71,17 +72,52 @@ public class StudentCourseInputView {
             return;
         }
 
-        int userId = user.getId(); // 또는 getId() (DTO 구조 확인 필요)
+        int userId = user.getId();
 
-        // 2. 컨트롤러 호출
-        List<CourseDTO> myCourseList = null;
-
-            myCourseList = controller.findMyCourses(userId);
-
-
-        // 3. 출력
+        // 1. 내 수강 강의 목록 출력 (기존 로직 유지)
+        List<CourseDTO> myCourseList = controller.findMyCourses(userId);
         outputView.printCourses(myCourseList);
 
+        if (myCourseList == null || myCourseList.isEmpty()) {
+            return; // 수강 중인 강의가 없으면 종료
+        }
+
+        // 2. [신규] 통계를 볼 강의 선택하기
+        System.out.print("\n👉 수강생들의 동료 평가(하트/태그)를 조회할 강의 번호(ID)를 입력하세요 (취소: 0) : ");
+        int courseId;
+        try {
+            courseId = Integer.parseInt(sc.nextLine());
+            if (courseId == 0) return;
+        } catch (NumberFormatException e) {
+            System.out.println("⚠️ 숫자만 입력해주세요.");
+            return;
+        }
+
+        // 3. [신규] 선택한 강의의 수강생 통계 출력
+        List<CourseStudentStatsDTO> statsList = controller.findStudentStatsByCourse(courseId);
+
+        System.out.println("\n================ [ 수강생 동료 평가 요약 ] ================");
+        if (statsList.isEmpty()) {
+            System.out.println("해당 강의에 수강생이 없거나 정보를 불러올 수 없습니다.");
+        } else {
+            for (CourseStudentStatsDTO stats : statsList) {
+                System.out.println(" 👤 이름 : " + stats.getStudentName());
+
+                // 프라이버시 보호 로직: 타인이면서 비공개 설정한 경우 숨김 처리
+                if (stats.getIsHeartPublic() == 0 && stats.getStudentId() != userId) {
+                    System.out.println("   🔒 [비공개] 해당 수강생이 평가 공개를 비활성화했습니다.");
+                } else {
+                    System.out.println("   💖 누적 하트 수 : " + stats.getTotalHearts() + "개");
+                    System.out.print("   🏆 핵심 태그 : ");
+                    if (stats.getTop3Tags().isEmpty()) {
+                        System.out.println("아직 받은 태그가 없습니다.");
+                    } else {
+                        System.out.println(String.join(", ", stats.getTop3Tags()));
+                    }
+                }
+                System.out.println("---------------------------------------------------------");
+            }
+        }
     }
 
     private void displayAllCourse() {

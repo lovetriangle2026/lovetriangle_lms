@@ -1,8 +1,6 @@
 package com.module1.crud.assignments.model.dao;
 
-import com.module1.crud.assignments.model.dto.ProfessorAssignmentDTO;
-import com.module1.crud.assignments.model.dto.ProfessorAssignmentSubmissionDTO;
-import com.module1.crud.assignments.model.dto.StudentAssignmentDTO;
+import com.module1.crud.assignments.model.dto.*;
 import com.module1.crud.global.utils.QueryUtil;
 
 import java.sql.*;
@@ -278,4 +276,118 @@ public class AssignmentDAO {
             return pstmt.executeUpdate();
         }
     }
+
+    // ================== [신규] 상호 평가 (Peer Review) 파트 ==================
+
+    // 1. 태그 목록 조회
+    public List<HeartTagDTO> findAllHeartTags(Connection con) throws SQLException {
+        String query = QueryUtil.getQuery("peerReview.findAllTags");
+        List<HeartTagDTO> tags = new ArrayList<>();
+
+        try (PreparedStatement pstmt = con.prepareStatement(query);
+             ResultSet rset = pstmt.executeQuery()) {
+            while (rset.next()) {
+                tags.add(new HeartTagDTO(
+                        rset.getInt("id"),
+                        rset.getString("category"),
+                        rset.getString("tag_name"),
+                        rset.getString("description")
+                ));
+            }
+        }
+        return tags;
+    }
+
+    // 2. 팀원 목록 조회 (본인 제외)
+    public List<TeamMemberDTO> findTeamMembers(Connection con, Long studentId, Long assignmentId) throws SQLException {
+        String query = QueryUtil.getQuery("peerReview.findTeamMembers");
+        List<TeamMemberDTO> members = new ArrayList<>();
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setLong(1, studentId);
+            pstmt.setLong(2, assignmentId);
+            pstmt.setLong(3, studentId); // 본인 제외용
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                while (rset.next()) {
+                    members.add(new TeamMemberDTO(
+                            rset.getLong("id"),
+                            rset.getString("name")
+                    ));
+                }
+            }
+        }
+        return members;
+    }
+
+    // 3. 중복 리뷰 체크
+    public boolean existsPeerReview(Connection con, Long assignmentId, Long reviewerId, Long revieweeId) throws SQLException {
+        String query = QueryUtil.getQuery("peerReview.checkDuplicate");
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setLong(1, assignmentId);
+            pstmt.setLong(2, reviewerId);
+            pstmt.setLong(3, revieweeId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return rset.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+
+    // 4. 리뷰 메인 데이터 삽입 (PK 반환)
+    public Long insertPeerReview(Connection con, Long assignmentId, Long reviewerId, Long revieweeId) throws SQLException {
+        String query = QueryUtil.getQuery("peerReview.insertReview");
+
+        // RETURN_GENERATED_KEYS 적용 완료
+        try (PreparedStatement pstmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setLong(1, assignmentId);
+            pstmt.setLong(2, reviewerId);
+            pstmt.setLong(3, revieweeId);
+            pstmt.executeUpdate();
+
+            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getLong(1);
+                }
+            }
+        }
+        return null;
+    }
+
+    // 5. 선택된 칭찬 태그 삽입
+    public void insertPeerReviewTag(Connection con, Long reviewId, int tagId) throws SQLException {
+        String query = QueryUtil.getQuery("peerReview.insertReviewTag");
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setLong(1, reviewId);
+            pstmt.setInt(2, tagId);
+            pstmt.executeUpdate();
+        }
+    }
+
+    // 내가 소속된 팀플 과제 목록 조회
+    public List<StudentTeamAssignmentDTO> findMyTeamAssignments(Connection con, Long studentId) throws SQLException {
+        String query = QueryUtil.getQuery("peerReview.findMyTeamAssignments");
+        List<StudentTeamAssignmentDTO> list = new ArrayList<>();
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setLong(1, studentId);
+            try (ResultSet rset = pstmt.executeQuery()) {
+                while (rset.next()) {
+                    list.add(new StudentTeamAssignmentDTO(
+                            rset.getLong("team_assignment_id"),
+                            rset.getString("course_title"),
+                            rset.getString("assignment_title"),
+                            rset.getTimestamp("deadline")
+                    ));
+                }
+            }
+        }
+        return list;
+    }
+
 }

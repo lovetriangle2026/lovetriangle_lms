@@ -1,6 +1,7 @@
 package com.module1.crud.course.controller;
 
 import com.module1.crud.course.model.dto.CourseDTO;
+import com.module1.crud.course.model.dto.CourseStudentStatsDTO;
 import com.module1.crud.course.model.service.CourseService;
 import com.module1.crud.course.view.ProfInputView;
 import com.module1.crud.course.view.ProfOutputView;
@@ -38,5 +39,9 @@ public class CourseController {
 
     public boolean insertCourse(CourseDTO newCourse) {
         return service.insertCourse(newCourse);
+    }
+
+    public List<CourseStudentStatsDTO> findStudentStatsByCourse(int courseId) {
+        return service.findStudentStatsByCourse(courseId);
     }
 }

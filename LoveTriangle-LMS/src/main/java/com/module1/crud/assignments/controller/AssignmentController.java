@@ -101,4 +101,21 @@ public class AssignmentController {
     public SubmissionRankResultDTO createSubmission(StudentAssignmentSubmissionDTO submissionDTO, boolean late) {
         return service.createSubmission(submissionDTO, late);
     }
+
+    // ================== [신규] 상호 평가 (Peer Review) 파트 ==================
+    public List<HeartTagDTO> findAllHeartTags() {
+        return service.findAllHeartTags();
+    }
+
+    public List<TeamMemberDTO> findTeamMembers(Long studentId, Long assignmentId) {
+        return service.findTeamMembers(studentId, assignmentId);
+    }
+
+    public void submitPeerReview(Long assignmentId, Long reviewerId, Long revieweeId, List<Integer> tagIds) {
+        service.submitPeerReview(assignmentId, reviewerId, revieweeId, tagIds);
+    }
+
+    public List<StudentTeamAssignmentDTO> findMyTeamAssignments(Long studentId) {
+        return service.findMyTeamAssignments(studentId);
+    }
 }

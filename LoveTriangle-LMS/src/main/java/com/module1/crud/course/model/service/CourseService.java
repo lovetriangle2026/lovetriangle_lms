@@ -2,6 +2,7 @@ package com.module1.crud.course.model.service;
 
 import com.module1.crud.course.model.dao.CourseDAO;
 import com.module1.crud.course.model.dto.CourseDTO;
+import com.module1.crud.course.model.dto.CourseStudentStatsDTO;
 import com.module1.crud.global.config.JDBCTemplate;
 import com.module1.crud.course.model.dao.SessionDAO;
 
@@ -135,4 +136,13 @@ public class CourseService {
             throw new RuntimeException("담당 강의 조회 중 오류 발생!! 🚨🚨", e);
         }
     }
+
+    public List<CourseStudentStatsDTO> findStudentStatsByCourse(int courseId) {
+        try (Connection con = JDBCTemplate.getConnection()) {
+            return courseDAO.findStudentStatsByCourse(con, courseId);
+        } catch (SQLException e) {
+            throw new RuntimeException("수강생 통계 조회 중 Error 발생!! 🚨🚨", e);
+        }
+    }
+
 }
