@@ -155,9 +155,10 @@ public class AttendanceService {
     }
 
     // 💡 이 메서드는 조회 후 등록/수정을 하는 복합 로직이므로 트랜잭션을 적용합니다!
-    public boolean checkAttendance(int studentId, SessionDTO session) {
+    // 반환 타입을 boolean -> String으로 변경
+    public String checkAttendance(int studentId, SessionDTO session) {
         try (Connection con = JDBCTemplate.getConnection()) {
-            con.setAutoCommit(false); // 🔒 트랜잭션 시작
+            con.setAutoCommit(false);
 
             try {
                 AttendanceDTO attendance = attendanceDAO.findByStudentIdAndSessionId(con, studentId, session.getId());
@@ -170,20 +171,40 @@ public class AttendanceService {
                     isSuccess = attendanceDAO.updateAttendanceCheck(con, attendance.getId(), status);
                 }
 
-                con.commit(); // 🔓 모든 로직이 정상 처리되면 커밋
-                return isSuccess;
+                String resultMessage = "출석체크 실패";
+
+                if (isSuccess) {
+                    resultMessage = "출석체크 완료! (상태: " + status + ")";
+
+                    if ("PRESENT".equals(status)) {
+                        int streak = attendanceDAO.getAttendanceStreak(
+                                con,
+                                studentId,
+                                session.getCourseId(),
+                                session.getId()
+                        );
+
+                        if (streak >= 3) {
+                            resultMessage += "\n🔥 3일 이상 연속 출석!! 현재 " + streak + "일 연속 출석 중입니다! 🎉";
+                        }
+                    }
+                }
+
+                con.commit();
+                return resultMessage;
 
             } catch (Exception e) {
-                con.rollback(); // 🚨 에러 발생 시 롤백
+                con.rollback();
                 throw new RuntimeException("출석체크 트랜잭션 중 Error 발생!! 🚨🚨", e);
             } finally {
-                con.setAutoCommit(true); // 자동 커밋 원상 복구
+                con.setAutoCommit(true);
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("출석체크 DB 연결 중 Error 발생!! 🚨🚨 " + e);
+            throw new RuntimeException("출석체크 DB 연결 중 Error 발생!! 🚨🚨", e);
         }
     }
+
 
     private String calculateAttendanceStatus(SessionDTO session) {
         LocalDateTime now = LocalDateTime.now();
@@ -227,4 +248,5 @@ public class AttendanceService {
             throw new RuntimeException("공결 신청 중 오류 🚨 " + e);
         }
     }
-}
+
+    }

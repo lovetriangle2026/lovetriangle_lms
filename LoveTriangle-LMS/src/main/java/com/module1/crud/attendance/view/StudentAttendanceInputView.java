@@ -25,9 +25,7 @@ public class StudentAttendanceInputView {
     public void displayMenu() {
         while (true) {
             System.out.println();
-            System.out.println("=================================");
-            System.out.println("        학생 출결관리 메뉴");
-            System.out.println("=================================");
+            System.out.println("\n======= [학생 출결관리 메뉴] =======");
             System.out.println("1. 내 출결 조회");
             System.out.println("2. 출석하기");
             System.out.println("3. 공결 신청");
@@ -66,7 +64,7 @@ public class StudentAttendanceInputView {
             return;
         }
 
-        System.out.println("\n===== 수강 강의 목록 =====");
+        System.out.println("\n======= [수강 강의 목록] =======");
         for (int i = 0; i < courseList.size(); i++) {
             System.out.println((i + 1) + ". " + courseList.get(i).getTitle());
         }
@@ -114,7 +112,7 @@ public class StudentAttendanceInputView {
         if (sessionList.size() == 1) {
             selectedSession = sessionList.get(0);
         } else {
-            System.out.println("\n===== 현재 출석 가능한 수업 목록 =====");
+            System.out.println("\n===== [현재 출석 가능한 수업 목록] =====");
             System.out.println("0. 돌아가기");
 
             for (int i = 0; i < sessionList.size(); i++) {
@@ -151,12 +149,17 @@ public class StudentAttendanceInputView {
             return;
         }
 
-        boolean result = controller.checkAttendance(studentId, selectedSession);
+        try {
+            String resultMessage = controller.checkAttendance(studentId, selectedSession);
 
-        if (result) {
-            outputView.printSuccess("출석체크 완료");
-        } else {
-            outputView.printError("출석체크에 실패했습니다.");
+            if (resultMessage.startsWith("출석체크 완료")) {
+                outputView.printSuccess(resultMessage);
+            } else {
+                outputView.printError(resultMessage);
+            }
+
+        } catch (Exception e) {
+            outputView.printError("출석체크 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 
@@ -181,7 +184,7 @@ public class StudentAttendanceInputView {
             return;
         }
 
-        System.out.println("\n===== 수강 강의 목록 =====");
+        System.out.println("\n======= [수강 강의 목록] =======");
 
         for (int i = 0; i < courseList.size(); i++) {
             System.out.println((i + 1) + ". " + courseList.get(i).getTitle());
@@ -211,7 +214,7 @@ public class StudentAttendanceInputView {
             return;
         }
 
-        System.out.println("\n===== 주차 목록 =====");
+        System.out.println("\n========= [주차 목록] =========");
         System.out.println("0. 돌아가기");
 
         for (int i = 0; i < sessionList.size(); i++) {
@@ -249,4 +252,6 @@ public class StudentAttendanceInputView {
             outputView.printError("공결 신청에 실패했습니다.");
         }
     }
+
+
 }

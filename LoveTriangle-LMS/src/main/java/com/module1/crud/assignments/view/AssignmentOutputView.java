@@ -3,6 +3,7 @@ package com.module1.crud.assignments.view;
 import com.module1.crud.assignments.model.dto.ProfessorAssignmentDTO;
 import com.module1.crud.assignments.model.dto.ProfessorAssignmentSubmissionDTO;
 import com.module1.crud.assignments.model.dto.StudentAssignmentDTO;
+import com.module1.crud.assignments.model.dto.SubmissionRankResultDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -153,5 +154,24 @@ public class AssignmentOutputView {
             System.out.println("=================================================");
         }
         System.out.println(" ========✅학생 과제 제출 현황을 조회했습니다!✅========");
+    }
+
+
+
+
+    public void printSubmissionResult(SubmissionRankResultDTO result) {
+        System.out.println();
+        System.out.println("========================================");
+        System.out.println("         🎉 과제 제출 완료");
+        System.out.println("========================================");
+
+        System.out.println(result.getMessage());
+        System.out.println("📌 제출 순위 : " + result.getRank() + " / " + result.getTotalStudents());
+
+        if (result.isLate()) {
+            System.out.println("⏰ 마감일 이후 제출입니다.");
+        }
+
+        System.out.println("========================================");
     }
 }

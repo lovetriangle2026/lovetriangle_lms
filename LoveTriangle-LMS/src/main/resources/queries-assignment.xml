@@ -170,6 +170,26 @@ WHERE assignment_id = ? AND student_id = ?
         WHERE c.professor_id = ?
         ORDER BY c.title ASC
     </query>
+    <query key="assignmentSubmission.findSubmittedAt">
+        SELECT submitted_at
+        FROM assignment_submissions
+        WHERE assignment_id = ? AND student_id = ?
+    </query>
+
+    <query key="assignmentSubmission.countEarlierSubmissions">
+        <![CDATA[
+    SELECT COUNT(*)
+    FROM assignment_submissions
+    WHERE assignment_id = ?
+      AND (
+            submitted_at < ?
+            OR (
+                submitted_at = ?
+                AND student_id < ?
+            )
+      )
+    ]]>
+    </query>
 
     <query key="assignment.findMyCourses">
         SELECT
@@ -182,5 +202,11 @@ WHERE assignment_id = ? AND student_id = ?
         ORDER BY c.title ASC
     </query>
 
+    <query key="assignmentSubmission.countTotalStudentsByAssignment">
+        SELECT COUNT(*)
+        FROM enrollments e
+        JOIN assignments a ON e.course_id = a.course_id
+        WHERE a.id = ?
+    </query>
 
 </properties>
