@@ -97,7 +97,8 @@ public class AttendanceController {
         return service.findAvailableSessionByStudentId(studentId);
     }
 
-    public boolean checkAttendance(int studentId, SessionDTO session) {
+    // AttendanceController.java (예시)
+    public String checkAttendance(int studentId, SessionDTO session) {
         return service.checkAttendance(studentId, session);
     }
 

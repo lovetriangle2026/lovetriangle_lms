@@ -2,10 +2,7 @@ package com.module1.crud.assignments.model.service;
 
 import com.module1.crud.assignments.model.dao.AssignmentDAO;
 import com.module1.crud.assignments.model.dao.AssignmentSubmissionDAO;
-import com.module1.crud.assignments.model.dto.ProfessorAssignmentDTO;
-import com.module1.crud.assignments.model.dto.ProfessorAssignmentSubmissionDTO;
-import com.module1.crud.assignments.model.dto.StudentAssignmentDTO;
-import com.module1.crud.assignments.model.dto.StudentAssignmentSubmissionDTO;
+import com.module1.crud.assignments.model.dto.*;
 import com.module1.crud.global.config.JDBCTemplate;
 
 import java.sql.Connection;
@@ -227,6 +224,51 @@ public class AssignmentService {
             }
         } catch (SQLException e) {
             throw new RuntimeException("DB 연결 중 오류 발생 🚨", e);
+        }
+    }
+
+    public SubmissionRankResultDTO createSubmission(StudentAssignmentSubmissionDTO submissionDTO, boolean late) {
+        try (Connection con = JDBCTemplate.getConnection()) {
+
+            int result = assignmentSubmissionDAO.createSubmission(con, submissionDTO);
+
+            if (result <= 0) {
+                throw new RuntimeException("과제 제출에 실패했습니다. 🚨");
+            }
+
+            Timestamp submittedAt = assignmentSubmissionDAO.findSubmittedAtByAssignmentAndStudent(
+                    con,
+                    submissionDTO.getAssignmentId(),
+                    submissionDTO.getStudentId()
+            );
+
+            if (submittedAt == null) {
+                throw new RuntimeException("제출 시간 조회에 실패했습니다. 🚨");
+            }
+
+            int earlierCount = assignmentSubmissionDAO.countEarlierSubmissions(
+                    con,
+                    submissionDTO.getAssignmentId(),
+                    submittedAt,
+                    submissionDTO.getStudentId()
+            );
+
+            int rank = earlierCount + 1;
+
+            int totalStudents = assignmentSubmissionDAO.countTotalStudentsByAssignment(
+                    con,
+                    submissionDTO.getAssignmentId()
+            );
+
+            int topTenCut = (int) Math.ceil(totalStudents * 0.1);
+
+            boolean first = rank == 1;
+            boolean topTenPercent = !first && rank <= topTenCut;
+
+            return new SubmissionRankResultDTO(rank, totalStudents, first, topTenPercent, late);
+
+        } catch (SQLException e) {
+            throw new RuntimeException("과제 제출 중 오류 발생 🚨 " + e.getMessage());
         }
     }
 }

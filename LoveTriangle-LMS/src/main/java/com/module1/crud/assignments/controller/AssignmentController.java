@@ -1,9 +1,6 @@
 package com.module1.crud.assignments.controller;
 
-import com.module1.crud.assignments.model.dto.ProfessorAssignmentDTO;
-import com.module1.crud.assignments.model.dto.ProfessorAssignmentSubmissionDTO;
-import com.module1.crud.assignments.model.dto.StudentAssignmentDTO;
-import com.module1.crud.assignments.model.dto.StudentAssignmentSubmissionDTO;
+import com.module1.crud.assignments.model.dto.*;
 import com.module1.crud.assignments.model.service.AssignmentService;
 
 import java.sql.Timestamp;
@@ -97,5 +94,7 @@ public class AssignmentController {
     public void deleteProfessorAssignment(Long assignmentId, Long professorId) {
         service.deleteProfessorAssignment(assignmentId, professorId);
     }
-
+    public SubmissionRankResultDTO createSubmission(StudentAssignmentSubmissionDTO submissionDTO, boolean late) {
+        return service.createSubmission(submissionDTO, late);
+    }
 }
