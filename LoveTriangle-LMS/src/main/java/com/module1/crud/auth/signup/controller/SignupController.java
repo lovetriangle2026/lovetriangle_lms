@@ -13,8 +13,8 @@ public class SignupController {
         return signupService.verifyUser(userCode, name, birth, userType);
     }
 
-    public Long createUser(String userCode, String loginId, String name, LocalDate birth, String telNum, String password, String pwAnswer, String userType) {
-        UsersDTO newUser = new UsersDTO(0, userCode, loginId, name, birth, telNum, password, pwAnswer, userType);
+    public Long createUser(String userCode, String loginId, String name, LocalDate birth, String telNum, String password, String pwAnswer, String userType, int isHeartPublic) {
+        UsersDTO newUser = new UsersDTO(0, userCode, loginId, name, birth, telNum, password, pwAnswer, userType, isHeartPublic);
         return signupService.saveUser(newUser);
     }
 }

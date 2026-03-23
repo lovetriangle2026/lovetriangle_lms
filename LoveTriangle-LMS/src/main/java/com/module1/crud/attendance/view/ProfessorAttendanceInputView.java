@@ -59,7 +59,7 @@ public class ProfessorAttendanceInputView {
         }
     }
 
-    private void displayCourseAttendanceMenu(int courseId, String courseTitle, int professorId) {
+    public void displayCourseAttendanceMenu(int courseId, String courseTitle, int professorId) {
         while (true) {
             System.out.println();
             System.out.println("=== [" + courseTitle + "] 출결관리 메뉴 ===");

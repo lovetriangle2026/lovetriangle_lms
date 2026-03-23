@@ -13,8 +13,9 @@ public class UsersDTO {
     private String password;     // 비밀번호 (암호화 대비 VARCHAR(255))
     private String pwAnswer;     // 비밀번호 찾기 질문 답변
     private String userType;     // 유저 타입 (학생/교수 등)
+    private int isHeartPublic; // 0: 비공개, 1: 공개 (추가!)
 
-    public UsersDTO(int id, String userCode, String loginId, String name, LocalDate birth, String telNum, String password, String pwAnswer, String userType) {
+    public UsersDTO(int id, String userCode, String loginId, String name, LocalDate birth, String telNum, String password, String pwAnswer, String userType, int isHeartPublic) {
         this.id = id;
         this.userCode = userCode;
         this.loginId = loginId;
@@ -24,6 +25,15 @@ public class UsersDTO {
         this.password = password;
         this.pwAnswer = pwAnswer;
         this.userType = userType;
+        this.isHeartPublic = isHeartPublic;
+    }
+
+    public int getIsHeartPublic() {
+        return isHeartPublic;
+    }
+
+    public void setIsHeartPublic(int isHeartPublic) {
+        this.isHeartPublic = isHeartPublic;
     }
 
     public int getId() {

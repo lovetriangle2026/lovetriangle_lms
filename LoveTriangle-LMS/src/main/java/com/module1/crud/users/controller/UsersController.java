@@ -1,5 +1,6 @@
 package com.module1.crud.users.controller;
 
+import com.module1.crud.users.model.dto.HeartStatsDTO;
 import com.module1.crud.users.model.dto.UsersDTO;
 import com.module1.crud.users.service.UsersService;
 
@@ -35,6 +36,13 @@ public class UsersController {
     public UsersDTO getUserInfo(String loginId) {
         // Service 계층으로 조회를 요청합니다.
         return service.getUserInfo(loginId);
+    }
+
+    public HeartStatsDTO getMyHeartStats(int userId) {
+        return service.getMyHeartStats(userId);
+    }
+    public boolean toggleHeartPublic(int userId, int currentStatus) {
+        return service.toggleHeartPublic(userId, currentStatus);
     }
 
 }
