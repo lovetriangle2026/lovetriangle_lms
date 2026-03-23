@@ -70,4 +70,57 @@ public class AssignmentSubmissionDAO {
         }
     }
 
+    public java.sql.Timestamp findSubmittedAtByAssignmentAndStudent(Connection con, Long assignmentId, Long studentId) throws SQLException {
+        String query = QueryUtil.getQuery("assignmentSubmission.findSubmittedAt");
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setLong(1, assignmentId);
+            pstmt.setLong(2, studentId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return rset.getTimestamp("submitted_at");
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public int countEarlierSubmissions(Connection con, Long assignmentId, java.sql.Timestamp submittedAt, Long studentId) throws SQLException {
+        String query = QueryUtil.getQuery("assignmentSubmission.countEarlierSubmissions");
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setLong(1, assignmentId);
+            pstmt.setTimestamp(2, submittedAt);
+            pstmt.setTimestamp(3, submittedAt);
+            pstmt.setLong(4, studentId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return rset.getInt(1);
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    public int countTotalStudentsByAssignment(Connection con, Long assignmentId) throws SQLException {
+        String query = QueryUtil.getQuery("assignmentSubmission.countTotalStudentsByAssignment");
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setLong(1, assignmentId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return rset.getInt(1);
+                }
+            }
+        }
+
+        return 0;
+    }
+
+
 }

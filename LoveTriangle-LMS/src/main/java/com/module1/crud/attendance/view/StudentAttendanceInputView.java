@@ -149,12 +149,17 @@ public class StudentAttendanceInputView {
             return;
         }
 
-        boolean result = controller.checkAttendance(studentId, selectedSession);
+        try {
+            String resultMessage = controller.checkAttendance(studentId, selectedSession);
 
-        if (result) {
-            outputView.printSuccess("출석체크 완료");
-        } else {
-            outputView.printError("출석체크에 실패했습니다.");
+            if (resultMessage.startsWith("출석체크 완료")) {
+                outputView.printSuccess(resultMessage);
+            } else {
+                outputView.printError(resultMessage);
+            }
+
+        } catch (Exception e) {
+            outputView.printError("출석체크 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 
@@ -247,4 +252,6 @@ public class StudentAttendanceInputView {
             outputView.printError("공결 신청에 실패했습니다.");
         }
     }
+
+
 }

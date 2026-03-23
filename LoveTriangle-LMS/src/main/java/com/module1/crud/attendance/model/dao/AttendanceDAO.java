@@ -483,5 +483,54 @@ public class AttendanceDAO {
         }
     }
 
+    /**
+     * 현재 세션까지의 출석 상태를 최신순으로 가져옵니다.
+     * 예: PRESENT, PRESENT, ABSENT ...
+     */
+    public List<String> getAttendanceStatusesDesc(Connection con, int studentId, int courseId, int currentSessionId) throws SQLException {
+        String query =
+                "SELECT a.attendance_status " +
+                        "FROM attendance a " +
+                        "JOIN sessions s ON a.session_id = s.id " +
+                        "WHERE a.student_id = ? " +
+                        "  AND s.course_id = ? " +
+                        "  AND s.start_at <= (SELECT start_at FROM sessions WHERE id = ?) " +
+                        "ORDER BY s.start_at DESC";
+
+        List<String> statusList = new ArrayList<>();
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setInt(1, studentId);
+            pstmt.setInt(2, courseId);
+            pstmt.setInt(3, currentSessionId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                while (rset.next()) {
+                    statusList.add(rset.getString("attendance_status"));
+                }
+            }
+        }
+
+        return statusList;
+    }
+
+    /**
+     * 최신순 출석 기록을 바탕으로 연속 출석 streak 계산
+     * PRESENT만 연속 출석으로 인정
+     */
+    public int getAttendanceStreak(Connection con, int studentId, int courseId, int currentSessionId) throws SQLException {
+        List<String> statusList = getAttendanceStatusesDesc(con, studentId, courseId, currentSessionId);
+
+        int streak = 0;
+        for (String status : statusList) {
+            if ("PRESENT".equals(status)) {
+                streak++;
+            } else {
+                break;
+            }
+        }
+
+        return streak;
+    }
 
 }
