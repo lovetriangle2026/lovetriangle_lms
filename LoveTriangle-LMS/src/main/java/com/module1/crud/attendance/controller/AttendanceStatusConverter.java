@@ -24,16 +24,12 @@ public class AttendanceStatusConverter {
 
         switch (status.trim()) {
             case "출석":
-            case "PRESENT":
                 return "PRESENT";
             case "지각":
-            case "LATE":
                 return "LATE";
             case "결석":
-            case "ABSENT":
                 return "ABSENT";
             case "공결":
-            case "EXCUSED":
                 return "EXCUSED";
             default:
                 return null;

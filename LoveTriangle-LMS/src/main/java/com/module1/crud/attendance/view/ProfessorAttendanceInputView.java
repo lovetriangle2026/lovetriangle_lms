@@ -34,15 +34,13 @@ public class ProfessorAttendanceInputView {
             }
 
             System.out.println();
-            System.out.println("=================================");
-            System.out.println("         교수 출결관리");
-            System.out.println("=================================");
+            System.out.println("\n======= [교수 출결관리] =======");
             System.out.println("강의를 선택하여 출결 조회 및 수정을 진행하세요.");
 
             for (int i = 0; i < courseList.size(); i++) {
                 System.out.println((i + 1) + ". " + courseList.get(i).getTitle());
             }
-            System.out.println("0. 뒤로가기");
+            System.out.println("0. 이전으로 돌아가기");
             System.out.print("번호를 입력해주세요 : ");
             int choice = inputInt();
 
@@ -64,9 +62,7 @@ public class ProfessorAttendanceInputView {
     public void displayCourseAttendanceMenu(int courseId, String courseTitle, int professorId) {
         while (true) {
             System.out.println();
-            System.out.println("=================================");
-            System.out.println(" [" + courseTitle + "] 출결관리 메뉴");
-            System.out.println("=================================");
+            System.out.println("=== [" + courseTitle + "] 출결관리 메뉴 ===");
             System.out.println("1. 전체 출결 조회");
             System.out.println("2. 주차별 출결 조회");
             System.out.println("3. 출결 유형별 조회");
@@ -110,9 +106,7 @@ public class ProfessorAttendanceInputView {
         }
 
         System.out.println();
-        System.out.println("=================================");
-        System.out.println(" [" + courseTitle + " - " + week + "주차] 출결 수정");
-        System.out.println("=================================");
+        System.out.println("===== [" + courseTitle + " - " + week + "주차] 출결 수정 =====");
 
         for (int i = 0; i < attendanceList.size(); i++) {
             AttendanceDTO attendance = attendanceList.get(i);
@@ -121,7 +115,7 @@ public class ProfessorAttendanceInputView {
                     + " - "
                     + attendance.getAttendanceStatus());
         }
-        System.out.println("0. 돌아가기");
+        System.out.println("0. 이전으로 돌아가기");
         System.out.print("수정할 학생 번호를 선택해주세요 : ");
         int choice = inputInt();
 
@@ -138,7 +132,7 @@ public class ProfessorAttendanceInputView {
         AttendanceDTO selectedAttendance = attendanceList.get(choice - 1);
 
         System.out.println();
-        System.out.println("===== 선택한 학생 출결 정보 =====");
+        System.out.println("\n======= [선택한 학생 출결 정보] =======");
         System.out.println("학생명 : " + selectedAttendance.getStudentName());
         System.out.println("강의명 : " + selectedAttendance.getCourseTitle());
         System.out.println("주차 : " + selectedAttendance.getWeek() + "주차");
@@ -151,7 +145,7 @@ public class ProfessorAttendanceInputView {
         System.out.println("2. 지각");
         System.out.println("3. 결석");
         System.out.println("4. 공결");
-        System.out.println("0. 돌아가기");
+        System.out.println("0. 이전으로 돌아가기");
 
         System.out.print("번호 선택 : ");
         int statusChoice = inputInt();
@@ -230,8 +224,15 @@ public class ProfessorAttendanceInputView {
     }
 
     private void findAttendanceByCourseIdAndStatus(int courseId, int professorId) {
-        System.out.print("출결 상태를 입력해주세요 (PRESENT / LATE / ABSENT / EXCUSED) : ");
-        String status = sc.nextLine().toUpperCase();
+
+        System.out.print("출결 상태를 입력해주세요 (출석 / 지각 / 결석 / 공결) : ");
+        String input = sc.nextLine();
+
+        String status = AttendanceStatusConverter.toEnglish(input);
+
+        if (status == null) {
+            return;
+        }
 
         List<AttendanceDTO> attendanceList =
                 controller.findAttendanceByCourseIdAndStatus(courseId, professorId, status);
