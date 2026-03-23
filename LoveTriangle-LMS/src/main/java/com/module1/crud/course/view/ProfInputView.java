@@ -22,7 +22,7 @@ public class ProfInputView {
         this.sessionController = sessionController;
     }
 
-    // 1. 메인 메뉴: 3, 4번을 제거하고 1번으로 통합했습니다.
+    // 1. 메인 메뉴
     public void displayProfessorCourseMenu() {
         while (true) {
             System.out.println("\n============ 🏫 교수 강의관리 메뉴 ============");
@@ -36,7 +36,7 @@ public class ProfInputView {
 
             switch (menu) {
                 case 1:
-                    manageMyCourses(); // 👈 여기서 목록을 보여주고 하위 메뉴로 진입합니다.
+                    manageMyCourses();
                     break;
                 case 2:
                     registerCourse();
@@ -67,7 +67,6 @@ public class ProfInputView {
 
         profOutputView.displayCourseList(courseList);
 
-        // 71번 줄부터 시작
         System.out.print("▶ 관리할 강의 번호를 선택하세요 (0: 이전) : ");
         int choice = sc.nextInt();
         sc.nextLine(); // 버퍼 비우기
@@ -100,10 +99,11 @@ public class ProfInputView {
             sc.nextLine();
 
             if (subMenu == 1) {
-                // 주차별 조회
-                sessionController.findSessionsByCourse(selectedCourse.getId().intValue());
+                // 💡 주차별 조회 시 예쁜 표 출력
+                List<SessionDTO> sessionList = sessionController.findSessionsByCourse(selectedCourse.getId().intValue());
+                profOutputView.displaySessionList(sessionList);
             } else if (subMenu == 2) {
-                // 주차별 수정 프로세스
+                // 💡 주차별 수정 프로세스로 이동
                 updateSessionProcess(selectedCourse);
             } else if (subMenu == 0) {
                 break;
@@ -113,11 +113,12 @@ public class ProfInputView {
         }
     }
 
-    // 3. 주차별 수정 로직을 따로 분리했습니다.
+    // 3. 주차별 수정 로직
     private void updateSessionProcess(CourseDTO selectedCourse) {
-        // 수정 전 목록 보여주기
+        // 💡 수정하기 전에 기존 주차별 내용을 표 형태로 쫙 보여줍니다!
         System.out.println("\n🔍 현재 주차별 내용입니다.");
-        sessionController.findSessionsByCourse(selectedCourse.getId().intValue());
+        List<SessionDTO> sessionList = sessionController.findSessionsByCourse(selectedCourse.getId().intValue());
+        profOutputView.displaySessionList(sessionList);
 
         System.out.print("수정할 주차 입력 (1~15) : ");
         int week = sc.nextInt();
@@ -139,9 +140,10 @@ public class ProfInputView {
 
         profOutputView.displaySessionUpdateResult(result);
 
-        // 수정 성공 시 바뀐 결과 다시 보여주기
+        // 💡 수정 성공 시 바뀐 결과를 다시 예쁜 표로 보여줍니다!
         if (result) {
-            sessionController.findSessionsByCourse(selectedCourse.getId().intValue());
+            List<SessionDTO> updatedList = sessionController.findSessionsByCourse(selectedCourse.getId().intValue());
+            profOutputView.displaySessionList(updatedList);
         }
     }
 
@@ -159,8 +161,7 @@ public class ProfInputView {
 
         int professorId = (int) loggedInUser.getId();
 
-        sc.nextLine();
-        System.out.println("============ 신규 강의 등록 ============");
+        System.out.println("\n============ 신규 강의 등록 ============");
 
         System.out.print("강의 제목 : ");
         String title = sc.nextLine();
