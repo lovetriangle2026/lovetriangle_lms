@@ -93,9 +93,11 @@ public class SystemRouter {
 
             System.out.println("\n========= [학생 메인 메뉴] =========");
             System.out.println("로그인 유저: " + user.getName() + " (" + user.getUserCode() + ")");
-            System.out.println(" 1. 로그인");
-            System.out.println(" 2. 회원가입");
-            System.out.println(" 3. 아이디/비밀번호 찾기");
+            System.out.println(" 1. 강의관리");
+            System.out.println(" 2. 출결관리");
+            System.out.println(" 3. 성적관리");
+            System.out.println(" 4. 과제관리");
+            System.out.println(" 5. 회원관리");
             System.out.println(" 0. 로그아웃");
             System.out.print("▶ 메뉴 선택: ");
 
