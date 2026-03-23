@@ -8,6 +8,7 @@ import com.module1.crud.users.model.dto.UsersDTO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class StudentAssignmentInputView {
@@ -62,18 +63,11 @@ public class StudentAssignmentInputView {
     private List<StudentAssignmentDTO> getMyAssignments(Long studentId) {
         return controller.findMyAssignments(studentId);
     }
-
-    private List<String> extractCourseTitles(List<StudentAssignmentDTO> assignmentList) {
-        List<String> courseTitles = new ArrayList<>();
-
-        for (StudentAssignmentDTO dto : assignmentList) {
-            if (!courseTitles.contains(dto.getCourseTitle())) {
-                courseTitles.add(dto.getCourseTitle());
-            }
-        }
-
-        return courseTitles;
+    private Map<Long, String> getMyCourses(Long studentId) {
+        return controller.findMyCourses(studentId);
     }
+
+
 
     private List<StudentAssignmentDTO> filterAssignmentsByCourseTitle(List<StudentAssignmentDTO> assignmentList, String courseTitle) {
         List<StudentAssignmentDTO> filteredList = new ArrayList<>();
@@ -87,16 +81,16 @@ public class StudentAssignmentInputView {
         return filteredList;
     }
 
-    private String selectCourseTitle(List<StudentAssignmentDTO> assignmentList, String actionName) {
-        List<String> courseTitles = extractCourseTitles(assignmentList);
-
-        if (courseTitles.isEmpty()) {
+    private String selectCourseTitle(Map<Long, String> courseMap, String actionName) {
+        if (courseMap == null || courseMap.isEmpty()) {
             outputView.printError("수강 중인 강의가 없습니다.");
             return null;
         }
 
+        List<String> courseTitles = new ArrayList<>(courseMap.values());
+
         while (true) {
-            outputView.printMessage("\n--- " + actionName + "할 강의 선택 ---");
+            outputView.printMessage("\n=== " + actionName + "할 강의 선택 ===");
             outputView.printStudentCourseMenu(courseTitles);
             System.out.print("번호를 입력해주세요: ");
 
@@ -127,7 +121,7 @@ public class StudentAssignmentInputView {
         }
 
         while (true) {
-            outputView.printMessage("\n--- " + actionName + "할 과제 선택 ---");
+            outputView.printMessage("\n=== " + actionName + "할 과제 선택 ===");
             outputView.printStudentAssignmentMenu(courseTitle, filteredList);
             System.out.print("번호를 입력해주세요: ");
 
@@ -157,20 +151,27 @@ public class StudentAssignmentInputView {
         UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
         Long studentId = (long) loggedInUser.getId();
 
-        List<StudentAssignmentDTO> assignmentList = getMyAssignments(studentId);
+        Map<Long, String> courseMap = getMyCourses(studentId);
 
-        if (assignmentList == null || assignmentList.isEmpty()) {
-            outputView.printError("조회할 과제가 없습니다.");
+        if (courseMap == null || courseMap.isEmpty()) {
+            outputView.printError("수강 중인 강의가 없습니다.");
             return;
         }
 
-        String courseTitle = selectCourseTitle(assignmentList, "조회");
+        String courseTitle = selectCourseTitle(courseMap, "조회");
         if (courseTitle == null) {
             outputView.printMessage("과제 조회를 취소했습니다.");
             return;
         }
 
+        List<StudentAssignmentDTO> assignmentList = getMyAssignments(studentId);
         List<StudentAssignmentDTO> filteredList = filterAssignmentsByCourseTitle(assignmentList, courseTitle);
+
+        if (filteredList == null || filteredList.isEmpty()) {
+            outputView.printError("과제가 존재하지 않습니다!");
+            return;
+        }
+
         StudentAssignmentDTO selectedAssignment = selectAssignment(filteredList, courseTitle, "조회");
 
         if (selectedAssignment == null) {
@@ -195,7 +196,7 @@ public class StudentAssignmentInputView {
                 return;
             }
 
-            String courseTitle = selectCourseTitle(assignmentList, "제출");
+            String courseTitle = selectCourseTitle((Map<Long, String>) assignmentList, "제출");
             if (courseTitle == null) {
                 outputView.printMessage("과제 제출을 취소했습니다.");
                 return;
@@ -265,7 +266,7 @@ public class StudentAssignmentInputView {
                 return;
             }
 
-            String courseTitle = selectCourseTitle(assignmentList, "수정");
+            String courseTitle = selectCourseTitle((Map<Long, String>) assignmentList, "수정");
             if (courseTitle == null) {
                 outputView.printMessage("과제 수정을 취소했습니다.");
                 return;
@@ -344,7 +345,7 @@ public class StudentAssignmentInputView {
                 return;
             }
 
-            String courseTitle = selectCourseTitle(assignmentList, "삭제");
+            String courseTitle = selectCourseTitle((Map<Long, String>) assignmentList, "삭제");
             if (courseTitle == null) {
                 outputView.printMessage("과제 삭제를 취소했습니다.");
                 return;

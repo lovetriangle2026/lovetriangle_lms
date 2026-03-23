@@ -26,6 +26,10 @@ public class AssignmentController {
 
     }
 
+    public Map<Long, String> findMyCourses(Long userId) {
+        return service.findMyCourses(userId);
+    }
+
     // ==================== 과제 제출 ========================
     public boolean canSubmitAssignment(Long assignmentId, Long studentId) {
         return service.canSubmitAssignment(assignmentId, studentId);

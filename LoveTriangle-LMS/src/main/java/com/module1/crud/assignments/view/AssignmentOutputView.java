@@ -70,7 +70,7 @@ public class AssignmentOutputView {
         System.out.println("과제 내용    : " + dto.getDescription());
         System.out.println("마감일       : " + dto.getDeadline());
         System.out.println("제출 상태    : " + dto.getSubmissionStatus());
-        System.out.println("기존 과제 제출 명 : " + (dto.getSubmissionContent() == null ? "-" : dto.getSubmissionContent()));
+        System.out.println("과제 제출 명 : " + (dto.getSubmissionContent() == null ? "-" : dto.getSubmissionContent()));
         System.out.println("제출일시     : " + (dto.getSubmittedAt() == null ? "-" : dto.getSubmittedAt()));
         System.out.println("=======================================================");
     }
