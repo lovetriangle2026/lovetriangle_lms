@@ -28,7 +28,7 @@ public class AssignmentOutputView {
             System.out.println("과제명    : " + dto.getTitle());
             System.out.println("마감일    : " + dto.getDeadline());
             System.out.println("제출상태  : " + dto.getSubmissionStatus());
-            System.out.println("--------------------------------------------------");
+            System.out.println("====================================================");
         }
     }
 
@@ -42,7 +42,7 @@ public class AssignmentOutputView {
         for (int i = 0; i < courseTitles.size(); i++) {
             System.out.println((i + 1) + ". " + courseTitles.get(i));
         }
-        System.out.println("0. 취소");
+        System.out.println("0. 이전으로 돌아가기");
     }
 
     public void printStudentAssignmentMenu(String courseTitle, List<StudentAssignmentDTO> assignmentList) {
@@ -55,7 +55,7 @@ public class AssignmentOutputView {
         for (int i = 0; i < assignmentList.size(); i++) {
             System.out.println((i + 1) + ". " + assignmentList.get(i).getTitle());
         }
-        System.out.println("0. 취소");
+        System.out.println("0. 이전으로 돌아가기");
     }
 
     public void printStudentAssignmentDetail(StudentAssignmentDTO dto) {
@@ -70,9 +70,9 @@ public class AssignmentOutputView {
         System.out.println("과제 내용    : " + dto.getDescription());
         System.out.println("마감일       : " + dto.getDeadline());
         System.out.println("제출 상태    : " + dto.getSubmissionStatus());
-        System.out.println("기존 제출내용 : " + (dto.getSubmissionContent() == null ? "-" : dto.getSubmissionContent()));
+        System.out.println("기존 과제 제출 명 : " + (dto.getSubmissionContent() == null ? "-" : dto.getSubmissionContent()));
         System.out.println("제출일시     : " + (dto.getSubmittedAt() == null ? "-" : dto.getSubmittedAt()));
-        System.out.println("--------------------------------------------------");
+        System.out.println("=======================================================");
     }
 
     public void printProfessorCourseMenu(Map<Long, String> courseMap) {
@@ -87,7 +87,7 @@ public class AssignmentOutputView {
             System.out.println(index + ". " + courseTitle);
             index++;
         }
-        System.out.println("0. 취소");
+        System.out.println("0. 이전으로 돌아가기");
     }
 
     public void printProfessorAssignmentMenu(String courseTitle, List<ProfessorAssignmentDTO> assignmentList) {
@@ -100,7 +100,7 @@ public class AssignmentOutputView {
         for (int i = 0; i < assignmentList.size(); i++) {
             System.out.println((i + 1) + ". " + assignmentList.get(i).getAssignmentTitle());
         }
-        System.out.println("0. 취소");
+        System.out.println("0. 이전으로 돌아가기");
     }
 
     public void printProfessorAssignmentDetail(ProfessorAssignmentDTO dto) {
@@ -114,7 +114,7 @@ public class AssignmentOutputView {
         System.out.println("과제명     : " + dto.getAssignmentTitle());
         System.out.println("과제 내용  : " + dto.getDescription());
         System.out.println("마감일     : " + dto.getDeadline());
-        System.out.println("--------------------------------------------------");
+        System.out.println("======================================================");
     }
 
     public void printProfessorAssignments(List<ProfessorAssignmentDTO> assignmentList) {
@@ -131,7 +131,7 @@ public class AssignmentOutputView {
             System.out.println("과제명   : " + dto.getAssignmentTitle());
             System.out.println("설명     : " + dto.getDescription());
             System.out.println("마감일   : " + dto.getDeadline());
-            System.out.println("--------------------------------------------------");
+            System.out.println("=====================================================");
         }
         System.out.println(" ========✅생성한 과제를 조회했습니다✅========");
     }
@@ -150,7 +150,7 @@ public class AssignmentOutputView {
             System.out.println("제출여부 : " + dto.getSubmissionStatus());
             System.out.println("제출내용 : " + (dto.getContentTitle() == null ? "-" : dto.getContentTitle()));
             System.out.println("제출일시 : " + (dto.getSubmittedAt() == null ? "-" : dto.getSubmittedAt()));
-            System.out.println("--------------------------------------------------");
+            System.out.println("=================================================");
         }
         System.out.println(" ========✅학생 과제 제출 현황을 조회했습니다!✅========");
     }

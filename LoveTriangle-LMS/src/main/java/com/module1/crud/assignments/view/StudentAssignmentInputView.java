@@ -32,7 +32,7 @@ public class StudentAssignmentInputView {
             System.out.println("2. 과제 제출");
             System.out.println("3. 제출 수정");
             System.out.println("4. 제출 삭제");
-            System.out.println("5. 이전으로 돌아가기");
+            System.out.println("0. 이전으로 돌아가기");
             System.out.print("번호를 입력해주세요 : ");
 
             int menu = inputInt();
@@ -50,7 +50,7 @@ public class StudentAssignmentInputView {
                 case 4:
                     deleteSubmission();
                     break;
-                case 5:
+                case 0:
                     outputView.printMessage("이전 메뉴로 돌아갑니다.");
                     return;
                 default:
@@ -152,7 +152,7 @@ public class StudentAssignmentInputView {
     }
 
     private void findMyAssignments() {
-        outputView.printMessage("\n--- 수강 과목 과제 조회 ---");
+        outputView.printMessage("\n=== 수강 과목 과제 조회 ===");
 
         UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
         Long studentId = (long) loggedInUser.getId();
@@ -182,218 +182,223 @@ public class StudentAssignmentInputView {
     }
 
     private void createSubmission() {
-        outputView.printMessage("\n--- 과제 제출 ---");
+        outputView.printMessage("\n=== 과제 제출 ===");
 
         UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
         Long studentId = (long) loggedInUser.getId();
 
-        List<StudentAssignmentDTO> assignmentList = getMyAssignments(studentId);
-
-        if (assignmentList == null || assignmentList.isEmpty()) {
-            outputView.printError("제출할 과제가 없습니다.");
-            return;
-        }
-
-        String courseTitle = selectCourseTitle(assignmentList, "제출");
-        if (courseTitle == null) {
-            outputView.printMessage("과제 제출을 취소했습니다.");
-            return;
-        }
-
-        List<StudentAssignmentDTO> filteredList = filterAssignmentsByCourseTitle(assignmentList, courseTitle);
-        StudentAssignmentDTO selectedAssignment = selectAssignment(filteredList, courseTitle, "제출");
-
-        if (selectedAssignment == null) {
-            outputView.printMessage("과제 제출을 취소했습니다.");
-            return;
-        }
-
-        outputView.printStudentAssignmentDetail(selectedAssignment);
-
-        Long assignmentId = selectedAssignment.getId();
-
-        boolean canSubmit = controller.canSubmitAssignment(assignmentId, studentId);
-        if (!canSubmit) {
-            outputView.printError("없는 과제이거나, 수강 중인 과제가 아닙니다. 다시 입력해주세요.");
-            return;
-        }
-
-        boolean alreadySubmitted = controller.isAlreadySubmitted(assignmentId, studentId);
-        if (alreadySubmitted) {
-            outputView.printError("이미 제출한 과제입니다.");
-            return;
-        }
-
-        boolean deadlinePassed = controller.isAssignmentDeadlinePassed(assignmentId);
-
         while (true) {
-            System.out.print("제출 내용을 입력해주세요: ");
-            String content = sc.nextLine().trim();
+            List<StudentAssignmentDTO> assignmentList = getMyAssignments(studentId);
 
-            if (content.isEmpty()) {
-                outputView.printError("제출 내용은 비워둘 수 없습니다.");
+            if (assignmentList == null || assignmentList.isEmpty()) {
+                outputView.printError("제출할 과제가 없습니다.");
+                return;
+            }
+
+            String courseTitle = selectCourseTitle(assignmentList, "제출");
+            if (courseTitle == null) {
+                outputView.printMessage("과제 제출을 취소했습니다.");
+                return;
+            }
+
+            List<StudentAssignmentDTO> filteredList = filterAssignmentsByCourseTitle(assignmentList, courseTitle);
+            StudentAssignmentDTO selectedAssignment = selectAssignment(filteredList, courseTitle, "제출");
+
+            if (selectedAssignment == null) {
+                outputView.printMessage("과제 선택을 다시 진행합니다.");
                 continue;
             }
 
-            StudentAssignmentSubmissionDTO submissionDTO =
-                    new StudentAssignmentSubmissionDTO(assignmentId, studentId, content);
+            outputView.printStudentAssignmentDetail(selectedAssignment);
 
-            controller.createSubmission(submissionDTO);
+            Long assignmentId = selectedAssignment.getId();
 
-            if (deadlinePassed) {
-                outputView.printMessage("과제가 성공적으로 제출되었습니다. (마감일 이후에 제출했습니다.)");
-            } else {
-                outputView.printMessage("과제가 성공적으로 제출되었습니다.");
+            boolean canSubmit = controller.canSubmitAssignment(assignmentId, studentId);
+            if (!canSubmit) {
+                outputView.printError("없는 과제이거나, 수강 중인 과제가 아닙니다. 다시 선택해주세요.");
+                continue;
             }
-            return;
+
+            boolean alreadySubmitted = controller.isAlreadySubmitted(assignmentId, studentId);
+            if (alreadySubmitted) {
+                outputView.printError("이미 제출한 과제입니다. 다른 과제를 선택해주세요.");
+                continue;
+            }
+
+            boolean deadlinePassed = controller.isAssignmentDeadlinePassed(assignmentId);
+
+            while (true) {
+                System.out.print("제출 내용을 입력해주세요: ");
+                String content = sc.nextLine().trim();
+
+                if (content.isEmpty()) {
+                    outputView.printError("제출 내용은 비워둘 수 없습니다.");
+                    continue;
+                }
+
+                StudentAssignmentSubmissionDTO submissionDTO =
+                        new StudentAssignmentSubmissionDTO(assignmentId, studentId, content);
+
+                controller.createSubmission(submissionDTO);
+
+                if (deadlinePassed) {
+                    outputView.printMessage("과제가 성공적으로 제출되었습니다. (마감일 이후에 제출했습니다.)");
+                } else {
+                    outputView.printMessage("과제가 성공적으로 제출되었습니다.");
+                }
+                return;
+            }
         }
     }
 
     private void updateSubmission() {
-        outputView.printMessage("\n--- 과제 제출 수정 ---");
+        outputView.printMessage("\n=== 과제 제출 수정 ===");
 
         UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
         Long studentId = (long) loggedInUser.getId();
 
-        List<StudentAssignmentDTO> assignmentList = getMyAssignments(studentId);
-
-        if (assignmentList == null || assignmentList.isEmpty()) {
-            outputView.printError("수정할 과제가 없습니다.");
-            return;
-        }
-
-        String courseTitle = selectCourseTitle(assignmentList, "수정");
-        if (courseTitle == null) {
-            outputView.printMessage("과제 수정을 취소했습니다.");
-            return;
-        }
-
-        List<StudentAssignmentDTO> filteredList = filterAssignmentsByCourseTitle(assignmentList, courseTitle);
-        StudentAssignmentDTO selectedAssignment = selectAssignment(filteredList, courseTitle, "수정");
-
-        if (selectedAssignment == null) {
-            outputView.printMessage("과제 수정을 취소했습니다.");
-            return;
-        }
-
-        outputView.printStudentAssignmentDetail(selectedAssignment);
-
-        Long assignmentId = selectedAssignment.getId();
-
-        boolean canSubmit = controller.canSubmitAssignment(assignmentId, studentId);
-        if (!canSubmit) {
-            outputView.printError("없는 과제이거나, 수강 중인 과제가 아닙니다. 다시 입력해주세요.");
-            return;
-        }
-
-        boolean alreadySubmitted = controller.isAlreadySubmitted(assignmentId, studentId);
-        if (!alreadySubmitted) {
-            outputView.printError("아직 제출하지 않은 과제입니다. 수정할 수 없습니다.");
-            return;
-        }
-
-        boolean deadlinePassed = controller.isAssignmentDeadlinePassed(assignmentId);
-        if (deadlinePassed) {
-            while (true) {
-                System.out.print("마감일이 지난 과제입니다. 수정하시겠습니까? (Y/N): ");
-                String confirmLateUpdate = sc.nextLine().trim();
-
-                if (confirmLateUpdate.equalsIgnoreCase("N")) {
-                    outputView.printMessage("과제 수정을 취소했습니다.");
-                    return;
-                }
-
-                if (confirmLateUpdate.equalsIgnoreCase("Y")) {
-                    break;
-                }
-
-                outputView.printError("Y 또는 N만 입력해주세요.");
-            }
-        }
-
         while (true) {
-            System.out.print("수정 내용을 입력해주세요: ");
-            String newContent = sc.nextLine().trim();
+            List<StudentAssignmentDTO> assignmentList = getMyAssignments(studentId);
 
-            if (newContent.isEmpty()) {
-                outputView.printError("제출 내용은 비워둘 수 없습니다.");
+            if (assignmentList == null || assignmentList.isEmpty()) {
+                outputView.printError("수정할 과제가 없습니다.");
+                return;
+            }
+
+            String courseTitle = selectCourseTitle(assignmentList, "수정");
+            if (courseTitle == null) {
+                outputView.printMessage("과제 수정을 취소했습니다.");
+                return;
+            }
+
+            List<StudentAssignmentDTO> filteredList = filterAssignmentsByCourseTitle(assignmentList, courseTitle);
+            StudentAssignmentDTO selectedAssignment = selectAssignment(filteredList, courseTitle, "수정");
+
+            if (selectedAssignment == null) {
+                outputView.printMessage("과제 선택을 다시 진행합니다.");
                 continue;
             }
 
-            controller.updateSubmission(assignmentId, studentId, newContent);
-            outputView.printMessage("✅ 과제 수정이 완료되었습니다.");
-            return;
+            outputView.printStudentAssignmentDetail(selectedAssignment);
+
+            Long assignmentId = selectedAssignment.getId();
+
+            boolean canSubmit = controller.canSubmitAssignment(assignmentId, studentId);
+            if (!canSubmit) {
+                outputView.printError("없는 과제이거나, 수강 중인 과제가 아닙니다. 다시 선택해주세요.");
+                continue;
+            }
+
+            boolean alreadySubmitted = controller.isAlreadySubmitted(assignmentId, studentId);
+            if (!alreadySubmitted) {
+                outputView.printError("아직 제출하지 않은 과제입니다. 다른 과제를 선택해주세요.");
+                continue;
+            }
+
+            boolean deadlinePassed = controller.isAssignmentDeadlinePassed(assignmentId);
+            if (deadlinePassed) {
+                while (true) {
+                    System.out.print("마감일이 지난 과제입니다. 수정하시겠습니까? (Y/N): ");
+                    String confirmLateUpdate = sc.nextLine().trim();
+
+                    if (confirmLateUpdate.equalsIgnoreCase("N")) {
+                        outputView.printMessage("과제 수정을 취소했습니다.");
+                        return;
+                    }
+
+                    if (confirmLateUpdate.equalsIgnoreCase("Y")) {
+                        break;
+                    }
+
+                    outputView.printError("Y 또는 N만 입력해주세요.");
+                }
+            }
+
+            while (true) {
+                System.out.print("수정 내용을 입력해주세요: ");
+                String newContent = sc.nextLine().trim();
+
+                if (newContent.isEmpty()) {
+                    outputView.printError("제출 내용은 비워둘 수 없습니다.");
+                    continue;
+                }
+
+                controller.updateSubmission(assignmentId, studentId, newContent);
+                outputView.printMessage("✅ 과제 수정이 완료되었습니다.");
+                return;
+            }
         }
     }
 
     private void deleteSubmission() {
-        outputView.printMessage("\n--- 제출 과제 삭제 ---");
+        outputView.printMessage("\n=== 제출 과제 삭제 ===");
 
         UsersDTO loggedInUser = SessionManager.getInstance().getLoggedInUser();
         Long studentId = (long) loggedInUser.getId();
 
-        List<StudentAssignmentDTO> assignmentList = getMyAssignments(studentId);
-
-        if (assignmentList == null || assignmentList.isEmpty()) {
-            outputView.printError("삭제할 과제가 없습니다.");
-            return;
-        }
-
-        String courseTitle = selectCourseTitle(assignmentList, "삭제");
-        if (courseTitle == null) {
-            outputView.printMessage("과제 삭제를 취소했습니다.");
-            return;
-        }
-
-        List<StudentAssignmentDTO> filteredList = filterAssignmentsByCourseTitle(assignmentList, courseTitle);
-        StudentAssignmentDTO selectedAssignment = selectAssignment(filteredList, courseTitle, "삭제");
-
-        if (selectedAssignment == null) {
-            outputView.printMessage("과제 삭제를 취소했습니다.");
-            return;
-        }
-
-        outputView.printStudentAssignmentDetail(selectedAssignment);
-
-        Long assignmentId = selectedAssignment.getId();
-
-        boolean canSubmit = controller.canSubmitAssignment(assignmentId, studentId);
-        if (!canSubmit) {
-            outputView.printError("없는 과제이거나, 수강 중인 과제가 아닙니다. 다시 입력해주세요.");
-            return;
-        }
-
-        boolean alreadySubmitted = controller.isAlreadySubmitted(assignmentId, studentId);
-        if (!alreadySubmitted) {
-            outputView.printError("아직 제출하지 않은 과제입니다. 삭제할 과제가 없습니다.");
-            return;
-        }
-
         while (true) {
-            boolean deadlinePassed = controller.isAssignmentDeadlinePassed(assignmentId);
+            List<StudentAssignmentDTO> assignmentList = getMyAssignments(studentId);
 
-            String confirm;
-            if (deadlinePassed) {
-                System.out.print("마감일이 지난 과제입니다. 삭제하시겠습니까? (Y/N): ");
-            } else {
-                System.out.print("정말 삭제하시겠습니까? (Y/N): ");
-            }
-
-            confirm = sc.nextLine().trim();
-
-            if (confirm.equalsIgnoreCase("N")) {
-                outputView.printMessage("과제 제출 삭제를 취소했습니다.");
+            if (assignmentList == null || assignmentList.isEmpty()) {
+                outputView.printError("삭제할 과제가 없습니다.");
                 return;
             }
 
-            if (!confirm.equalsIgnoreCase("Y")) {
-                outputView.printError("Y 또는 N만 입력해주세요.");
+            String courseTitle = selectCourseTitle(assignmentList, "삭제");
+            if (courseTitle == null) {
+                outputView.printMessage("과제 삭제를 취소했습니다.");
+                return;
+            }
+
+            List<StudentAssignmentDTO> filteredList = filterAssignmentsByCourseTitle(assignmentList, courseTitle);
+            StudentAssignmentDTO selectedAssignment = selectAssignment(filteredList, courseTitle, "삭제");
+
+            if (selectedAssignment == null) {
+                outputView.printMessage("과제 선택을 다시 진행합니다.");
                 continue;
             }
 
-            controller.deleteSubmission(assignmentId, studentId);
-            outputView.printMessage("✅ 과제 제출 삭제가 완료되었습니다.");
-            return;
+            outputView.printStudentAssignmentDetail(selectedAssignment);
+
+            Long assignmentId = selectedAssignment.getId();
+
+            boolean canSubmit = controller.canSubmitAssignment(assignmentId, studentId);
+            if (!canSubmit) {
+                outputView.printError("없는 과제이거나, 수강 중인 과제가 아닙니다. 다시 선택해주세요.");
+                continue;
+            }
+
+            boolean alreadySubmitted = controller.isAlreadySubmitted(assignmentId, studentId);
+            if (!alreadySubmitted) {
+                outputView.printError("아직 제출하지 않은 과제입니다. 다른 과제를 선택해주세요.");
+                continue;
+            }
+
+            while (true) {
+                boolean deadlinePassed = controller.isAssignmentDeadlinePassed(assignmentId);
+
+                if (deadlinePassed) {
+                    System.out.print("마감일이 지난 과제입니다. 삭제하시겠습니까? (Y/N): ");
+                } else {
+                    System.out.print("정말 삭제하시겠습니까? (Y/N): ");
+                }
+
+                String confirm = sc.nextLine().trim();
+
+                if (confirm.equalsIgnoreCase("N")) {
+                    outputView.printMessage("과제 제출 삭제를 취소했습니다.");
+                    return;
+                }
+
+                if (!confirm.equalsIgnoreCase("Y")) {
+                    outputView.printError("Y 또는 N만 입력해주세요.");
+                    continue;
+                }
+
+                controller.deleteSubmission(assignmentId, studentId);
+                outputView.printMessage("✅ 과제 제출 삭제가 완료되었습니다.");
+                return;
+            }
         }
     }
 
