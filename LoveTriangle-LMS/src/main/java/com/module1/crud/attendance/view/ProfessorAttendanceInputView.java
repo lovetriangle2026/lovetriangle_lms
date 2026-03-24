@@ -110,10 +110,26 @@ public class ProfessorAttendanceInputView {
 
         for (int i = 0; i < attendanceList.size(); i++) {
             AttendanceDTO attendance = attendanceList.get(i);
+
+            String status = attendance.getAttendanceStatus();
+
+            // 👉 여기서 한글 변환
+            switch (status) {
+                case "PRESENT":
+                    status = "출석";
+                    break;
+                case "LATE":
+                    status = "지각";
+                    break;
+                case "ABSENT":
+                    status = "결석";
+                    break;
+            }
+
             System.out.println((i + 1) + ". "
                     + attendance.getStudentName()
                     + " - "
-                    + attendance.getAttendanceStatus());
+                    + status);
         }
         System.out.println("0. 이전으로 돌아가기");
         System.out.print("수정할 학생 번호를 선택해주세요 : ");
@@ -158,10 +174,10 @@ public class ProfessorAttendanceInputView {
         String newStatus;
 
         switch (statusChoice) {
-            case 1: newStatus = "PRESENT"; break;
-            case 2: newStatus = "LATE"; break;
-            case 3: newStatus = "ABSENT"; break;
-            case 4: newStatus = "EXCUSED"; break;
+            case 1: newStatus = "출석"; break;
+            case 2: newStatus = "지각"; break;
+            case 3: newStatus = "결석"; break;
+            case 4: newStatus = "공결"; break;
             default:
                 outputView.printError("잘못된 번호입니다.");
                 return;
