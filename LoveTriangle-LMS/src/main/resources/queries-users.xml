@@ -13,9 +13,9 @@
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     </query>
 
-    <!--    회원탈퇴-유저삭제-->
+
     <query key="Users.delete">
-        DELETE FROM users WHERE id = ?
+        UPDATE users SET is_active = 'N', deleted_at = NOW() WHERE id = ?
     </query>
 
     <!--    회원인증-->

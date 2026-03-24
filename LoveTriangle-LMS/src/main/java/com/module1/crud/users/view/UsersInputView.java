@@ -170,15 +170,8 @@ public class UsersInputView {
         String answer = sc.nextLine();
 
         if (answer.equalsIgnoreCase("Y")) {
-            // Controller를 호출하여 삭제 수행
-            boolean isDeleted = controller.deleteUser(loggedInUserId);
-
-            if (isDeleted) {
-                outputView.printSuccess("회원 탈퇴가 완료되었습니다. 그동안 이용해 주셔서 감사합니다.");
-                SessionManager.getInstance().clearSession();
-            } else {
-                outputView.printError("회원 탈퇴에 실패했습니다. 관리자에게 문의하세요.");
-            }
+            outputView.printSuccess("회원 탈퇴가 완료되었습니다. 그동안 이용해 주셔서 감사합니다.");
+            SessionManager.getInstance().clearSession();
         } else {
             System.out.println("탈퇴를 취소하고 이전 화면으로 돌아갑니다.");
         }
