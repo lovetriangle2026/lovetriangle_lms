@@ -199,7 +199,13 @@ public class StudentAssignmentInputView {
                 return;
             }
 
-            String courseTitle = selectCourseTitle((Map<Long, String>) assignmentList, "제출");
+            Map<Long, String> courseMap = getMyCourses(studentId);
+            if (courseMap == null || courseMap.isEmpty()) {
+                outputView.printError("수강 중인 강의가 없습니다.");
+                return;
+            }
+
+            String courseTitle = selectCourseTitle(courseMap, "제출");
             if (courseTitle == null) {
                 outputView.printMessage("과제 제출을 취소했습니다.");
                 return;
@@ -264,7 +270,13 @@ public class StudentAssignmentInputView {
                 return;
             }
 
-            String courseTitle = selectCourseTitle((Map<Long, String>) assignmentList, "수정");
+            Map<Long, String> courseMap = getMyCourses(studentId);
+            if (courseMap == null || courseMap.isEmpty()) {
+                outputView.printError("수강 중인 강의가 없습니다.");
+                return;
+            }
+
+            String courseTitle = selectCourseTitle(courseMap, "수정");
             if (courseTitle == null) {
                 outputView.printMessage("과제 수정을 취소했습니다.");
                 return;
@@ -343,7 +355,13 @@ public class StudentAssignmentInputView {
                 return;
             }
 
-            String courseTitle = selectCourseTitle((Map<Long, String>) assignmentList, "삭제");
+            Map<Long, String> courseMap = getMyCourses(studentId);
+            if (courseMap == null || courseMap.isEmpty()) {
+                outputView.printError("수강 중인 강의가 없습니다.");
+                return;
+            }
+
+            String courseTitle = selectCourseTitle(courseMap, "삭제");
             if (courseTitle == null) {
                 outputView.printMessage("과제 삭제를 취소했습니다.");
                 return;
