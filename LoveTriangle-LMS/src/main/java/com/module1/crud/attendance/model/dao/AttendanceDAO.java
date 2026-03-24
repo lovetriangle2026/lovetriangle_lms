@@ -521,6 +521,10 @@ public class AttendanceDAO {
     public int getAttendanceStreak(Connection con, int studentId, int courseId, int currentSessionId) throws SQLException {
         List<String> statusList = getAttendanceStatusesDesc(con, studentId, courseId, currentSessionId);
 
+
+
+
+
         int streak = 0;
         for (String status : statusList) {
             if ("PRESENT".equals(status)) {
