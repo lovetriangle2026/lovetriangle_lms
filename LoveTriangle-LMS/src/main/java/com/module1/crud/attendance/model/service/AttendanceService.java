@@ -164,7 +164,7 @@ public class AttendanceService {
                 String status;
 // ✅ 예외 처리: 정글 아키텍처(course_id=1) 15주차는 무조건 출석
                 if (session.getCourseId() == 1 && session.getWeek() == 15) {
-                    status = "PRESENT";
+                    status = "출석";
                 } else {
                     status = calculateAttendanceStatus(session);
                 }
@@ -219,9 +219,9 @@ public class AttendanceService {
         LocalDateTime lateStart = startAt.plusMinutes(10);
 
         if (!now.isBefore(presentStart) && now.isBefore(lateStart)) {
-            return "PRESENT";
+            return "출석";
         } else {
-            return "LATE";
+            return "지각";
         }
     }
 
