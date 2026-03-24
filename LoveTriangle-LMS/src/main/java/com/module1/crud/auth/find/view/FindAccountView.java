@@ -129,6 +129,14 @@ public class FindAccountView {
             return false;
         }
 
-        return controller.resetPassword(loginId, newPassword);
+        boolean result = controller.resetPassword(loginId, newPassword);
+
+        if (result) {
+            System.out.println("✅ 비밀번호를 변경하였습니다!!");
+        } else {
+            System.out.println("🚨 비밀번호 변경에 실패했습니다.");
+        }
+
+        return result;
     }
 }

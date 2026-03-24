@@ -41,6 +41,7 @@ public class LoginView {
             // 2. 결과 반환
             if (loginSuccess) {
                 // 💡 환영 인사와 메뉴 이동(Routing)은 SystemRouter가 알아서 할 것이므로 true만 던져줍니다!
+
                 return true;
             } else {
                 // 로그인 실패 시 루프가 돌면서 다시 입력을 받게 됨

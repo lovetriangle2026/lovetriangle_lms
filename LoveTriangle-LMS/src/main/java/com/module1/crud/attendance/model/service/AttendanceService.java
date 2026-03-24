@@ -154,8 +154,7 @@ public class AttendanceService {
         }
     }
 
-    // 💡 이 메서드는 조회 후 등록/수정을 하는 복합 로직이므로 트랜잭션을 적용합니다!
-    // 반환 타입을 boolean -> String으로 변경
+
     public String checkAttendance(int studentId, SessionDTO session) {
         try (Connection con = JDBCTemplate.getConnection()) {
             con.setAutoCommit(false);
@@ -185,7 +184,7 @@ public class AttendanceService {
                         );
 
                         if (streak >= 3) {
-                            resultMessage += "\n🔥 3일 이상 연속 출석!! 현재 " + streak + "일 연속 출석 중입니다! 🎉";
+                            resultMessage += "\n🔥" + streak + "일 연속 출석!! 현재 " + 3 + "일 이상 연속 출석 중입니다! 🎉";
                         }
                     }
                 }
