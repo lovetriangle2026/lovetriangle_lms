@@ -42,7 +42,7 @@ public class SubmissionRankResultDTO {
         if (first) {
             String coupon = generateCouponCode();
 
-            return "🎉 축하합니다! 1빠입니다!!\n"
+            return "🎉 축하합니다! 1등으로 제출했습니다!!\n"
                     + "🎁 할인쿠폰이 지급되었습니다!\n"
                     + "쿠폰번호 : " + coupon;
 
