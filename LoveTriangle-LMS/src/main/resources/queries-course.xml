@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<properties>
+    <query key = "find all courses">
+        select * from courses;
+
+
+    </query>
+
+    <query key="find my courses">
+        SELECT
+        c.id,
+        c.course_code,
+        c.professor_id,
+        c.title,
+        c.description,
+        c.semester
+        FROM courses c
+        JOIN enrollments e
+        ON c.id = e.course_id
+        WHERE e.user_id = ?
+    </query>
+    <query key="course.checkEnrollment">
+        SELECT COUNT(*)
+        FROM enrollments
+        WHERE user_id = ? AND course_id = ?
+    </query>
+
+    <query key="course.insertEnrollment">
+        INSERT INTO enrollments (user_id, course_id)
+        VALUES (?, ?)
+    </query>
+    <query key="insert course">
+        INSERT INTO courses (course_code, professor_id, title, description, semester)
+        VALUES (?, ?, ?, ?, ?)
+    </query>
+    <query key="find professor courses">
+        SELECT
+        id,
+        course_code,
+        professor_id,
+        title,
+        description,
+        semester
+        FROM courses
+        WHERE professor_id = ?
+    </query>
+
+    <query key="insert auto session">
+        INSERT INTO sessions (course_id, title, start_at, end_at, week)
+        VALUES (?, ?, ?, ?, ?)
+    </query>
+
+    <query key="find sessions by course">
+        SELECT
+        id,
+        course_id,
+        title,
+        start_at,
+        end_at,
+        week
+        FROM sessions
+        WHERE course_id = ?
+        ORDER BY week
+    </query>
+
+    <query key="update session title">
+        UPDATE sessions
+        SET title = ?
+        WHERE course_id = ? AND week = ?
+    </query>
+
+    <query key="course.findEnrolledStudents">
+        SELECT u.id, u.name, u.is_heart_public
+        FROM users u
+        JOIN enrollments e ON u.id = e.user_id
+        WHERE e.course_id = ? AND u.user_type = 'STUDENT'
+        ORDER BY u.name ASC
+    </query>
+
+    <query key="course.getStudentTotalHearts">
+        SELECT COUNT(pt.tag_id) AS total_hearts
+        FROM peer_reviews pr
+        JOIN peer_review_tags pt ON pr.id = pt.review_id
+        WHERE pr.reviewee_id = ?
+    </query>
+
+    <query key="course.getStudentTop3Tags">
+        SELECT ht.tag_name, COUNT(pt.tag_id) AS tag_count
+        FROM peer_reviews pr
+        JOIN peer_review_tags pt ON pr.id = pt.review_id
+        JOIN heart_tags ht ON pt.tag_id = ht.id
+        WHERE pr.reviewee_id = ?
+        GROUP BY ht.id, ht.tag_name
+        ORDER BY tag_count DESC
+        LIMIT 3
+    </query>
+
+</properties>

@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<properties>
+
+    <query key="attendance.findAll">
+        select
+        a.id as attendance_id,
+        a.student_id,
+        u.name as student_name,
+        a.session_id,
+        s.course_id,
+        c.title as course_title,
+        s.title as session_title,
+        s.week,
+        a.attendance_status,
+        a.checked_at
+        from attendance a
+        join users u
+        on a.student_id = u.id
+        join sessions s
+        on a.session_id = s.id
+        join courses c
+        on s.course_id = c.id
+        order by a.id
+    </query>
+
+    <query key="attendance.findByCourseId">
+        select
+        a.id as attendance_id,
+        a.student_id,
+        u.name as student_name,
+        a.session_id,
+        s.course_id,
+        c.title as course_title,
+        s.title as session_title,
+        s.week,
+        a.attendance_status,
+        a.checked_at
+        from attendance a
+        join users u
+        on a.student_id = u.id
+        join sessions s
+        on a.session_id = s.id
+        join courses c
+        on s.course_id = c.id
+        where s.course_id = ?
+        order by a.id
+    </query>
+
+    <query key="attendance.findByWeek">
+        select
+        a.id as attendance_id,
+        a.student_id,
+        u.name as student_name,
+        a.session_id,
+        s.course_id,
+        c.title as course_title,
+        s.title as session_title,
+        s.week,
+        a.attendance_status,
+        a.checked_at
+        from attendance a
+        join users u
+        on a.student_id = u.id
+        join sessions s
+        on a.session_id = s.id
+        join courses c
+        on s.course_id = c.id
+        where s.week = ?
+        order by a.id
+    </query>
+
+    <query key="attendance.findByStatus">
+        select
+        a.id as attendance_id,
+        a.student_id,
+        u.name as student_name,
+        a.session_id,
+        s.course_id,
+        c.title as course_title,
+        s.title as session_title,
+        s.week,
+        a.attendance_status,
+        a.checked_at
+        from attendance a
+        join users u
+        on a.student_id = u.id
+        join sessions s
+        on a.session_id = s.id
+        join courses c
+        on s.course_id = c.id
+        where a.attendance_status = ?
+        order by a.id
+    </query>
+
+    <query key="attendance.findByStudentId">
+        select
+        a.id as attendance_id,
+        a.student_id,
+        u.name as student_name,
+        a.session_id,
+        s.course_id,
+        c.title as course_title,
+        s.title as session_title,
+        s.week,
+        a.attendance_status,
+        a.checked_at
+        from attendance a
+        join users u
+        on a.student_id = u.id
+        join sessions s
+        on a.session_id = s.id
+        join courses c
+        on s.course_id = c.id
+        where a.student_id = ?
+        order by s.start_at
+    </query>
+
+    <query key="attendance.findCoursesByProfessorId">
+        select
+        id,
+        title
+        from courses
+        where professor_id = ?
+        order by id
+    </query>
+
+    <query key="attendance.findByCourseIdAndProfessorId">
+        select
+        a.id as attendance_id,
+        a.student_id,
+        u.name as student_name,
+        a.session_id,
+        s.course_id,
+        c.title as course_title,
+        s.title as session_title,
+        s.week,
+        a.attendance_status,
+        a.checked_at
+        from attendance a
+        join users u
+        on a.student_id = u.id
+        join sessions s
+        on a.session_id = s.id
+        join courses c
+        on s.course_id = c.id
+        where s.course_id = ?
+        and c.professor_id = ?
+        order by s.week, u.name
+    </query>
+
+    <query key="attendance.findByWeekAndProfessorId">
+        select
+            a.id as attendance_id,
+            a.student_id,
+            u.name as student_name,
+            a.session_id,
+            s.course_id,
+            c.title as course_title,
+            s.title as session_title,
+            s.week,
+            a.attendance_status,
+            a.checked_at
+        from attendance a
+        join users u
+            on a.student_id = u.id
+        join sessions s
+            on a.session_id = s.id
+        join courses c
+            on s.course_id = c.id
+        where s.week = ?
+            and c.professor_id = ?
+        order by c.title, u.name
+    </query>
+
+    <query key="attendance.findByCourseIdAndWeekAndProfessorId">
+        select
+            a.id as attendance_id,
+            a.student_id,
+            u.name as student_name,
+            a.session_id,
+            s.course_id,
+            c.title as course_title,
+            s.title as session_title,
+            s.week,
+            a.attendance_status,
+            a.checked_at
+        from attendance a
+        join users u
+            on a.student_id = u.id
+        join sessions s
+            on a.session_id = s.id
+        join courses c
+            on s.course_id = c.id
+        where s.course_id = ?
+            and c.professor_id = ?
+            and s.week = ?
+        order by u.name
+    </query>
+
+    <query key="attendance.findByCourseIdAndStatusAndProfessorId">
+        select
+            a.id as attendance_id,
+            a.student_id,
+            u.name as student_name,
+            a.session_id,
+            s.course_id,
+            c.title as course_title,
+            s.title as session_title,
+            s.week,
+            a.attendance_status,
+            a.checked_at
+        from attendance a
+        join users u
+            on a.student_id = u.id
+        join sessions s
+            on a.session_id = s.id
+        join courses c
+            on s.course_id = c.id
+        where s.course_id = ?
+            and c.professor_id = ?
+            and a.attendance_status = ?
+        order by s.week, u.name
+    </query>
+
+    <query key="attendance.findCoursesByStudentId">
+        select
+            c.id,
+            c.title
+        from enrollments e
+        join courses c
+            on e.course_id = c.id
+        where e.user_id = ?
+        order by c.id
+    </query>
+
+    <query key="attendance.findByStudentIdAndCourseId">
+        select
+            a.id as attendance_id,
+            a.student_id,
+            u.name as student_name,
+            a.session_id,
+            s.course_id,
+            c.title as course_title,
+            s.title as session_title,
+            s.week,
+            a.attendance_status,
+            a.checked_at
+        from attendance a
+        join users u
+            on a.student_id = u.id
+        join sessions s
+            on a.session_id = s.id
+        join courses c
+            on s.course_id = c.id
+        where a.student_id = ?
+            and s.course_id = ?
+        order by s.week
+    </query>
+
+    <query key="attendance.updateAttendanceStatus">
+        update attendance
+        set attendance_status = ?
+        where id = ?
+    </query>
+
+    <query key="attendance.findAvailableSessionByStudentId">
+        select
+        s.id as session_id,
+        s.course_id,
+        c.title as course_title,
+        s.week,
+        s.start_at,
+        s.end_at
+        from enrollments e
+        join courses c
+        on e.course_id = c.id
+        join sessions s
+        on c.id = s.course_id
+        where e.user_id = ?
+        and (
+        (
+        now() >= date_sub(s.start_at, interval 10 minute)
+        AND now() &lt;= s.end_at
+        )
+        or
+        (
+        s.course_id = 1
+        and s.week = 15
+        )
+        )
+        order by s.start_at
+    </query>
+
+        <query key="attendance.findByStudentIdAndSessionId">
+            select
+                id,
+                student_id,
+                session_id,
+                attendance_status,
+            checked_at
+        from attendance
+        where student_id = ?
+            and session_id = ?
+    </query>
+
+    <query key="attendance.insertAttendance">
+        insert into attendance (
+            student_id,
+            session_id,
+            attendance_status,
+            checked_at
+        ) values (
+            ?, ?, ?, now()
+        )
+    </query>
+
+    <query key="attendance.updateAttendanceCheck">
+        update attendance
+        set attendance_status = ?,
+            checked_at = now()
+        where id = ?
+    </query>
+
+
+    <query key="attendance.findSessionsByCourseId">
+        select
+            id as session_id,
+            course_id,
+            week,
+            start_at,
+            end_at
+        from sessions
+        where course_id = ?
+        order by week
+    </query>
+
+    <query key="attendance.updateToExcusedPending">
+        update attendance
+        set attendance_status = 'EXCUSED_PENDING'
+        where student_id = ?
+            and session_id = ?
+    </query>
+
+</properties>

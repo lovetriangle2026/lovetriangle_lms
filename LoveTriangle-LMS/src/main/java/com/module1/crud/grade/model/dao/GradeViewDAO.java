@@ -11,57 +11,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GradeViewDAO {
-    private final Connection connection;
 
-    public GradeViewDAO(Connection connection) {
-        this.connection = connection;
+    // 💡 생성자와 필드 제거
+    public GradeViewDAO() {
     }
 
+    private Integer getNullableInt(ResultSet rset, String columnLabel) throws SQLException {
+        Number value = (Number) rset.getObject(columnLabel);
+        return value == null ? null : value.intValue();
+    }
 
-    public List<GradeViewDTO> findGrade(long studentId) throws SQLException {
-        // 동작시킬 쿼리문 준비
+    private Double getNullableDouble(ResultSet rset, String columnLabel) throws SQLException {
+        Number value = (Number) rset.getObject(columnLabel);
+        return value == null ? null : value.doubleValue();
+    }
+
+    public List<GradeViewDTO> findGrade(Connection con, long studentId) throws SQLException {
         String query = QueryUtil.getQuery("grade.findall");
-
-
         List<GradeViewDTO> gradeList = new ArrayList<>();
 
-        // 쿼리문 동작
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, studentId);
             ResultSet rset = pstmt.executeQuery();
+
             while (rset.next()) {
                 GradeViewDTO grade = new GradeViewDTO(
                         rset.getInt("student_id"),
                         rset.getString("student_name"),
                         rset.getInt("course_id"),
-                        rset.getString("assignment_title"),
-                        rset.getInt("midterm_score"),
-                        rset.getInt("midterm_score"),
-                        rset.getDouble("midterm_35"),
-                        rset.getDouble("final_35"),
-                        rset.getDouble("attendance_score"),
-                        rset.getInt("assignment_score"),
-                        rset.getDouble("total_score"),
+                        rset.getString("course_title"),
+                        getNullableInt(rset, "midterm_score"),
+                        getNullableInt(rset, "final_score"),
+                        getNullableDouble(rset, "midterm_35"),
+                        getNullableDouble(rset, "final_35"),
+                        getNullableDouble(rset, "attendance_score"),
+                        getNullableInt(rset, "assignment_score"),
+                        getNullableDouble(rset, "total_score"),
                         rset.getString("grade")
                 );
                 gradeList.add(grade);
-
             }
-
         }
+
         return gradeList;
     }
 
-    public List<GradeViewDTO> findByStudentName(long professorId, String studentName) throws SQLException {
-        // 동작시킬 쿼리문 준비
+    public List<GradeViewDTO> findByStudentName(Connection con, long professorId, String studentName) throws SQLException {
         String query = QueryUtil.getQuery("grade.findById");
-
-
         List<GradeViewDTO> gradeList = new ArrayList<>();
 
-        // 쿼리문 동작
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setLong(1, professorId);
             pstmt.setString(2, studentName);
 
@@ -71,21 +70,51 @@ public class GradeViewDAO {
                         rset.getInt("student_id"),
                         rset.getString("student_name"),
                         rset.getInt("course_id"),
-                        rset.getString("assignment_title"),
-                        rset.getInt("midterm_score"),
-                        rset.getInt("midterm_score"),
-                        rset.getDouble("midterm_35"),
-                        rset.getDouble("final_35"),
-                        rset.getDouble("attendance_score"),
-                        rset.getInt("assignment_score"),
-                        rset.getDouble("total_score"),
+                        rset.getString("course_title"),
+                        getNullableInt(rset, "midterm_score"),
+                        getNullableInt(rset, "final_score"),
+                        getNullableDouble(rset, "midterm_35"),
+                        getNullableDouble(rset, "final_35"),
+                        getNullableDouble(rset, "attendance_score"),
+                        getNullableInt(rset, "assignment_score"),
+                        getNullableDouble(rset, "total_score"),
                         rset.getString("grade")
                 );
                 gradeList.add(grade);
-
             }
-
         }
+
+        return gradeList;
+    }
+
+    public List<GradeViewDTO> findAllGradeByProfessor(Connection con, long professorId) throws SQLException {
+        String query = QueryUtil.getQuery("grade.findAllByProfessor");
+        List<GradeViewDTO> gradeList = new ArrayList<>();
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setLong(1, professorId);
+
+            ResultSet rset = pstmt.executeQuery();
+
+            while (rset.next()) {
+                GradeViewDTO grade = new GradeViewDTO(
+                        rset.getInt("student_id"),
+                        rset.getString("student_name"),
+                        rset.getInt("course_id"),
+                        rset.getString("course_title"),
+                        getNullableInt(rset, "midterm_score"),
+                        getNullableInt(rset, "final_score"),
+                        getNullableDouble(rset, "midterm_35"),
+                        getNullableDouble(rset, "final_35"),
+                        getNullableDouble(rset, "attendance_score"),
+                        getNullableInt(rset, "assignment_score"),
+                        getNullableDouble(rset, "total_score"),
+                        rset.getString("grade")
+                );
+                gradeList.add(grade);
+            }
+        }
+
         return gradeList;
     }
 }

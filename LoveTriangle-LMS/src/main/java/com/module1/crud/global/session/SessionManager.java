@@ -26,6 +26,7 @@ public class SessionManager {
     // ---------------------------------------------------------
     // 아래는 사물함을 조작하는 기능들입니다.
 
+
     // 로그인 성공 시 사용자 정보를 사물함에 넣기
     public void setLoggedInUser(UsersDTO user) {
         this.loggedInUser = user;

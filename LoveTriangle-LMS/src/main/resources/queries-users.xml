@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<properties>
+    <!--유저전체조회-->
+    <query key="users.findAll">
+        select
+        *
+        from users
+    </query>
+
+    <!--회원가입-유저저장-->
+    <query key="Users.save">
+        INSERT INTO users (user_code, login_id, name, birth, tel_num, password, pw_answer, user_type, findByLoginI1d)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    </query>
+
+
+    <query key="Users.delete">
+        UPDATE users SET is_active = 'N', deleted_at = NOW() WHERE id = ?
+    </query>
+
+    <!--    회원인증-->
+    <query key="Users.findByLoginId">
+        SELECT * FROM users
+        WHERE login_id = ?
+    </query>
+
+    <query key="Users.update">
+        UPDATE users SET password = ?, tel_num = ?, name = ?, pw_answer = ? WHERE id = ?
+    </query>
+
+    <query key="Users.checkSchoolMember">
+        SELECT COUNT(*)
+        FROM users
+        WHERE user_code = ? AND name = ? AND birth = ? AND user_type = ?
+    </query>
+
+    <query key = "Users.checkAlreadyRegistered">
+        SELECT login_id
+        FROM users
+        WHERE user_code = ?
+    </query>
+
+    <query key="Users.updateAccount">
+        UPDATE users
+        SET login_id = ?, password = ?, tel_num = ?, pw_answer = ?
+        WHERE user_code = ?
+    </query>
+
+    <query key="Users.findIdByUserCode">
+        SELECT id
+        FROM users
+        WHERE user_code = ?
+    </query>
+
+    <query key="Users.findLoginId">
+        SELECT login_id
+        FROM users
+        WHERE user_code = ? AND name = ?
+    </query>
+
+    <query key="Users.verifyPasswordHint">
+        SELECT COUNT(*)
+        FROM users
+        WHERE login_id = ? AND user_code = ? AND pw_answer = ?
+    </query>
+
+    <query key="Users.updatePassword">
+        UPDATE users
+        SET password = ?
+        WHERE login_id = ?
+    </query>
+
+
+    <query key="Users.getTotalHearts">
+        SELECT COUNT(pt.tag_id) AS total_hearts
+        FROM peer_reviews pr
+        JOIN peer_review_tags pt ON pr.id = pt.review_id
+        WHERE pr.reviewee_id = ?
+    </query>
+
+    <query key="Users.getTop3Tags">
+        SELECT ht.tag_name, COUNT(pt.tag_id) AS tag_count
+        FROM peer_reviews pr
+        JOIN peer_review_tags pt ON pr.id = pt.review_id
+        JOIN heart_tags ht ON pt.tag_id = ht.id
+        WHERE pr.reviewee_id = ?
+        GROUP BY ht.id, ht.tag_name
+        ORDER BY tag_count DESC
+        LIMIT 3
+    </query>
+
+    <query key="Users.updateHeartPublic">
+        UPDATE users SET is_heart_public = ? WHERE id = ?
+    </query>
+
+</properties>

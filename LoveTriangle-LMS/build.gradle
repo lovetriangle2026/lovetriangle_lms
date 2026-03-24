@@ -18,6 +18,8 @@ dependencies {
     implementation("com.zaxxer:HikariCP:5.1.0")
     // Source: https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     testImplementation("org.slf4j:slf4j-simple:2.0.17")
+    implementation 'org.mindrot:jbcrypt:0.4'
+    implementation 'ch.qos.logback:logback-classic:1.4.11'
 }
 
 test {
