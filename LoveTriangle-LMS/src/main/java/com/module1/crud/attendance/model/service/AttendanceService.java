@@ -161,7 +161,13 @@ public class AttendanceService {
 
             try {
                 AttendanceDTO attendance = attendanceDAO.findByStudentIdAndSessionId(con, studentId, session.getId());
-                String status = calculateAttendanceStatus(session);
+                String status;
+// ✅ 예외 처리: 정글 아키텍처(course_id=1) 15주차는 무조건 출석
+                if (session.getCourseId() == 1 && session.getWeek() == 15) {
+                    status = "PRESENT";
+                } else {
+                    status = calculateAttendanceStatus(session);
+                }
 
                 boolean isSuccess;
                 if (attendance == null) {
