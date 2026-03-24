@@ -219,6 +219,7 @@ public class AttendanceService {
         }
     }
 
+
     public List<SessionDTO> findSessionsByCourseId(int courseId) {
         try (Connection con = JDBCTemplate.getConnection()) {
             return attendanceDAO.findSessionsByCourseId(con, courseId);

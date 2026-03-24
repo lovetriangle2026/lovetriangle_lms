@@ -312,6 +312,7 @@
         where id = ?
     </query>
 
+
     <query key="attendance.findSessionsByCourseId">
         select
             id as session_id,
