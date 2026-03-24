@@ -113,7 +113,7 @@ public class StudentAttendanceInputView {
             selectedSession = sessionList.get(0);
         } else {
             System.out.println("\n===== [현재 출석 가능한 수업 목록] =====");
-            System.out.println("0. 돌아가기");
+            System.out.println("0. 이전으로 돌아가기");
 
             for (int i = 0; i < sessionList.size(); i++) {
                 SessionDTO session = sessionList.get(i);
